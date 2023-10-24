@@ -1,0 +1,42 @@
+.status-buttons {
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+
+  > * {
+    color: white;
+    background: #000;
+    width: 150px;
+    padding: 10px 5px;
+    transition: all 300ms;
+    font-size: 15px;
+  }
+  .active {
+    background-color: #3d3d3d; /* Set the background color of the active button */
+    color: white;
+  }
+}
+.table-container-wrapper {
+  height: 600px;
+  width: 70vw;
+  .MuiTableContainer-root {
+    height: 100%; /* Take up the full height of the wrapper */
+    overflow-y: scroll; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal scrolling */
+    border-radius: 0px;
+    border-left: 1px solid #cecece;
+    border-right: 1px solid #cecece;
+    border-bottom: 1px solid #cecece;
+  }
+
+  .MuiTableHead-root {
+    position: sticky;
+    top: 0; /* Fix the table header to the top */
+    background-color: black;
+    z-index: 1; /* Ensure header is above scrollable content */
+  }
+  .MuiTableBody-root {
+  }
+}

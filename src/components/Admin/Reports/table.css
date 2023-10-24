@@ -1,0 +1,12 @@
+.table .MuiDataGrid-cell:nth-child(n+4):nth-child(-n+33){
+    padding: 0 !important;
+}
+.table .MuiDataGrid-columnHeader,
+.table .MuiDataGrid-cell{
+    border-collapse: collapse !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    border: 1px solid #000 !important;
+}
