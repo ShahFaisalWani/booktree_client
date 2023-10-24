@@ -125,7 +125,12 @@ const GridToolbar = ({ refetchData, rowSelectionModel, onFinish }) => {
       <div className="flex gap-5">
         <button
           onClick={handleClick}
-          className="flex justify-center items-center gap-1 text-blue-500 hover:bg-gray-200 p-2 rounded-lg h-12"
+          className={`flex justify-center items-center gap-1 text-blue-500 p-2 rounded-lg h-12 transition-all ${
+            !supplier || supplier.supplier_name == "All"
+              ? "text-gray-400 hover:bg-none"
+              : "hover:bg-gray-200"
+          }`}
+          disabled={!supplier || supplier.supplier_name == "All"}
         >
           <AddIcon />
           เพิ่มสินค้า
@@ -135,8 +140,10 @@ const GridToolbar = ({ refetchData, rowSelectionModel, onFinish }) => {
             setType("order");
             setOpenActionModal(true);
           }}
-          className={`flex justify-center items-center gap-1 text-blue-500 hover:bg-gray-200 p-2 rounded-lg h-12 ${
-            rowSelectionModel.length == 0 ? "text-gray-400" : ""
+          className={`flex justify-center items-center gap-1 text-blue-500 p-2 rounded-lg h-12 ${
+            rowSelectionModel.length == 0
+              ? "text-gray-400 hover:bg-none"
+              : "hover:bg-gray-200"
           }`}
           disabled={rowSelectionModel.length == 0}
         >
@@ -161,8 +168,10 @@ const GridToolbar = ({ refetchData, rowSelectionModel, onFinish }) => {
             setType("return");
             setOpenActionModal(true);
           }}
-          className={`flex justify-center items-center gap-1 text-blue-500 hover:bg-gray-200 p-2 rounded-lg h-12 ${
-            rowSelectionModel.length == 0 ? "text-gray-400" : ""
+          className={`flex justify-center items-center gap-1 text-blue-500 p-2 rounded-lg h-12 ${
+            rowSelectionModel.length == 0
+              ? "text-gray-400 hover:bg-none"
+              : "hover:bg-gray-200"
           }`}
           disabled={rowSelectionModel.length == 0}
         >
