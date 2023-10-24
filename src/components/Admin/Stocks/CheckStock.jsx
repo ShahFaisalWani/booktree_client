@@ -210,7 +210,13 @@ const CheckStock = () => {
       <div className="flex mb-10 w-fit m-auto gap-20">
         <form onSubmit={ISBNsubmit}>
           <div className="flex gap-5">
-            <input type="text" placeholder="ISBN" id="ISBN" name="ISBN" />
+            <input
+              type="text"
+              placeholder="ISBN"
+              id="ISBN"
+              name="ISBN"
+              className="border-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+            />
             <button
               type="submit"
               className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
@@ -234,6 +240,7 @@ const CheckStock = () => {
             id="upload"
             ref={inputRef}
             onChange={() => btnRef.current.click()}
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
           />
           <div>
             <button ref={btnRef} type="submit" hidden />

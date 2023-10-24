@@ -58,7 +58,7 @@ const PasswordPage = () => {
           <input
             onChange={(e) => setPass(e.target.value)}
             type="password"
-            className="mb-8 py-3 px-4 block w-full rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
+            className="mb-8 py-3 px-4 block w-full rounded-md text-sm border-2 border-gray-300  focus:border-blue-500 focus:ring-blue-500"
           />
           <div className="flex justify-center mt-4 pb-4">
             <button

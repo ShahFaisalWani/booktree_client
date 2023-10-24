@@ -325,7 +325,13 @@ const SellBooks = () => {
       <div className="flex flex-col items-center">
         <form onSubmit={handleAddCart}>
           <div className="flex gap-5">
-            <input type="text" placeholder="ISBN" id="ISBN" name="ISBN" />
+            <input
+              type="text"
+              placeholder="ISBN"
+              id="ISBN"
+              name="ISBN"
+              className="border-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+            />
             <button
               type="submit"
               className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
