@@ -63,10 +63,14 @@ const createExcelData = (modalData) => {
       E: "",
       F: modalData?.supplier?.percent + "%",
     },
-    modalData.type == "add"
-      ? { A: "เลขที่อ้างอิงจากตัวแทนจำหน่าย:", B: modalData?.refNum }
-      : {},
   ];
+  const addStockRows =
+    modalData.type == "add"
+      ? [
+          { A: "เลขที่อ้างอิงจากตัวแทนจำหน่าย:", B: modalData?.refNum },
+          { A: "วันที่ส่งสินค้า:", B: modalData?.deliveryDate },
+        ]
+      : {};
 
   let quantitySum = 0;
   let totalSum = 0;
@@ -80,6 +84,7 @@ const createExcelData = (modalData) => {
 
   const data = [
     ...extraRows,
+    ...addStockRows,
     {},
     {
       A: "ISBN",
@@ -163,6 +168,11 @@ export const StockSuccessModal = ({ modalData, openDone, handleClose }) => {
                 เลขที่อ้างอิงจากตัวแทนจำหน่าย: <b>{modalData?.refNum}</b>
               </span>
             )}
+            {modalData?.deliveryDate && (
+              <span>
+                วันที่ส่งสินค้า: <b>{modalData?.deliveryDate}</b>
+              </span>
+            )}
           </p>
           <button
             onClick={handleClose}
@@ -170,7 +180,7 @@ export const StockSuccessModal = ({ modalData, openDone, handleClose }) => {
           >
             <CloseIcon fontSize="medium" />
           </button>
-          <div className="flex justify-center items-center p-16 mt-16">
+          <div className="flex justify-center items-center p-16 mt-28">
             <table className="w-full">
               <thead>
                 <tr className="flex gap-5 pb-4">
@@ -343,6 +353,7 @@ const ManageStocks = ({
   rowSelectionModel,
 }) => {
   const [refNum, setRefNum] = useState("");
+  const [deliveryDate, setdeliveryDate] = useState("");
   const [stockList, setStockList] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -382,7 +393,7 @@ const ManageStocks = ({
         setLoading(true);
         const res = await axios.post(
           import.meta.env.VITE_API_BASEURL + "/stock/restock",
-          { type: type, refId: refNum }
+          { type: type, refId: refNum, deliveryDate: deliveryDate }
         );
         const resId = res.data;
 
@@ -401,6 +412,7 @@ const ManageStocks = ({
               supplier: supplier,
               stockList: stockList,
               refNum: refNum || "",
+              deliveryDate: deliveryDate || "",
               type: type,
             };
             if (onFinish) onFinish(modalData);
@@ -447,13 +459,23 @@ const ManageStocks = ({
           </p>
           <p>{supplier?.percent}%</p>
           {type == "add" && (
-            <input
-              name="refNum"
-              className="border border-gray-500 placeholder-gray-400 p-2 py-1"
-              placeholder="เลขที่อ้างอิง"
-              value={refNum}
-              onChange={(e) => setRefNum(e.target.value)}
-            />
+            <>
+              <input
+                name="refNum"
+                className="border border-gray-500 placeholder-gray-400 p-2 py-1"
+                placeholder="เลขที่อ้างอิง"
+                value={refNum}
+                onChange={(e) => setRefNum(e.target.value)}
+              />
+              <input
+                name="deliverDate"
+                type="date"
+                className="border border-gray-500 placeholder-gray-400 p-2 py-1"
+                placeholder="วันที่ส่งสินค้า"
+                value={deliveryDate}
+                onChange={(e) => setdeliveryDate(e.target.value)}
+              />
+            </>
           )}
         </div>
       </div>
