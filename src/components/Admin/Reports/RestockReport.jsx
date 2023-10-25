@@ -6,7 +6,6 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import RangePicker from "./RangePicker";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 const RestockReport = () => {
   const { supplier } = useContext(BookContext);
@@ -43,12 +42,18 @@ const RestockReport = () => {
         totalQuantity += item.restock.total_quantity;
         totalPrice += item.restock.total_price;
         totalNet += item.restock.total_net;
+        let del_date = "";
+        if (item.restock.delivery_date)
+          del_date = new Date(item.restock.delivery_date).toLocaleDateString(
+            "en-GB"
+          );
         newRows.push({
           id: i + 1,
           show_id: i + 1,
           restock_id: item.restock.restock_id,
           date: item.restock.date,
-          ref_id: item.restock.ref_id,
+          ref_id: item.restock.ref,
+          delivery_date: del_date,
           quantity: item.restock.total_quantity,
           price: item.restock.total_price,
           net: item.restock.total_net,

@@ -98,6 +98,12 @@ export default function RestockReportTable({
       width: 150,
       hide: true,
     },
+    {
+      field: "delivery_date",
+      headerName: "วันที่ส่งสินค้า",
+      width: 150,
+      hide: true,
+    },
   ];
 
   return (
@@ -114,9 +120,11 @@ export default function RestockReportTable({
             type == "add"
               ? {
                   ref_id: true,
+                  delivery_date: true,
                 }
               : {
                   ref_id: false,
+                  delivery_date: false,
                 }
           }
           onRowClick={(e) => {
