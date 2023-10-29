@@ -334,15 +334,16 @@ const orderExcel = async (modalData) => {
   formData.append("excel_file", excelFile);
   formData.append("order_id", modalData?.id);
 
-  await axios
-    .post(import.meta.env.VITE_API_BASEURL + `/email/ordersupplier`, formData)
-    .then((res) => {
-      toast.success("ส่งเมลสำเร็จ");
-    })
-    .catch((err) => {
-      toast.error("ส่งเมลไม่สำเร็จ");
-      console.log(err);
-    });
+  //TODO:send email to supplier
+  // await axios
+  //   .post(import.meta.env.VITE_API_BASEURL + `/email/ordersupplier`, formData)
+  //   .then((res) => {
+  //     toast.success("ส่งเมลสำเร็จ");
+  //   })
+  //   .catch((err) => {
+  //     toast.error("ส่งเมลไม่สำเร็จ");
+  //     console.log(err);
+  //   });
 };
 
 const ManageStocks = ({

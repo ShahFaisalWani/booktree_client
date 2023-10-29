@@ -632,7 +632,7 @@ const AddBookModal = ({ onClose, initialISBN }) => {
       .post(
         import.meta.env.VITE_API_BASEURL +
           `/${type == "book" ? "book" : "stationery"}/add`,
-        data
+        [data]
       )
       .catch((err) => {
         console.log(err);

@@ -26,10 +26,8 @@ const OrderTable = ({ rows }) => {
   const totalSum = parseFloat(
     rows.reduce((sum, row) => sum + parseFloat(row.total), 0)
   ).toFixed(2);
-
   // const [open, setOpen] = useState(false);
   // const [currentRow, setCurrentRow] = useState(null);
-
   return (
     <>
       <TableContainer component={Paper}>
@@ -54,10 +52,10 @@ const OrderTable = ({ rows }) => {
                   {row.ISBN}
                 </TableCell>
                 <TableCell align="center">{row.title}</TableCell>
-                <TableCell align="center">{row.price.toFixed(2)}</TableCell>
+                <TableCell align="center">{row.price}</TableCell>
                 <TableCell align="center">{row.quantity}</TableCell>
-                <TableCell align="center">{row.discount.toFixed(2)}</TableCell>
-                <TableCell align="center">{row.total.toFixed(2)}</TableCell>
+                <TableCell align="center">{row.discount}</TableCell>
+                <TableCell align="center">{row.total}</TableCell>
               </TableRow>
             ))}
             <TableRow>

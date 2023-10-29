@@ -13,7 +13,7 @@ const DailyReport = () => {
       title: data.title || "",
       price: parseFloat(data.price) || "",
       quantity: parseInt(data.quantity) || "",
-      discount: parseFloat(data.discount),
+      discount: parseFloat(data.discount).toFixed(2),
       total: parseFloat(data.total),
     };
   };
