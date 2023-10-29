@@ -233,12 +233,24 @@ const SellBooks = () => {
       }));
 
       await addOrderDetail(order_details);
-      setCartFunc([]);
       toast.success("สำเร็จ");
       return { id: res.data.insertId, date: res.data.date };
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handlePrint = async (order_num) => {
+    const data = {
+      items: cart,
+      total: calcTotal(),
+      discount: calcDiscount(),
+      net: calcNetTotal(),
+      payment: payment,
+      orderNum: order_num,
+    };
+
+    await axios.post(import.meta.env.VITE_API_BASEURL + "/print", data);
   };
 
   const handleSubmit = async (e) => {
@@ -268,8 +280,8 @@ const SellBooks = () => {
     const { id, date } = await addOrder();
     const order_num = "INV" + String(id).padStart(5, "0");
     const order_date = new Date(date).toString();
-    console.log(order_num, order_date);
-    //   //TODO: print receipt
+    handlePrint(order_num);
+    setCartFunc([]);
     setLoading(false);
     setConfirmLoading(false);
   };
@@ -302,21 +314,6 @@ const SellBooks = () => {
     if (e.key === "Enter") {
       btnRef.current.click();
     }
-  };
-  const printTest = async () => {
-    const data = {
-      items: cart,
-      total: calcTotal(),
-      discount: calcDiscount(),
-      net: calcNetTotal(),
-      payment: payment,
-    };
-
-    const res = await axios.post(
-      import.meta.env.VITE_API_BASEURL + "/print",
-      data
-    );
-    console.log(res);
   };
 
   return (
@@ -413,13 +410,6 @@ const SellBooks = () => {
       <div className="w-1/4">
         <div>
           <p className="text-center text-xl mb-5">สรุปรายการขาย</p>
-          <button
-            type="button"
-            onClick={printTest}
-            className="border-4 border-red-500"
-          >
-            PRINT TEST
-          </button>
           <div className="border-4 px-4">
             <div className="border-b-4 py-4">
               <p className="flex justify-between mb-2">
