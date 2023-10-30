@@ -536,6 +536,7 @@ const ManageStocks = ({
                       }}
                       onKeyDown={(e) => {
                         if (e.key == "Enter") e.preventDefault();
+                        if (e.key == "Tab") console.log("first");
                       }}
                     />
                   </td>

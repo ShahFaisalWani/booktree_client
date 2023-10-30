@@ -31,12 +31,9 @@ const SupplierReport = () => {
   const year = today.getFullYear();
   const days = new Date(year, month, 0).getDate();
 
-  let url = ``;
-  if (type == "full") {
-    url = `/order/monthlysalesbydates?supplier_name=${supplier.supplier_name}&month=${month}`;
-  } else if (type == "total") {
-    url = `/order/monthlysalesbybooks?supplier_name=${supplier.supplier_name}&month=${month}`;
-  }
+  const url = `/order/monthlysalesby${
+    type == "full" ? "dates" : "books"
+  }?supplier_name=${supplier.supplier_name}&month=${month}`;
 
   const fetchMyData = async () => {
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url);
@@ -66,9 +63,6 @@ const SupplierReport = () => {
       });
   } else if (type == "total") {
     if (rowData?.length > 0) {
-      let totalSold = 0;
-      let totalRevenue = 0;
-      let totalNet = 0;
       rowData.map((item) => {
         item["id"] = item.ISBN || "รวมทั้งหมด";
         item["percent"] = supplier.percent;

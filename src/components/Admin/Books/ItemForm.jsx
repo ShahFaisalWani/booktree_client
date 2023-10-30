@@ -9,8 +9,8 @@ import ImgInput from "./ImgInput";
 import { BookContext } from "./Book";
 import SupplierSelect from "./SupplierSelect";
 
-const ItemForm = () => {
-  const { genre, setGenre, supplier, setCoverImg, coverImg } =
+const ItemForm = ({ onFinish }) => {
+  const { supplier, setSupplier, setCoverImg, coverImg } =
     useContext(BookContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,7 +40,7 @@ const ItemForm = () => {
 
       try {
         await axios
-          .post(import.meta.env.VITE_API_BASEURL + "/stationery/add", data)
+          .post(import.meta.env.VITE_API_BASEURL + "/stationery/add", [data])
           .then(() => {
             resetForm({ values: "" });
             setCoverImg(null);
@@ -70,7 +70,10 @@ const ItemForm = () => {
       //       console.log(err);
       //     });
       // }
+
       toast.success("เพิ่มสินค้าเรียบร้อย");
+      setSupplier("");
+      onFinish();
       setIsLoading(false);
     } else {
       toast.error("เลือกตัวแทนจำหน่าย");

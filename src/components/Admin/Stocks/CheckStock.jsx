@@ -51,30 +51,29 @@ const CheckStock = () => {
     setLoading(false);
   };
 
-  const pdfOption = {
-    orientation: "p",
-    format: "a4",
-    unit: "px",
-    lineHeight: 2,
-    putOnlyUsedFonts: true,
-  };
-
-  const pdfConfig = {
-    typo: {
-      header: 25,
-      large: 20,
-      normal: 18,
-      small: 14,
-    },
-    margin: {
-      t: 20,
-      b: 20,
-      l: 20,
-      r: 20,
-    },
-  };
-
   function printPDF() {
+    const pdfOption = {
+      orientation: "p",
+      format: "a4",
+      unit: "px",
+      lineHeight: 2,
+      putOnlyUsedFonts: true,
+    };
+
+    const pdfConfig = {
+      typo: {
+        header: 25,
+        large: 20,
+        normal: 18,
+        small: 14,
+      },
+      margin: {
+        t: 20,
+        b: 20,
+        l: 20,
+        r: 20,
+      },
+    };
     try {
       let pdf = new jsPDF(pdfOption);
       const pdf_width = pdf.internal.pageSize.width;

@@ -31,7 +31,7 @@ const SellBooks = () => {
   const [payment, setPayment] = useState("");
   const [cash, setCash] = useState(0);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [slip, setSlip] = useState();
+  const [slip, setSlip] = useState(null);
   const [loading, setLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -107,9 +107,9 @@ const SellBooks = () => {
         return (document.getElementById("ISBN").value = "");
       }
 
-      const res = await axios.get(
-        import.meta.env.VITE_API_BASEURL + "/book/ISBN/" + ISBN
-      );
+      const res = await axios
+        .get(import.meta.env.VITE_API_BASEURL + "/book/ISBN/" + ISBN)
+        .catch((err) => console.log(err));
 
       let bookData =
         res?.data?.length > 0
@@ -171,9 +171,9 @@ const SellBooks = () => {
     if (memberId) {
       setLoading(true);
       try {
-        const res = await axios.get(
-          import.meta.env.VITE_API_BASEURL + "/member/check/" + memberId
-        );
+        const res = await axios
+          .get(import.meta.env.VITE_API_BASEURL + "/member/check/" + memberId)
+          .catch((err) => console.log(err));
         if (res.data.status === "valid") {
           setMember(true);
           const newData = cart.map((book) => {
@@ -200,14 +200,12 @@ const SellBooks = () => {
   };
 
   const addOrderDetail = async (order_details) => {
-    try {
-      const res = await axios.post(
+    const res = await axios
+      .post(
         import.meta.env.VITE_API_BASEURL + "/order/addorderdetail",
         order_details
-      );
-    } catch (err) {
-      console.log(err);
-    }
+      )
+      .catch((err) => console.log(err));
   };
 
   const addOrder = async () => {
@@ -250,40 +248,47 @@ const SellBooks = () => {
       orderNum: order_num,
     };
 
-    await axios.post(import.meta.env.VITE_API_BASEURL + "/print", data);
+    await axios
+      .post(import.meta.env.VITE_API_BASEURL + "/print", data)
+      .catch((err) => console.log(err));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (cart.length == 0) return;
+    if (!payment) {
+      return toast.error("เลือกวิธีชำระเงิน");
+    }
     if (payment == "cash" && !cash) {
       return toast.error("ใส่จำนวนเงิน");
     }
-    setConfirmLoading(true);
-    setLoading(true);
 
-    // let hasInvalidValue = false;
+    let hasInvalidValue = false;
 
-    // Check each book's quantity input
-    // cart.forEach((book) => {
-    //   if (book.quantity > book.in_stock) {
-    //     toast.error("ไม่มี " + book.title + " ในสต็อก");
-    //     hasInvalidValue = true;
-    //   }
-    // });
-    // // if (phoneNumber.length != 10) return toast.error("ใส่เบอร์โทรศัพท์");
-    // if (!hasInvalidValue) {
-    // const { id, date } = await addOrder();
-    // const order_num = "INV" + String(id).padStart(5, "0");
-    // const order_date = new Date(date).toString();
-    // console.log(order_num, order_date);
-    // }
-    const { id, date } = await addOrder();
-    const order_num = "INV" + String(id).padStart(5, "0");
-    const order_date = new Date(date).toString();
-    handlePrint(order_num);
-    setCartFunc([]);
-    setLoading(false);
-    setConfirmLoading(false);
+    cart.forEach((book) => {
+      if (book.quantity > book.in_stock) {
+        toast.error("ไม่มี " + book.title + " ในสต็อก");
+        hasInvalidValue = true;
+      }
+    });
+
+    try {
+      setConfirmLoading(true);
+      setLoading(true);
+      if (!hasInvalidValue) {
+        const { id, date } = await addOrder();
+        const order_num = "INV" + String(id).padStart(5, "0");
+        // const order_date = new Date(date).toString();
+        await handlePrint(order_num);
+        setCartFunc([]);
+        setPayment("");
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+      setConfirmLoading(false);
+    }
   };
 
   // const handleAddSlip = (e) => {

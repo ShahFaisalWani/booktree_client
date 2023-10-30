@@ -69,7 +69,7 @@ export default function MonthlyReportTableTotal({ rows, footerData }) {
   return (
     <Box
       sx={{
-        height: rows.length > 4 ? 400 : "fit",
+        height: rows.length > 4 ? 1000 : "fit",
         width: "100%",
         margin: "auto",
       }}
@@ -80,12 +80,12 @@ export default function MonthlyReportTableTotal({ rows, footerData }) {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5,
+              pageSize: 15,
             },
           },
         }}
         disableColumnFilter
-        pageSizeOptions={[5]}
+        pageSizeOptions={[15, 50]}
         slots={{ toolbar: GridToolbar, footer: CustomFooter }}
         slotProps={{
           footer: { footerData },
