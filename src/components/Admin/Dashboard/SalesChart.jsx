@@ -12,9 +12,6 @@ import {
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import { useQuery } from "react-query";
-import ReactDatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import LoadingScreen from "../../Loading/LoadingScreen";
 
 ChartJS.register(
   CategoryScale,
@@ -108,9 +105,12 @@ export default function SalesChart() {
       <div className="h-[57px] rounded-t-[4px] bg-black text-white px-4 py-2 flex justify-between items-center">
         <div className="font-bold flex justify-between items-center gap-5">
           <span className="text-black">
-            <ReactDatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
+            <input
+              name="deliverDate"
+              type="date"
+              className="border border-gray-500 placeholder-gray-400 p-2 py-1"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
             />
           </span>
         </div>
