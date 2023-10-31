@@ -21,7 +21,8 @@ const EditDialog = ({ initial, changeInitial, onClose }) => {
     "ราคา",
     "เนื้อเรื่อง",
     "ผู้แปล",
-    "น้ำหนัก",
+    "น้ำหนัก (kg)",
+    "ปีพิมพ์",
   ];
 
   const initialValues = {
@@ -35,11 +36,12 @@ const EditDialog = ({ initial, changeInitial, onClose }) => {
     desc: inputData.desc || "",
     translator: inputData.translator || "",
     weight: inputData.weight || "",
+    published_year: "",
   };
 
   const validationSchema = Yup.object({
     ISBN: Yup.string().required("Required"),
-    title: Yup.string().required("Required"),
+    title: Yup.string(),
     old_genre: Yup.string(),
     genre: Yup.string(),
     author: Yup.string(),
@@ -48,6 +50,7 @@ const EditDialog = ({ initial, changeInitial, onClose }) => {
     desc: Yup.string(),
     translator: Yup.string(),
     weight: Yup.number().typeError("Must be a number"),
+    published_year: Yup.number(),
   });
 
   const handleGenreChange = (genre) => {

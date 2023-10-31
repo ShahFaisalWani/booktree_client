@@ -29,6 +29,7 @@ const ManualForm = ({ onFinish }) => {
     "เนื้อเรื่อง",
     "ผู้แปล",
     "น้ำหนัก",
+    "ปีพิมพ์",
   ];
 
   const initialValues = {
@@ -41,6 +42,7 @@ const ManualForm = ({ onFinish }) => {
     desc: "",
     translator: "",
     weight: "",
+    published_year: "",
   };
 
   const validationSchema = Yup.object({
@@ -53,6 +55,7 @@ const ManualForm = ({ onFinish }) => {
     desc: Yup.string(),
     translator: Yup.string(),
     weight: Yup.string(),
+    published_year: Yup.number(),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -88,9 +91,7 @@ const ManualForm = ({ onFinish }) => {
 
       await axios
         .post(import.meta.env.VITE_API_BASEURL + "/upload/book_cover", formData)
-        .then((res) => {
-          console.log(res);
-        })
+        .then((res) => {})
         .catch((err) => {
           console.log(err);
         });

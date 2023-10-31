@@ -63,12 +63,14 @@ const SupplierReport = () => {
       });
   } else if (type == "total") {
     if (rowData?.length > 0) {
-      rowData.map((item) => {
+      rowData.map((item, i) => {
+        item["index"] = i + 1;
         item["id"] = item.ISBN || "รวมทั้งหมด";
-        item["percent"] = supplier.percent;
+        item["percent"] = item.percent;
+        item["supplier_name"] = item.supplier_name;
         item["net"] = (
           parseFloat(item.total_revenue) *
-          (1 - parseFloat(supplier.percent) / 100)
+          (1 - parseFloat(item.percent) / 100)
         ).toFixed(2);
       });
     }

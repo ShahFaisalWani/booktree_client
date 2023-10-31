@@ -1,8 +1,69 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridToolbar, GridPagination } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  GridPagination,
+  GridToolbarContainer,
+  GridToolbarColumnsButton,
+  GridToolbarDensitySelector,
+  GridToolbarExportContainer,
+  GridCsvExportMenuItem,
+  GridPrintExportMenuItem,
+} from "@mui/x-data-grid";
+import * as XLSX from "xlsx";
 
-const CustomFooter = ({ footerData, type }) => {
+function exportToExcel(data, columns) {
+  let formattedData = data.map((row) => {
+    let newRow = {};
+    columns.forEach(({ field, headerName }) => {
+      newRow[headerName] = row[field];
+    });
+    return newRow;
+  });
+
+  let totalsRow = {};
+
+  columns.forEach(({ field, headerName }) => {
+    if (["total_quantity", "total_revenue", "net"].includes(field)) {
+      totalsRow[headerName] = data.reduce(
+        (sum, row) => sum + (parseFloat(row[field]) || 0),
+        0
+      );
+    } else {
+      totalsRow[headerName] = "";
+    }
+  });
+  totalsRow["ยอดขายทั้งหมด"] = totalsRow["ยอดขายทั้งหมด"].toFixed(2);
+  totalsRow["ยอดขายหลังหักเปอร์เซนต์"] =
+    totalsRow["ยอดขายหลังหักเปอร์เซนต์"].toFixed(2);
+
+  formattedData.push(totalsRow);
+
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  XLSX.writeFile(workbook, "report.xlsx");
+}
+
+const GridToolbarExport = ({ rows, columns, printOptions, ...other }) => (
+  <GridToolbarExportContainer {...other}>
+    <GridCsvExportMenuItem onClick={() => exportToExcel(rows, columns)} />
+    <GridPrintExportMenuItem options={printOptions} />
+  </GridToolbarExportContainer>
+);
+
+function CustomToolbar({ rows, columns }) {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarDensitySelector />
+      <GridToolbarExport rows={rows} columns={columns} />
+    </GridToolbarContainer>
+  );
+}
+
+const CustomFooter = ({ footerData }) => {
   return (
     <div className="">
       <Box
@@ -15,12 +76,14 @@ const CustomFooter = ({ footerData, type }) => {
           height: "50px",
         }}
       >
+        <div style={{ flexBasis: "50px" }}></div>
         <div
           style={{ flexBasis: "150px", textAlign: "left", paddingLeft: "10px" }}
         >
           รวม
         </div>
         <div style={{ flexBasis: "330px" }}></div>
+        <div style={{ flexBasis: "150px" }}></div>
         <div style={{ flexBasis: "70px", textAlign: "center" }}></div>
         <div style={{ flexBasis: "130px", textAlign: "center" }}>
           {footerData?.totalSold}
@@ -40,8 +103,10 @@ const CustomFooter = ({ footerData, type }) => {
 };
 
 const columns = [
+  { field: "index", headerName: "ที่", width: 50 },
   { field: "id", headerName: "ISBN", width: 150 },
   { field: "title", headerName: "ชื่อ", width: 330 },
+  { field: "supplier_name", headerName: "Supplier", width: 150 },
   { field: "percent", headerName: "%", width: 70 },
   {
     field: "total_quantity",
@@ -69,7 +134,6 @@ export default function MonthlyReportTableTotal({ rows, footerData }) {
   return (
     <Box
       sx={{
-        height: rows.length > 4 ? 1000 : "fit",
         width: "100%",
         margin: "auto",
       }}
@@ -86,9 +150,10 @@ export default function MonthlyReportTableTotal({ rows, footerData }) {
         }}
         disableColumnFilter
         pageSizeOptions={[15, 50]}
-        slots={{ toolbar: GridToolbar, footer: CustomFooter }}
+        slots={{ toolbar: CustomToolbar, footer: CustomFooter }}
         slotProps={{
-          footer: { footerData },
+          toolbar: { rows, columns },
+          footer: { footerData, rows, columns },
         }}
         sx={{
           "@media print": {

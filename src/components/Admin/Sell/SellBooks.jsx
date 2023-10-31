@@ -35,10 +35,12 @@ const SellBooks = () => {
   const [loading, setLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [addStockModal, setAddStockModal] = useState(false);
 
   // const [open, setOpen] = useState(false);
 
   const btnRef = useRef();
+  const addToCartRef = useRef();
 
   useEffect(() => {
     if (localSellCart) {
@@ -119,6 +121,11 @@ const SellBooks = () => {
           : null;
       if (!bookData) {
         return setOpenModal(ISBN);
+      }
+
+      if (bookData.in_stock == 0) {
+        // toast.error("สต็อกเป็น 0");
+        return setAddStockModal(bookData);
       }
 
       const newData = [
@@ -267,15 +274,22 @@ const SellBooks = () => {
 
     cart.forEach((book) => {
       if (book.quantity > book.in_stock) {
-        toast.error("ไม่มี " + book.title + " ในสต็อก");
+        // toast.error("ไม่มี " + book.title + " ในสต็อก");
+        toast.error(
+          "มี " +
+            book.title.substring(0, 15) +
+            " แค่ " +
+            book.in_stock +
+            " ในสต็อก"
+        );
         hasInvalidValue = true;
       }
     });
 
     try {
-      setConfirmLoading(true);
-      setLoading(true);
       if (!hasInvalidValue) {
+        setConfirmLoading(true);
+        setLoading(true);
         const { id, date } = await addOrder();
         const order_num = "INV" + String(id).padStart(5, "0");
         // const order_date = new Date(date).toString();
@@ -322,36 +336,37 @@ const SellBooks = () => {
   };
 
   return (
-    <div className="flex gap-10 justify-around mt-16">
+    <div className="mt-16">
       {loading && <LoadingScreen />}
-      <div className="flex flex-col items-center">
-        <form onSubmit={handleAddCart}>
-          <div className="flex gap-5">
-            <input
-              type="text"
-              placeholder="ISBN"
-              id="ISBN"
-              name="ISBN"
-              className="border-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
-            />
-            <button
-              type="submit"
-              className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
-            >
-              เพิ่ม
-            </button>
-          </div>
-        </form>
-        <form onSubmit={handleSubmit}>
-          <div className="mt-16 w-[50vw]">
+      <form onSubmit={handleAddCart}>
+        <div className="flex gap-5 justify-center w-[65%]">
+          <input
+            type="text"
+            placeholder="ISBN"
+            id="ISBN"
+            name="ISBN"
+            className="border-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+          />
+          <button
+            ref={addToCartRef}
+            type="submit"
+            className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
+          >
+            เพิ่ม
+          </button>
+        </div>
+      </form>
+      <div className="flex gap-10 justify-around items-start">
+        <form onSubmit={handleSubmit} className="mt-16 w-[65%]">
+          <div>
             <table className="w-full">
               <thead>
                 <tr className="flex gap-5 pb-4">
                   <th className="text-left w-[2.5%]">ที่</th>
                   <th className="text-left w-[20%]">ISBN</th>
-                  <th className="text-left w-[35%]">ชื่อ</th>
+                  <th className="text-left w-[32.5%]">ชื่อ</th>
                   <th className="text-center w-[10%]">ต่อหน่วย</th>
-                  <th className="text-center w-[10%]">จำนวน</th>
+                  <th className="text-center w-[12.5%]">จำนวน</th>
                   <th className="text-center w-[10%]">ส่วนลด</th>
                   <th className="text-center w-[10%]">รวม</th>
                   <th className="text-center w-[2.5%]">ลบ</th>
@@ -362,7 +377,7 @@ const SellBooks = () => {
                   <tr key={book.ISBN} className="flex gap-5 items-center pb-2">
                     <td className="w-[2.5%] text-left">{i + 1}</td>
                     <td className="w-[20%] text-left">{book.ISBN}</td>
-                    <td className="w-[35%] text-left">
+                    <td className="w-[32.5%] text-left">
                       {book.title?.length > 30
                         ? book.title?.substring(0, 30) + "..."
                         : book.title}
@@ -370,18 +385,19 @@ const SellBooks = () => {
                     <td className="w-[10%] text-center">
                       {book.price.toFixed(2)}
                     </td>
-                    <td className="flex w-[10%] text-center items-center justify-around">
+                    <td className="flex w-[12.5%] text-center items-center justify-around">
                       <input
                         className="w-14 h-[2rem] text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         type="number"
                         min={1}
+                        max={book.in_stock}
                         name="quantity"
                         value={book.quantity}
                         onChange={(e) => {
                           handleChange(book.ISBN, e.target.value);
                         }}
                       />
-                      {/* <p>/ {book.in_stock}</p> */}
+                      <p>/ {book.in_stock}</p>
                     </td>
                     <td className="w-[10%] text-center">
                       {(book.discount * book.quantity).toFixed(2)}
@@ -411,142 +427,142 @@ const SellBooks = () => {
             </div>
           </div>
         </form>
-      </div>
-      <div className="w-1/4">
-        <div>
-          <p className="text-center text-xl mb-5">สรุปรายการขาย</p>
-          <div className="border-4 px-4">
-            <div className="border-b-4 py-4">
-              <p className="flex justify-between mb-2">
-                <span>ทั้งหมด:</span>
-                <span className="ml-auto">{calcTotal()} บาท</span>
-              </p>
-              <p className="flex justify-between mb-2">
-                <span>ส่วนลด:</span>
-                <span className="ml-auto">
-                  {member ? calcDiscount() : 0.0} บาท
-                </span>
-              </p>
-              <p className="flex justify-between">
-                <span>ราคาสุทธิ:</span>
-                <span className="ml-auto">{calcNetTotal()} บาท</span>
-              </p>
-            </div>
 
-            <div className="flex justify-evenly mb-2 py-4 border-b-4">
-              <Input
-                type="text"
-                variant="outlined"
-                name="member_id"
-                placeholder="รหัสสมาชิก"
-                className="rounded-2xl px-2 py-1"
-                onChange={(e) => setMemberId(e.target.value)}
-                disabled={member == true}
-                value={memberId}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    checkMember(e);
+        <div className="w-[25%]">
+          <div>
+            <p className="text-center text-xl mb-5">สรุปรายการขาย</p>
+            <div className="border-4 px-4">
+              <div className="border-b-4 py-4">
+                <p className="flex justify-between mb-2">
+                  <span>ทั้งหมด:</span>
+                  <span className="ml-auto">{calcTotal()} บาท</span>
+                </p>
+                <p className="flex justify-between mb-2">
+                  <span>ส่วนลด:</span>
+                  <span className="ml-auto">
+                    {member ? calcDiscount() : 0.0} บาท
+                  </span>
+                </p>
+                <p className="flex justify-between">
+                  <span>ราคาสุทธิ:</span>
+                  <span className="ml-auto">{calcNetTotal()} บาท</span>
+                </p>
+              </div>
+
+              <div className="flex justify-evenly mb-2 py-4 border-b-4">
+                <Input
+                  type="text"
+                  variant="outlined"
+                  name="member_id"
+                  placeholder="รหัสสมาชิก"
+                  className="rounded-2xl px-2 py-1"
+                  onChange={(e) => setMemberId(e.target.value)}
+                  disabled={member == true}
+                  value={memberId}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      checkMember(e);
+                    }
+                  }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      {member === "none" ? (
+                        <button
+                          onClick={checkMember}
+                          className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
+                        >
+                          ยืนยัน
+                        </button>
+                      ) : (
+                        <>
+                          {member ? (
+                            <CheckIcon sx={{ color: "green" }} />
+                          ) : (
+                            <button onClick={checkMember}>
+                              <RefreshIcon sx={{ color: "blue" }} />
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </InputAdornment>
                   }
-                }}
-                endAdornment={
-                  <InputAdornment position="end">
-                    {member === "none" ? (
-                      <button
-                        onClick={checkMember}
-                        className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
-                      >
-                        ยืนยัน
-                      </button>
-                    ) : (
-                      <>
-                        {member ? (
-                          <CheckIcon sx={{ color: "green" }} />
-                        ) : (
-                          <button onClick={checkMember}>
-                            <RefreshIcon sx={{ color: "blue" }} />
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </InputAdornment>
-                }
-              />
-            </div>
-            <div className="flex justify-center py-2">
-              <FormControl>
-                <InputLabel id="demo-simple-select-label">
-                  ชำระเงินโดย
-                </InputLabel>
-                <Select
-                  className="w-40"
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Payment"
-                  value={payment}
-                  onChange={(e) => setPayment(e.target.value)}
-                >
-                  <MenuItem value={"cash"}>เงินสด</MenuItem>
-                  <MenuItem value={"transfer"}>QR code แสกน</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <div className="border-b-4 px-4 pb-4 mb-4">
-              {payment == "cash" && (
-                <div className="py-4 flex flex-col gap-8 items-stretch">
-                  <p className="flex items-center justify-between">
-                    <label>รับเงิน:</label>
-                    <span>
-                      <input
-                        className="w-20 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        type="number"
-                        name="amount"
-                        onChange={(e) => setCash(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                      />{" "}
-                      บาท
-                    </span>
-                  </p>
+                />
+              </div>
+              <div className="flex justify-center py-2">
+                <FormControl>
+                  <InputLabel id="demo-simple-select-label">
+                    ชำระเงินโดย
+                  </InputLabel>
+                  <Select
+                    className="w-40"
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Payment"
+                    value={payment}
+                    onChange={(e) => setPayment(e.target.value)}
+                  >
+                    <MenuItem value={"cash"}>เงินสด</MenuItem>
+                    <MenuItem value={"transfer"}>QR code แสกน</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+              <div className="border-b-4 px-4 pb-4 mb-4">
+                {payment == "cash" && (
+                  <div className="py-4 flex flex-col gap-8 items-stretch">
+                    <p className="flex items-center justify-between">
+                      <label>รับเงิน:</label>
+                      <span>
+                        <input
+                          className="w-20 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          type="number"
+                          name="amount"
+                          onChange={(e) => setCash(e.target.value)}
+                          onKeyDown={handleKeyPress}
+                        />{" "}
+                        บาท
+                      </span>
+                    </p>
 
-                  <p className="flex items-center justify-between">
-                    <span>เงินทอน:</span>
-                    <span>
-                      {cash && calcNetTotal() > 0
-                        ? (cash - calcNetTotal()).toFixed(2)
-                        : 0}{" "}
-                      บาท
-                    </span>
-                  </p>
-                </div>
-              )}
-            </div>
-            {payment && (
-              <div>
-                {/* <div className="flex justify-between items-center">
+                    <p className="flex items-center justify-between">
+                      <span>เงินทอน:</span>
+                      <span>
+                        {cash && calcNetTotal() > 0
+                          ? (cash - calcNetTotal()).toFixed(2)
+                          : 0}{" "}
+                        บาท
+                      </span>
+                    </p>
+                  </div>
+                )}
+              </div>
+              {payment && (
+                <div>
+                  {/* <div className="flex justify-between items-center">
                   <label>เบอร์โทร:</label>
                   <input
                     type="text"
                     onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                 </div> */}
-                <div className="flex justify-center mt-4 pb-4">
-                  <button
-                    disabled={confirmLoading}
-                    onClick={() => btnRef.current.click()}
-                    className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                  >
-                    {confirmLoading ? (
-                      <CircularProgress
-                        style={{
-                          color: "white",
-                        }}
-                        size={20}
-                      />
-                    ) : (
-                      <p>Confirm</p>
-                    )}
-                  </button>
-                </div>
-                {/* <Modal
+                  <div className="flex justify-center mt-4 pb-4">
+                    <button
+                      disabled={confirmLoading}
+                      onClick={() => btnRef.current.click()}
+                      className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    >
+                      {confirmLoading ? (
+                        <CircularProgress
+                          style={{
+                            color: "white",
+                          }}
+                          size={20}
+                        />
+                      ) : (
+                        <p>Confirm</p>
+                      )}
+                    </button>
+                  </div>
+                  {/* <Modal
                   open={open}
                   aria-labelledby="modal-modal-title"
                   aria-describedby="modal-modal-description"
@@ -593,11 +609,13 @@ const SellBooks = () => {
                     </form>
                   </Box>
                 </Modal> */}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
       {openModal && (
         <MyModal
           children={
@@ -607,6 +625,20 @@ const SellBooks = () => {
             />
           }
           onClose={() => setOpenModal(false)}
+        />
+      )}
+      {addStockModal && (
+        <MyModal
+          children={
+            <AddStockModal
+              onClose={() => {
+                setAddStockModal(false);
+                addToCartRef.current.click();
+              }}
+              initial={addStockModal}
+            />
+          }
+          onClose={() => setAddStockModal(false)}
         />
       )}
     </div>
@@ -735,6 +767,124 @@ const AddBookModal = ({ onClose, initialISBN }) => {
                   type="number"
                   name="price"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                />
+              </div>
+              <div className="mb-5 w-1/2">
+                <label htmlFor="quantity">จำนวน</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 flex justify-center">
+            <button
+              type="submit"
+              className="w-1/2 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              Add
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+};
+const AddStockModal = ({ onClose, initial }) => {
+  const [next, setNext] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const quantity = e.target.quantity.value;
+    if (!quantity) return toast.error("ใส่ให้ครบถ้วน");
+
+    const res = await axios.post(
+      import.meta.env.VITE_API_BASEURL + "/stock/restock",
+      { type: "add" }
+    );
+    const resId = res.data;
+
+    const detailData = [
+      {
+        restock_id: resId,
+        book_ISBN: initial.ISBN,
+        quantity: quantity,
+      },
+    ];
+
+    await axios
+      .post(
+        import.meta.env.VITE_API_BASEURL + "/stock/restockDetail",
+        detailData
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+    toast.success("รับสต็อกสำเร็จ");
+    onClose();
+  };
+
+  return (
+    <div className="py-5">
+      {!next ? (
+        <div className="h-24 flex flex-col justify-between">
+          <div className="text-gray text-lg text-center mb-7">
+            สต็อกเป็น 0 คุณต้องการจะเพิ่มหรือไม่
+          </div>
+          <div className="flex gap-5 justify-around">
+            <button
+              type="button"
+              onClick={() => onClose()}
+              className="text-red-500 bg-white hover:bg-gray-200 font-medium rounded-lg px-5 py-2.5 text-center"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="button"
+              onClick={() => setNext(true)}
+              className="text-blue-600 bg-white hover:bg-gray-200 font-medium rounded-lg px-5 py-2.5 text-center"
+            >
+              เพิ่ม
+            </button>
+          </div>
+        </div>
+      ) : (
+        <form action="submit" onSubmit={handleSubmit}>
+          <div>
+            <div className="mb-5 flex gap-5 items-end">
+              <div className="w-1/2">
+                <label htmlFor="ISBN">ISBN</label>
+                <input
+                  value={initial.ISBN}
+                  type="text"
+                  name="ISBN"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  disabled
+                />
+              </div>
+              <div className="w-1/2">
+                <label htmlFor="supplier_name">Supplier</label>
+                <input
+                  value={initial.supplier_name}
+                  type="text"
+                  name="supplier_name"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-5">
+              <div className="mb-5 w-1/2">
+                <label htmlFor="price">ราคา</label>
+                <input
+                  value={initial.price}
+                  type="number"
+                  name="price"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  disabled
                 />
               </div>
               <div className="mb-5 w-1/2">

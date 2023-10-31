@@ -42,6 +42,7 @@ const BookEditDialog = ({ handleClose, book }) => {
     "ISBN",
     "เรื่อง",
     "ผู้แต่ง",
+    "หมวดหมู่เดิม",
     "หมวดหมู่",
     "สำนักพิมพ์",
     "ตำแทนจำหน่าย",
@@ -49,12 +50,14 @@ const BookEditDialog = ({ handleClose, book }) => {
     "เนื้อเรื่อง",
     "ผู้แปล",
     "น้ำหนัก (kg)",
+    "ปีพิมพ์",
   ];
 
   const initialValues = {
     ISBN: book.ISBN || "",
     title: book.title || "",
     author: book.author || "",
+    old_genre: book.old_genre || "",
     genre: book.genre || "",
     publisher: book.publisher || "",
     supplier_name: book.supplier_name || "",
@@ -62,18 +65,21 @@ const BookEditDialog = ({ handleClose, book }) => {
     desc: book.desc || "",
     translator: book.translator || "",
     weight: book.weight || "",
+    published_year: "",
   };
 
   const validationSchema = Yup.object({
     ISBN: Yup.string().required("Required"),
-    title: Yup.string().required("Required"),
-    author: Yup.string().required("Required"),
+    title: Yup.string(),
+    author: Yup.string(),
+    old_genre: Yup.string(),
     genre: Yup.string(),
     publisher: Yup.string(),
     price: Yup.number().required("Required").typeError("Must be a number"),
     desc: Yup.string(),
     translator: Yup.string(),
     weight: Yup.number().typeError("Must be a number"),
+    published_year: Yup.number(),
   });
 
   const [coverImg, setCoverImg] = useState(book.cover_img);

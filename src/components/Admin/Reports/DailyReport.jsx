@@ -131,7 +131,7 @@ const DailyReport = () => {
       pdf_position_y += 20;
 
       rows.map((book, i) => {
-        if (i != 0 && i % 8 == 0) {
+        if (i != 0 && i % 48 == 0) {
           pdf.addPage();
           pdf_position_y = 40;
         }
