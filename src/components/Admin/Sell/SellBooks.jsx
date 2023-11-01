@@ -196,6 +196,9 @@ const SellBooks = () => {
           });
           setCartFunc(newData);
           toast.success("ส่วนลดสำเร็จ");
+        } else {
+          setMember(false);
+          toast.error("หมายเลขสมาชิกนี้หมดอายุแล้ว");
         }
       } catch (err) {
         setMember(false);
@@ -334,6 +337,20 @@ const SellBooks = () => {
       btnRef.current.click();
     }
   };
+  const printTest = async () => {
+    const data = {
+      items: cart,
+      total: calcTotal(),
+      discount: calcDiscount(),
+      net: calcNetTotal(),
+      payment: "cash",
+      orderNum: "test123",
+    };
+
+    await axios
+      .post(import.meta.env.VITE_API_BASEURL + "/print", data)
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="mt-16">
@@ -429,6 +446,9 @@ const SellBooks = () => {
         </form>
 
         <div className="w-[25%]">
+          <button className="border-red-500 border" onClick={printTest}>
+            print test
+          </button>
           <div>
             <p className="text-center text-xl mb-5">สรุปรายการขาย</p>
             <div className="border-4 px-4">

@@ -32,9 +32,9 @@ const MemberForm = ({ closeModal, onSuccess }) => {
 
   const handleSubmit = async (values) => {
     const memberData = {
+      member_id: values.phone_number,
       first_name: values.first_name,
       last_name: values.last_name,
-      phone_number: values.phone_number,
       email: values.email,
     };
 

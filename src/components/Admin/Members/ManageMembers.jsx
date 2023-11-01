@@ -20,6 +20,8 @@ import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import MemberCard from "../../User/MemberCard";
 import LoadingScreen from "../../Loading/LoadingScreen";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
+import MyModal from "../../MyModal";
 
 const style = {
   position: "absolute",
@@ -57,9 +59,9 @@ const MemberForm = ({ handleChange }) => {
 
   const handleSubmit = async (values) => {
     const memberData = {
+      member_id: values.phone_number,
       first_name: values.first_name,
       last_name: values.last_name,
-      phone_number: values.phone_number,
     };
     createMember(memberData);
   };
@@ -213,13 +215,18 @@ function QuickSearchToolbar(props) {
   );
 }
 
-const GridToolbar = () => {
+const GridToolbar = ({ refetch }) => {
   const [open, setOpen] = useState(false);
   const [openS, setOpenS] = useState(false);
   const [member, setMember] = useState();
 
   const addMember = () => {
     setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpenS(false);
+    refetch();
   };
 
   return (
@@ -262,18 +269,12 @@ const GridToolbar = () => {
           open={openS}
           aria-labelledby="modal-modal-titleS"
           aria-describedby="modal-modal-descriptionS"
-          onClose={() => {
-            setOpenS(false);
-            window.location.reload();
-          }}
+          onClose={handleClose}
         >
           <Box sx={style}>
             <div className="">
               <button
-                onClick={() => {
-                  setOpenS(false);
-                  window.location.reload();
-                }}
+                onClick={handleClose}
                 className="absolute right-7 top-7 text-gray-400 hover:text-red-400"
               >
                 <CloseIcon fontSize="medium" />
@@ -294,10 +295,10 @@ const GridToolbar = () => {
   );
 };
 
-function CustomToolbar({ value, onChange, clearSearch }) {
+function CustomToolbar({ value, onChange, clearSearch, refetch }) {
   return (
     <GridToolbarContainer className="flex justify-between">
-      <GridToolbar />
+      <GridToolbar refetch={refetch} />
       <QuickSearchToolbar
         value={value}
         onChange={onChange}
@@ -310,13 +311,17 @@ function CustomToolbar({ value, onChange, clearSearch }) {
 const ManageMembers = () => {
   const [rows, setRows] = useState([]);
   const [orginalData, setOrginalData] = useState([]);
+  const [openRenewModal, setOpenRenewModal] = useState(false);
 
   const url = "/book/table/members";
   const fetchMyData = async () => {
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url);
     return res.data;
   };
-  const { isLoading, error, data } = useQuery(["members table"], fetchMyData);
+  const { isLoading, error, data, refetch } = useQuery(
+    ["members table"],
+    fetchMyData
+  );
 
   useEffect(() => {
     if (data?.length > 0) {
@@ -334,13 +339,45 @@ const ManageMembers = () => {
     }
   }, [data]);
 
+  const renewMember = async (member_id) => {
+    await axios
+      .put(import.meta.env.VITE_API_BASEURL + "/member/renew", {
+        member_id,
+      })
+      .then((res) => {
+        toast.success("ต่ออายุสำเร็จ");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("เกิดข้อผิดพลาด");
+      })
+      .finally(() => {
+        setOpenRenewModal(false);
+        refetch();
+      });
+  };
+
   const columns = [
-    { field: "id", headerName: "รหัสสมาชิก", width: 150 },
+    { field: "member_id", headerName: "รหัสสมาชิก", width: 150 },
     { field: "first_name", headerName: "ชื่อจริง", width: 150 },
     { field: "last_name", headerName: "นามสกุล", width: 150 },
-    { field: "phone_number", headerName: "เบอร์โทร", width: 150 },
     { field: "start_date", headerName: "วันที่ออกบัตร", width: 150 },
     { field: "end_date", headerName: "วันหมดอายุ", width: 150 },
+    {
+      field: "renew",
+      headerName: "ต่ออายุสมาชิก",
+      width: 100,
+      align: "left",
+      renderCell: (params) => {
+        return (
+          <div className="flex w-full justify-center">
+            <button onClick={() => setOpenRenewModal(params.row.id)}>
+              <AutorenewIcon />
+            </button>
+          </div>
+        );
+      },
+    },
   ];
 
   const [searchText, setSearchText] = useState("");
@@ -386,12 +423,41 @@ const ManageMembers = () => {
                   value: searchText,
                   onChange: (event) => requestSearch(event.target.value),
                   clearSearch: () => requestSearch(""),
+                  refetch: () => refetch(),
                 },
               }}
             />
           </Box>
         )}
       </div>
+      {openRenewModal && (
+        <MyModal
+          children={
+            <div className="flex flex-col mt-6 gap-10">
+              <div className="text-center">
+                ยืนยันต่ออายุรหัสสมาชิกหมายเลข {openRenewModal}
+              </div>
+              <div className="flex justify-evenly">
+                <button
+                  type="button"
+                  onClick={() => setOpenRenewModal(false)}
+                  className="text-red-500 bg-white hover:bg-gray-200 font-medium rounded-lg px-5 py-2.5 text-center"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="button"
+                  onClick={() => renewMember(openRenewModal)}
+                  className="text-blue-600 bg-white hover:bg-gray-200 font-medium rounded-lg px-5 py-2.5 text-center"
+                >
+                  ยืนยัน
+                </button>
+              </div>
+            </div>
+          }
+          onClose={() => setOpenRenewModal(false)}
+        />
+      )}
     </div>
   );
 };

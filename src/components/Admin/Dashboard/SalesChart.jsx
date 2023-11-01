@@ -12,6 +12,7 @@ import {
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import { useQuery } from "react-query";
+import dayjs from "dayjs";
 
 ChartJS.register(
   CategoryScale,
@@ -37,7 +38,9 @@ const options = {
 };
 
 export default function SalesChart() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const currentDate = dayjs();
+  const initialDateString = currentDate.format("YYYY-MM-DD");
+  const [selectedDate, setSelectedDate] = useState(initialDateString);
 
   const orderObj = function (order) {
     const newDate = new Date(order.date);
@@ -56,7 +59,7 @@ export default function SalesChart() {
     };
   };
 
-  const url = "/order/date?date=" + selectedDate.toLocaleString().split(",")[0];
+  const url = "/order/date?date=" + dayjs(selectedDate).format("MM/DD/YYYY");
 
   const fetchMyData = async () => {
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url);
@@ -115,7 +118,8 @@ export default function SalesChart() {
           </span>
         </div>
         <p className="font-bold">
-          รายได้รวม: {totals.reduce((sum, total) => sum + parseFloat(total), 0)}{" "}
+          รายได้รวม:{" "}
+          {totals.reduce((sum, total) => sum + parseFloat(total), 0).toFixed(2)}{" "}
           บาท
         </p>
       </div>
