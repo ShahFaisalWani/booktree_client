@@ -55,9 +55,11 @@ const RestockReport = () => {
           ref_id: item.restock.ref,
           delivery_date: del_date,
           quantity: item.restock.total_quantity,
-          price: item.restock.total_price,
-          net: item.restock.total_net,
+          price: item.restock.total_price.toFixed(2),
+          net: item.restock.total_net.toFixed(2),
           details: item.restock_details,
+          supplier_name: item.restock.supplier_name,
+          percent: item.restock.percent,
         });
       });
       setFooterData({

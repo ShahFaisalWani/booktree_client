@@ -16,7 +16,7 @@ const style = {
   p: 4,
 };
 
-const MyModal = ({ children, onClose, width }) => {
+const MyModal = ({ children, onClose, width, height }) => {
   return (
     <Modal
       open={true}
@@ -24,7 +24,13 @@ const MyModal = ({ children, onClose, width }) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={{ ...style, width: width ? width : "fit" }}>
+      <Box
+        sx={{
+          ...style,
+          width: width ? width : "fit",
+          height: height ? height : "fit",
+        }}
+      >
         <button
           onClick={() => onClose()}
           className="absolute right-7 top-7 text-gray-400 hover:text-red-500"

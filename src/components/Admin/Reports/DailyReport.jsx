@@ -20,11 +20,9 @@ const DailyReport = () => {
     setType(e.target.value);
   };
 
-  let url =
-    `/order/dateby${type}?date=` + dayjs(selectedDate).format("MM/DD/YYYY");
+  let url = `/order/date?date=` + dayjs(selectedDate).format("MM/DD/YYYY");
   useEffect(() => {
-    url =
-      `/order/dateby${type}?date=` + dayjs(selectedDate).format("MM/DD/YYYY");
+    url = `/order/date?date=` + dayjs(selectedDate).format("MM/DD/YYYY");
   }, [selectedDate]);
 
   const fetchMyData = async () => {
@@ -33,7 +31,7 @@ const DailyReport = () => {
   };
 
   const { isLoading, error, data } = useQuery(
-    ["daily report", selectedDate, type],
+    ["daily report", selectedDate],
     fetchMyData
   );
 
@@ -52,7 +50,6 @@ const DailyReport = () => {
           />
         </div>
         <div>
-          {" "}
           <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Type</InputLabel>
@@ -73,7 +70,7 @@ const DailyReport = () => {
           <button
             className={`items-center text-white ${
               data.length == 0 ? "bg-gray-400" : "bg-blue-700 hover:bg-blue-800"
-            }  px-20 py-2.5 text-center`}
+            }  px-20 py-2.5 text-center ${type == "order" ? "opacity-0" : ""}`}
             onClick={() => orderTableRef.current.handlePrint()}
             disabled={data.length == 0}
           >
@@ -85,10 +82,13 @@ const DailyReport = () => {
       </div>
       <div className="px-10 mt-10">
         {type == "item" ? (
-          <OrderDetailTable data={data} ref={orderTableRef} />
+          <OrderDetailTable
+            data={data}
+            ref={orderTableRef}
+            isLoading={isLoading}
+          />
         ) : (
-          // <OrderTable data={data} />
-          <p>Developing...</p>
+          <OrderTable data={data} isLoading={isLoading} />
         )}
       </div>
     </div>

@@ -44,6 +44,8 @@ const StockReport = () => {
           sold_quantity: -parseInt(item.sold_quantity),
           in_stock: item.in_stock,
           in_stock_revenue: parseFloat(item.in_stock_revenue).toFixed(2),
+          supplier_name: item.supplier_name,
+          percent: item.percent,
         });
       });
       setRows(newRows);
@@ -61,7 +63,11 @@ const StockReport = () => {
           <MonthSelect month={month} handleMonthChange={handleMonthChange} />
         </div>
       </div>
-      <div className="mt-16">{rows && <StockReportTable rows={rows} />}</div>
+      <div className="mt-16">
+        {rows && (
+          <StockReportTable rows={rows} month={month} supplier={supplier} />
+        )}
+      </div>
     </div>
   );
 };

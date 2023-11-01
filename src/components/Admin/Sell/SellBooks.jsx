@@ -154,6 +154,14 @@ const SellBooks = () => {
     setCartFunc(newArray);
   };
 
+  const calcQuantity = () => {
+    let total = 0;
+    cart.map((book) => {
+      total += parseInt(book.quantity) || 0;
+    });
+    return total;
+  };
+
   const calcTotal = () => {
     let total = 0;
     cart.map((book) => {
@@ -337,20 +345,20 @@ const SellBooks = () => {
       btnRef.current.click();
     }
   };
-  const printTest = async () => {
-    const data = {
-      items: cart,
-      total: calcTotal(),
-      discount: calcDiscount(),
-      net: calcNetTotal(),
-      payment: "cash",
-      orderNum: "test123",
-    };
+  // const printTest = async () => {
+  //   const data = {
+  //     items: cart,
+  //     total: calcTotal(),
+  //     discount: calcDiscount(),
+  //     net: calcNetTotal(),
+  //     payment: "cash",
+  //     orderNum: "test123",
+  //   };
 
-    await axios
-      .post(import.meta.env.VITE_API_BASEURL + "/print", data)
-      .catch((err) => console.log(err));
-  };
+  //   await axios
+  //     .post(import.meta.env.VITE_API_BASEURL + "/print", data)
+  //     .catch((err) => console.log(err));
+  // };
 
   return (
     <div className="mt-16">
@@ -446,13 +454,17 @@ const SellBooks = () => {
         </form>
 
         <div className="w-[25%]">
-          <button className="border-red-500 border" onClick={printTest}>
+          {/* <button className="border-red-500 border" onClick={printTest}>
             print test
-          </button>
+          </button> */}
           <div>
             <p className="text-center text-xl mb-5">สรุปรายการขาย</p>
             <div className="border-4 px-4">
               <div className="border-b-4 py-4">
+                <p className="flex justify-between mb-2">
+                  <span>จำนวน:</span>
+                  <span className="ml-auto">{calcQuantity()} ชิ้น</span>
+                </p>
                 <p className="flex justify-between mb-2">
                   <span>ทั้งหมด:</span>
                   <span className="ml-auto">{calcTotal()} บาท</span>
@@ -642,6 +654,10 @@ const SellBooks = () => {
             <AddBookModal
               onClose={() => setOpenModal(false)}
               initialISBN={openModal}
+              onSuccess={() => {
+                setOpenModal(false);
+                addToCartRef.current.click();
+              }}
             />
           }
           onClose={() => setOpenModal(false)}
@@ -653,9 +669,12 @@ const SellBooks = () => {
             <AddStockModal
               onClose={() => {
                 setAddStockModal(false);
-                addToCartRef.current.click();
               }}
               initial={addStockModal}
+              onSuccess={() => {
+                setAddStockModal(false);
+                addToCartRef.current.click();
+              }}
             />
           }
           onClose={() => setAddStockModal(false)}
@@ -665,7 +684,7 @@ const SellBooks = () => {
   );
 };
 
-const AddBookModal = ({ onClose, initialISBN }) => {
+const AddBookModal = ({ initialISBN, onSuccess, onClose }) => {
   const [supplier, setSupplier1] = useState("");
   const { setSupplier } = useContext(BookContext);
   const [type, setType] = useState("book");
@@ -714,12 +733,14 @@ const AddBookModal = ({ onClose, initialISBN }) => {
         import.meta.env.VITE_API_BASEURL + "/stock/restockDetail",
         detailData
       )
+      .then(() => {
+        toast.success("เพิ่มสำเร็จ");
+        onSuccess();
+      })
       .catch((err) => {
         console.log(err);
       });
     setSupplier("");
-    toast.success("เพิ่มสำเร็จ");
-    onClose();
   };
 
   return (
@@ -793,6 +814,7 @@ const AddBookModal = ({ onClose, initialISBN }) => {
                 <label htmlFor="quantity">จำนวน</label>
                 <input
                   type="number"
+                  min={1}
                   name="quantity"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
@@ -812,7 +834,7 @@ const AddBookModal = ({ onClose, initialISBN }) => {
     </div>
   );
 };
-const AddStockModal = ({ onClose, initial }) => {
+const AddStockModal = ({ initial, onSuccess, onClose }) => {
   const [next, setNext] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -839,11 +861,13 @@ const AddStockModal = ({ onClose, initial }) => {
         import.meta.env.VITE_API_BASEURL + "/stock/restockDetail",
         detailData
       )
+      .then(() => {
+        toast.success("รับสต็อกสำเร็จ");
+        onSuccess();
+      })
       .catch((err) => {
         console.log(err);
       });
-    toast.success("รับสต็อกสำเร็จ");
-    onClose();
   };
 
   return (
@@ -911,6 +935,7 @@ const AddStockModal = ({ onClose, initial }) => {
                 <label htmlFor="quantity">จำนวน</label>
                 <input
                   type="number"
+                  min={1}
                   name="quantity"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />

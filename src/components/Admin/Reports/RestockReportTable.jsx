@@ -1,8 +1,77 @@
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridToolbar, GridPagination } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarColumnsButton,
+  GridToolbarDensitySelector,
+  GridToolbarExportContainer,
+  GridCsvExportMenuItem,
+  GridPrintExportMenuItem,
+  GridPagination,
+} from "@mui/x-data-grid";
 import MyModal from "../../MyModal";
 import { handleExport, printData } from "../Stocks/ManageStocks";
+
+import * as XLSX from "xlsx";
+
+function exportToExcel(data, columns, footerData) {
+  let formattedData = data.map((row) => {
+    let newRow = {};
+    columns.forEach(({ field, headerName }) => {
+      newRow[headerName] = row[field];
+    });
+    return newRow;
+  });
+  let footerRow = [
+    "รวม",
+    "",
+    "",
+    footerData.totalQuantity,
+    footerData.totalPrice,
+    footerData.totalNet,
+  ];
+  let newRow = {};
+  columns.forEach(({ field, headerName }, i) => {
+    newRow[headerName] = footerRow[i];
+  });
+
+  formattedData.push(newRow);
+
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  XLSX.writeFile(workbook, "report.xlsx");
+}
+
+const GridToolbarExport = ({
+  rows,
+  columns,
+  footerData,
+  printOptions,
+  ...other
+}) => (
+  <GridToolbarExportContainer {...other}>
+    <GridCsvExportMenuItem
+      onClick={() => exportToExcel(rows, columns, footerData)}
+    />
+    <GridPrintExportMenuItem options={printOptions} />
+  </GridToolbarExportContainer>
+);
+
+function CustomToolbar({ rows, columns, footerData }) {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarDensitySelector />
+      <GridToolbarExport
+        rows={rows}
+        columns={columns}
+        footerData={footerData}
+      />
+    </GridToolbarContainer>
+  );
+}
 
 const CustomFooter = ({ footerData, type }) => {
   return (
@@ -61,7 +130,8 @@ export default function RestockReportTable({
   const [open, setOpen] = useState(false);
   const [row, setRow] = useState(null);
 
-  const columns = [
+  const columns = [];
+  const firstPart = [
     {
       field: "show_id",
       headerName: "ที่",
@@ -71,6 +141,24 @@ export default function RestockReportTable({
     },
     { field: "restock_id", headerName: "เลขที่อ้างอิง", width: 150 },
     { field: "date", headerName: "วันที่", width: 150 },
+  ];
+  const middlePart = [
+    {
+      field: "supplier_name",
+      headerName: "ตัวแทนจำหน่าย",
+      width: 120,
+      align: "left",
+      headerAlign: "left",
+    },
+    {
+      field: "percent",
+      headerName: "%",
+      width: 70,
+      align: "left",
+      headerAlign: "left",
+    },
+  ];
+  const lastPart = [
     {
       field: "quantity",
       headerName: "จำนวน",
@@ -105,6 +193,9 @@ export default function RestockReportTable({
       hide: true,
     },
   ];
+  columns.push(...firstPart);
+  if (supplier.supplier_name == "All") columns.push(...middlePart);
+  columns.push(...lastPart);
 
   return (
     <div>
@@ -142,8 +233,9 @@ export default function RestockReportTable({
           }}
           pageSizeOptions={[10, 20, 30]}
           disableColumnFilter
-          slots={{ toolbar: GridToolbar, footer: CustomFooter }}
+          slots={{ toolbar: CustomToolbar, footer: CustomFooter }}
           slotProps={{
+            toolbar: { rows, columns, footerData },
             footer: { footerData, type },
           }}
           sx={{
@@ -176,15 +268,16 @@ export default function RestockReportTable({
   );
 }
 
-const DetailList = ({ row, type, supplier }) => {
+const DetailList = ({ row, type }) => {
   const exportData = {
     type: type,
     id: row.restock_id,
     refNum: row.ref_id,
     stockList: row.details,
+    deliveryDate: row.delivery_date,
     supplier: {
-      supplier_name: supplier.supplier_name,
-      percent: supplier.percent,
+      supplier_name: row.supplier_name,
+      percent: row.percent,
     },
   };
 

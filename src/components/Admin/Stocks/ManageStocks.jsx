@@ -53,6 +53,7 @@ function dataToHTMLTable(data) {
 }
 
 const createExcelData = (modalData) => {
+  const isAdd = modalData.type == "add";
   const extraRows = [
     { A: "เลขที่อ้างอิง:", B: modalData?.id },
     {
@@ -64,13 +65,12 @@ const createExcelData = (modalData) => {
       F: modalData?.supplier?.percent + "%",
     },
   ];
-  const addStockRows =
-    modalData.type == "add"
-      ? [
-          { A: "เลขที่อ้างอิงจากตัวแทนจำหน่าย:", B: modalData?.refNum },
-          { A: "วันที่ส่งสินค้า:", B: modalData?.deliveryDate },
-        ]
-      : {};
+  const addStockRows = isAdd
+    ? [
+        { A: "เลขที่อ้างอิงจากตัวแทนจำหน่าย:", B: modalData?.refNum },
+        { A: "วันที่ส่งสินค้า:", B: modalData?.deliveryDate },
+      ]
+    : [{}];
 
   let quantitySum = 0;
   let totalSum = 0;
@@ -99,15 +99,18 @@ const createExcelData = (modalData) => {
       B: stock.title,
       C: stock.price,
       D: stock.quantity,
-      E: stock.price * stock.quantity,
-      F:
-        stock.price * stock.quantity * (1 - modalData?.supplier?.percent / 100),
+      E: (stock.price * stock.quantity).toFixed(2),
+      F: (
+        stock.price *
+        stock.quantity *
+        (1 - modalData?.supplier?.percent / 100)
+      ).toFixed(2),
     })),
     {
       C: "รวม",
       D: quantitySum,
-      E: totalSum,
-      F: netSum,
+      E: totalSum.toFixed(2),
+      F: netSum.toFixed(2),
     },
   ];
   return data;

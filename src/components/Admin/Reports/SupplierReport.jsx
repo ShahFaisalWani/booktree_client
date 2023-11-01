@@ -124,7 +124,7 @@ const SupplierReport = () => {
       </div>
       <div className="mt-16">
         {type == "full" && rowData && (
-          <MonthlyReportTable days={days} rows={rowData} />
+          <MonthlyReportTable days={days} rows={rowData} supplier={supplier} />
         )}
         {type == "total" && rowData && (
           <MonthlyReportTableTotal rows={rowData} footerData={footerData} />

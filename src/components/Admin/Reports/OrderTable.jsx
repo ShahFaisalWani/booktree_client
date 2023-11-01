@@ -1,223 +1,154 @@
-import { forwardRef } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TableFooter from "@mui/material/TableFooter";
-import { TableVirtuoso } from "react-virtuoso";
+import { useEffect, useState } from "react";
+import MyModal from "../../MyModal";
+import LoadingScreen from "../../Loading/LoadingScreen";
 
-const columns = [
-  {
-    width: 30,
-    label: "ที่",
-    dataKey: "index",
-    numeric: true,
-  },
-  {
-    width: 70,
-    label: "ISBN",
-    dataKey: "ISBN",
-  },
-  {
-    width: 120,
-    label: "ชื่อ",
-    dataKey: "title",
-  },
-  {
-    width: 120,
-    label: "ราคา",
-    dataKey: "price",
-    numeric: true,
-  },
-  {
-    width: 120,
-    label: "จำนวน",
-    dataKey: "quantity",
-    numeric: true,
-  },
-  {
-    width: 120,
-    label: "ส่วนลด",
-    dataKey: "discount",
-    numeric: true,
-  },
-  {
-    width: 120,
-    label: "รวม",
-    dataKey: "total",
-    numeric: true,
-  },
-];
+const OrderTable = ({ data, isLoading }) => {
+  const [currentRow, setCurrentRow] = useState(false);
+  const [rows, setRows] = useState([]);
 
-const VirtuosoTableComponents = {
-  Scroller: forwardRef((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref} />
-  )),
-  Table: (props) => (
-    <Table
-      {...props}
-      sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-    />
-  ),
-  TableHead,
-  TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
-  TableBody: forwardRef((props, ref) => <TableBody {...props} ref={ref} />),
-};
+  useEffect(() => {
+    if (!data) return;
+    const newData = Object.keys(data).map((item, i) => {
+      const formattedDate = new Date(data[item].order.date).toLocaleString(
+        "en-GB"
+      );
+      return {
+        order: { ...data[item].order, date: formattedDate },
+        order_details: [...data[item].order_details],
+      };
+    });
+    setRows(newData);
+  }, []);
 
-function fixedHeaderContent() {
-  return (
-    <TableRow>
-      {columns.map((column) => (
-        <TableCell
-          key={column.dataKey}
-          variant="head"
-          align={column.numeric || false ? "center" : "left"}
-          style={{ width: column.width }}
-          sx={{
-            backgroundColor: "background.paper",
-          }}
-        >
-          {column.label}
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-}
+  if (isLoading) return <LoadingScreen />;
 
-function rowContent(_index, row) {
   return (
     <>
-      {columns.map((column) => (
-        <TableCell
-          key={column.dataKey}
-          align={column.numeric || false ? "center" : "left"}
-        >
-          {row[column.dataKey]}
-        </TableCell>
-      ))}
+      <table className="w-full">
+        <thead className="">
+          <tr className="bg-black">
+            <th className="border-0 text-center p-[8px] text-white w-[5%]">
+              ที่
+            </th>
+            <th className="border-0 text-center p-[8px] text-white w-[15%]">
+              รหัสออเดอร์
+            </th>
+            <th className="border-0 text-center p-[8px] text-white w-[20%]">
+              เบอร์โทร
+            </th>
+            <th className="border-0 text-center p-[8px] text-white w-[20%]">
+              วันที่
+            </th>
+            <th className="border-0 text-center p-[8px] text-white w-[20%]">
+              ยอดรวม
+            </th>
+            <th className="border-0 text-center p-[8px] text-white w-[20%]">
+              ชำระโดย
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <div className="max-h-[500px] overflow-y-scroll">
+        <table className="w-full">
+          <tbody>
+            {rows.map((item, i) => (
+              <tr
+                key={i}
+                className={`h-14 hover:bg-gray-300 transition-all ${
+                  i % 2 === 1 ? "bg-gray-200" : ""
+                }`}
+                onClick={() => {
+                  setCurrentRow(item.order_details);
+                }}
+              >
+                <td className="text-center p-[8px] w-[5%]">{i + 1}</td>
+                <td className="text-center p-[8px] w-[15%]">
+                  {item.order.order_id}
+                </td>
+                <td className="text-center p-[8px] w-[20%]">
+                  {item.order.customer_phone_number || "0948025972"}
+                </td>
+                <td className="text-center p-[8px] w-[20%]">
+                  {item.order.date}
+                </td>
+                <td className="text-center p-[8px] w-[20%]">
+                  {item.order.total}
+                </td>
+                <td className="text-center p-[8px] w-[20%]">
+                  {item.order.payment == "cash" ? "เงินสด" : "โอน"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {currentRow && (
+        <MyModal
+          width={"60vw"}
+          onClose={() => setCurrentRow(false)}
+          children={
+            <div className="py-16 px-10">
+              <table className="w-full">
+                <thead className="">
+                  <tr className="bg-black">
+                    <th className="border-0 text-left p-[8px] text-white w-[7%]">
+                      ที่
+                    </th>
+                    <th className="border-0 text-left p-[8px] text-white w-[20%]">
+                      ISBN
+                    </th>
+                    <th className="border-0 text-left p-[8px] text-white w-[38%]">
+                      ชื่อ
+                    </th>
+                    <th className="border-0 text-centr p-[8px] text-white w-[10%]">
+                      ราคา
+                    </th>
+                    <th className="border-0 text-centr p-[8px] text-white w-[5%]">
+                      จำนวน
+                    </th>
+                    <th className="border-0 text-centr p-[8px] text-white w-[10%]">
+                      ส่วนลด
+                    </th>
+                    <th className="border-0 text-centr p-[8px] text-white w-[10%]">
+                      รวม
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+              <div className="max-h-[500px] overflow-y-scroll">
+                <table className="w-full">
+                  <tbody>
+                    {currentRow?.map((row, i) => (
+                      <tr key={i} className={i % 2 === 1 ? "bg-gray-200" : ""}>
+                        <td className="text-left p-[8px] w-[7%]">{i + 1}</td>
+                        <td className="text-left p-[8px] w-[20%]">
+                          {row.ISBN}
+                        </td>
+                        <td className="text-left p-[8px] w-[38%]">
+                          {row.title}
+                        </td>
+                        <td className="text-center p-[8px] w-[10%]">
+                          {row.price}
+                        </td>
+                        <td className="text-center p-[8px] w-[5%]">
+                          {row.quantity}
+                        </td>
+                        <td className="text-center p-[8px] w-[10%]">
+                          {row.discount}
+                        </td>
+                        <td className="text-center p-[8px] w-[10%]">
+                          {row.total.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        />
+      )}
     </>
-  );
-}
-
-const OrderTable = ({ data }) => {
-  const totalColumn = [
-    {
-      data: "รวม",
-      numeric: true,
-    },
-    { data: "" },
-    { data: "" },
-    { data: "" },
-    {
-      data: totalQuantity,
-      numeric: true,
-    },
-    {
-      data: totalDiscount,
-      numeric: true,
-    },
-    {
-      data: totalSum,
-      numeric: true,
-    },
-  ];
-  function fixedFooterContent() {
-    return (
-      <TableRow>
-        {totalColumn.map((column, i) => (
-          <TableCell
-            key={i}
-            variant="head"
-            align={column.numeric || false ? "center" : "left"}
-            sx={{
-              backgroundColor: "background.paper",
-              borderTop: "1px solid #ddd",
-            }}
-          >
-            {column.data}
-          </TableCell>
-        ))}
-      </TableRow>
-    );
-  }
-  return (
-    <Paper style={{ height: 600, width: "100%" }}>
-      <TableVirtuoso
-        data={rows}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
-        fixedFooterContent={fixedFooterContent}
-      />
-    </Paper>
-    // <TableContainer component={Paper}>
-    //   <Table sx={{ minWidth: 650 }} aria-label="simple table">
-    //     <TableHead>
-    //       <TableRow className=" border-y-2 border-black">
-    //         <TableCell>ที่</TableCell>
-    //         <TableCell>ISBN</TableCell>
-    //         <TableCell align="center">ชื่อ</TableCell>
-    //         <TableCell align="center">ราคา</TableCell>
-    //         <TableCell align="center">จำนวน</TableCell>
-    //         <TableCell align="center">ส่วนลด</TableCell>
-    //         <TableCell align="center">รวม</TableCell>
-    //       </TableRow>
-    //     </TableHead>
-    //     <TableBody>
-    //       {rows.map((row, i) => (
-    //         <TableRow
-    //           key={i}
-    //           sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-    //         >
-    //           <TableCell>{i + 1}</TableCell>
-    //           <TableCell component="th" scope="row">
-    //             {row.ISBN}
-    //           </TableCell>
-    //           <TableCell align="center">{row.title}</TableCell>
-    //           <TableCell align="center">{row.price.toFixed(2)}</TableCell>
-    //           <TableCell align="center">{row.quantity}</TableCell>
-    //           <TableCell align="center">{row.discount.toFixed(2)}</TableCell>
-    //           <TableCell align="center">{row.total.toFixed(2)}</TableCell>
-    //         </TableRow>
-    //       ))}
-    //     </TableBody>
-    //     <TableFooter>
-    //       <TableRow className="bg-gray-200 border-t-2 border-black">
-    //         <TableCell align="left" colSpan={4}>
-    //           <strong>ยอดรวม:</strong>
-    //         </TableCell>
-    //         <TableCell align="center" colSpan={1}>
-    //           <strong>{totalQuantity}</strong>
-    //         </TableCell>
-    //         <TableCell align="center" colSpan={1}>
-    //           <strong>{totalDiscount.toFixed(2)}</strong>
-    //         </TableCell>
-    //         <TableCell align="center" colSpan={1}>
-    //           <strong>{totalSum.toFixed(2)}</strong>
-    //         </TableCell>
-    //       </TableRow>
-    //       <TableRow className="bg-white">
-    //         <TableCell align="left" colSpan={6}>
-    //           <strong>เงินสด:</strong>
-    //         </TableCell>
-    //         <TableCell align="center" colSpan={1}>
-    //           <strong>{totalCash.toFixed(2)}</strong>
-    //         </TableCell>
-    //       </TableRow>
-    //       <TableRow className="bg-gray-200 border-y-0 border-none">
-    //         <TableCell align="left" colSpan={6}>
-    //           <strong>เงินโอน:</strong>
-    //         </TableCell>
-    //         <TableCell align="center" colSpan={1}>
-    //           <strong>{totalTransfer.toFixed(2)}</strong>
-    //         </TableCell>
-    //       </TableRow>
-    //     </TableFooter>
-    //   </Table>
-    // </TableContainer>
   );
 };
 

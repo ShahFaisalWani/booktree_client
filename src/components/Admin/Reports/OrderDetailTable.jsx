@@ -15,6 +15,9 @@ import Paper from "@mui/material/Paper";
 import TableFooter from "@mui/material/TableFooter";
 import { TableVirtuoso } from "react-virtuoso";
 import jsPDF from "jspdf";
+import LoadingScreen from "../../Loading/LoadingScreen";
+import "../Stocks/THSarabunNew-normal";
+import "../Stocks/THSarabunNew Bold-normal.js";
 
 const columns = [
   {
@@ -29,30 +32,30 @@ const columns = [
     dataKey: "ISBN",
   },
   {
-    width: 120,
+    width: 150,
     label: "ชื่อ",
     dataKey: "title",
   },
   {
-    width: 120,
+    width: 70,
     label: "ราคา",
     dataKey: "price",
     numeric: true,
   },
   {
-    width: 120,
+    width: 70,
     label: "จำนวน",
     dataKey: "quantity",
     numeric: true,
   },
   {
-    width: 120,
+    width: 70,
     label: "ส่วนลด",
     dataKey: "discount",
     numeric: true,
   },
   {
-    width: 120,
+    width: 70,
     label: "รวม",
     dataKey: "total",
     numeric: true,
@@ -129,7 +132,7 @@ function printPDF(
     typo: {
       header: 25,
       large: 20,
-      normal: 18,
+      normal: 16,
       small: 14,
     },
     margin: {
@@ -149,14 +152,16 @@ function printPDF(
     pdf.setTextColor("#000");
     pdf_position_y += 40;
 
-    const ISBN_w = 40;
-    const title_w = ISBN_w + 80;
+    const index_w = 40;
+    const ISBN_w = index_w + 20;
+    const title_w = ISBN_w + 70;
     const price_w = title_w + 110;
     const quantity_w = price_w + 50;
     const discount_w = quantity_w + 50;
     const total_w = discount_w + 50;
 
     pdf.setFontSize(pdfConfig.typo.small);
+    pdf.text("ที่", index_w, pdf_position_y, null, null, "left");
     pdf.text("ISBN", ISBN_w, pdf_position_y, null, null, "left");
     pdf.text("ชื่อ", title_w, pdf_position_y, null, null, "left");
     pdf.text("ราคา", price_w, pdf_position_y, null, null, "left");
@@ -166,10 +171,20 @@ function printPDF(
     pdf_position_y += 20;
 
     rows.map((book, i) => {
-      if (i != 0 && i % 48 == 0) {
+      if (i != 0 && i % 32 == 0) {
         pdf.addPage();
         pdf_position_y = 40;
+        pdf.text("ที่", index_w, pdf_position_y, null, null, "left");
+        pdf.text("ISBN", ISBN_w, pdf_position_y, null, null, "left");
+        pdf.text("ชื่อ", title_w, pdf_position_y, null, null, "left");
+        pdf.text("ราคา", price_w, pdf_position_y, null, null, "left");
+        pdf.text("จำนวน", quantity_w, pdf_position_y, null, null, "left");
+        pdf.text("ส่วนลด", discount_w, pdf_position_y, null, null, "left");
+        pdf.text("รวม", total_w, pdf_position_y, null, null, "left");
+        pdf_position_y += 20;
       }
+
+      pdf.text(`${book.index}`, index_w, pdf_position_y, null, null, "left");
       pdf.text(`${book.ISBN}`, ISBN_w, pdf_position_y, null, null, "left");
       pdf.text(
         `${
@@ -183,14 +198,7 @@ function printPDF(
         null,
         "left"
       );
-      pdf.text(
-        `${book.price.toFixed(2)}`,
-        price_w,
-        pdf_position_y,
-        null,
-        null,
-        "left"
-      );
+      pdf.text(`${book.price}`, price_w, pdf_position_y, null, null, "left");
       pdf.text(
         `${book.quantity}`,
         quantity_w,
@@ -200,26 +208,21 @@ function printPDF(
         "left"
       );
       pdf.text(
-        `${book.discount.toFixed(2)}`,
+        `${book.discount}`,
         discount_w,
         pdf_position_y,
         null,
         null,
         "left"
       );
-      pdf.text(
-        `${book.total.toFixed(2)}`,
-        total_w,
-        pdf_position_y,
-        null,
-        null,
-        "left"
-      );
+      pdf.text(`${book.total}`, total_w, pdf_position_y, null, null, "left");
       pdf_position_y += 15;
     });
     pdf_position_y += 10;
 
-    pdf.text("ยอดรวม", ISBN_w, pdf_position_y, null, null, "left");
+    pdf.setFont("THSarabunNew Bold", "normal");
+    pdf.setFontSize(pdfConfig.typo.normal);
+    pdf.text("ยอดรวม", index_w, pdf_position_y, null, null, "left");
     pdf.text(
       `${totalQuantity}`,
       quantity_w,
@@ -229,43 +232,23 @@ function printPDF(
       "left"
     );
     pdf.text(
-      `${totalDiscount.toFixed(2)}`,
+      `${totalDiscount}`,
       discount_w,
       pdf_position_y,
       null,
       null,
       "left"
     );
-    pdf.text(
-      `${totalSum.toFixed(2)}`,
-      total_w,
-      pdf_position_y,
-      null,
-      null,
-      "left"
-    );
+
+    pdf.text(`${totalSum}`, total_w, pdf_position_y, null, null, "left");
     pdf_position_y += 15;
 
-    pdf.text("เงินสด", ISBN_w, pdf_position_y, null, null, "left");
-    pdf.text(
-      `${totalCash.toFixed(2)}`,
-      total_w,
-      pdf_position_y,
-      null,
-      null,
-      "left"
-    );
+    pdf.text("เงินสด", index_w, pdf_position_y, null, null, "left");
+    pdf.text(`${totalCash}`, total_w, pdf_position_y, null, null, "left");
     pdf_position_y += 15;
 
-    pdf.text("เงินโอน", ISBN_w, pdf_position_y, null, null, "left");
-    pdf.text(
-      `${totalTransfer.toFixed(2)}`,
-      total_w,
-      pdf_position_y,
-      null,
-      null,
-      "left"
-    );
+    pdf.text("เงินโอน", index_w, pdf_position_y, null, null, "left");
+    pdf.text(`${totalTransfer}`, total_w, pdf_position_y, null, null, "left");
 
     setTimeout(() => {
       const textDate = new Date().toString();
@@ -299,7 +282,7 @@ function printPDF(
 }
 
 const OrderDetailTable = forwardRef((props, ref) => {
-  const { data } = props;
+  const { data, isLoading } = props;
 
   const [rows, setRows] = useState([]);
   const [totalCash, setTotalCash] = useState(0);
@@ -321,29 +304,26 @@ const OrderDetailTable = forwardRef((props, ref) => {
     },
   }));
 
-  let index = 0;
-
   function orderObj(data) {
-    ++index;
     return {
-      index: index,
       ISBN: data.ISBN || "",
       title: data.title || "",
-      price: parseFloat(data.price) || "",
+      price: parseFloat(data.price).toFixed(2) || "",
       quantity: parseInt(data.quantity) || "",
-      discount: parseFloat(data.discount),
-      total: parseFloat(data.total),
+      discount: parseFloat(data.discount).toFixed(2),
+      total: parseFloat(data.total).toFixed(2),
     };
   }
 
-  const updateOrPushOrder = (rows, setRows, order) => {
+  const updateOrPushOrder = (rows, index, order) => {
     const existingOrderIndex = rows.findIndex((row) => row.ISBN === order.ISBN);
+
     if (existingOrderIndex !== -1) {
-      rows[existingOrderIndex].quantity += order.quantity;
-      rows[existingOrderIndex].discount += order.discount;
-      rows[existingOrderIndex].total += order.total;
+      rows[existingOrderIndex].quantity += parseInt(order.quantity);
+      rows[existingOrderIndex].discount += parseFloat(order.discount);
+      rows[existingOrderIndex].total += parseFloat(order.total);
     } else {
-      setRows((prev) => [...prev, order]);
+      rows.push({ ...order, index });
     }
   };
 
@@ -354,6 +334,8 @@ const OrderDetailTable = forwardRef((props, ref) => {
     let total_s = 0;
     let total_cash = 0;
     let total_transfer = 0;
+    const tempArray = [];
+    let index = 0;
     Object.keys(data).map((item, i) => {
       if (
         data[item].order.payment === "cash" ||
@@ -361,33 +343,34 @@ const OrderDetailTable = forwardRef((props, ref) => {
       ) {
         for (let i = 0; i < Object.keys(data[item].order_details).length; i++) {
           updateOrPushOrder(
-            rows,
-            setRows,
+            tempArray,
+            ++index,
             orderObj(data[item].order_details[i])
           );
           total_q += parseInt(data[item].order_details[i].quantity);
           total_d += parseFloat(data[item].order_details[i].discount);
           total_s += parseFloat(data[item].order_details[i].total);
         }
+        setRows(tempArray);
       }
 
       if (data[item].order.payment === "cash") {
         for (let i = 0; i < Object.keys(data[item].order_details).length; i++) {
-          total_cash += data[item].order_details[i].total;
+          total_cash += parseFloat(data[item].order_details[i].total);
         }
       } else if (data[item].order.payment === "transfer") {
         for (let i = 0; i < Object.keys(data[item].order_details).length; i++) {
-          total_transfer += data[item].order_details[i].total;
+          total_transfer += parseFloat(data[item].order_details[i].total);
         }
       }
 
       setTotalQuantity(total_q);
-      setTotalDiscount(total_d);
-      setTotalSum(total_s);
-      setTotalCash(total_cash);
-      setTotalTransfer(total_transfer);
+      setTotalDiscount(total_d.toFixed(2));
+      setTotalSum(total_s.toFixed(2));
+      setTotalCash(total_cash.toFixed(2));
+      setTotalTransfer(total_transfer.toFixed(2));
     });
-  }, [data]);
+  }, []);
 
   const totalColumn = [
     {
@@ -412,23 +395,87 @@ const OrderDetailTable = forwardRef((props, ref) => {
   ];
   function fixedFooterContent() {
     return (
-      <TableRow>
-        {totalColumn.map((column, i) => (
+      <>
+        <TableRow>
+          {totalColumn.map((column, i) => (
+            <TableCell
+              key={i}
+              variant="head"
+              align={column.numeric || false ? "center" : "left"}
+              sx={{
+                backgroundColor: "background.paper",
+                borderTop: "1px solid #ddd",
+              }}
+            >
+              {column.data}
+            </TableCell>
+          ))}
+        </TableRow>
+        <TableRow>
           <TableCell
-            key={i}
             variant="head"
-            align={column.numeric || false ? "center" : "left"}
+            colSpan={1}
+            align="center"
             sx={{
               backgroundColor: "background.paper",
-              borderTop: "1px solid #ddd",
             }}
           >
-            {column.data}
+            เงินสด
           </TableCell>
-        ))}
-      </TableRow>
+          <TableCell
+            variant="head"
+            colSpan={5}
+            align="center"
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          ></TableCell>
+          <TableCell
+            variant="head"
+            colSpan={1}
+            align="center"
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          >
+            {totalCash}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell
+            variant="head"
+            colSpan={1}
+            align="center"
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          >
+            เงินโอน
+          </TableCell>
+          <TableCell
+            variant="head"
+            colSpan={5}
+            align="center"
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          ></TableCell>
+          <TableCell
+            variant="head"
+            colSpan={1}
+            align="center"
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          >
+            {totalTransfer}
+          </TableCell>
+        </TableRow>
+      </>
     );
   }
+
+  if (isLoading) return <LoadingScreen />;
   return (
     <Paper style={{ height: 600, width: "100%" }}>
       <TableVirtuoso

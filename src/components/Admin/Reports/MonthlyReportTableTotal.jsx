@@ -2,7 +2,6 @@ import React from "react";
 import Box from "@mui/material/Box";
 import {
   DataGrid,
-  GridToolbar,
   GridPagination,
   GridToolbarContainer,
   GridToolbarColumnsButton,
