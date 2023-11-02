@@ -486,7 +486,7 @@ const SellBooks = () => {
                   type="text"
                   variant="outlined"
                   name="member_id"
-                  placeholder="รหัสสมาชิก"
+                  placeholder="เบอร์โทร"
                   className="rounded-2xl px-2 py-1"
                   onChange={(e) => setMemberId(e.target.value)}
                   disabled={member == true}

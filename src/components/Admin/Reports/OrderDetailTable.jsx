@@ -328,7 +328,7 @@ const OrderDetailTable = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    if (!data) return;
+    if (!data) return setRows([]);
     let total_q = 0;
     let total_d = 0;
     let total_s = 0;
@@ -370,7 +370,7 @@ const OrderDetailTable = forwardRef((props, ref) => {
       setTotalCash(total_cash.toFixed(2));
       setTotalTransfer(total_transfer.toFixed(2));
     });
-  }, []);
+  }, [data]);
 
   const totalColumn = [
     {

@@ -20,12 +20,8 @@ const DailyReport = () => {
     setType(e.target.value);
   };
 
-  let url = `/order/date?date=` + dayjs(selectedDate).format("MM/DD/YYYY");
-  useEffect(() => {
-    url = `/order/date?date=` + dayjs(selectedDate).format("MM/DD/YYYY");
-  }, [selectedDate]);
-
   const fetchMyData = async () => {
+    let url = `/order/date?date=` + dayjs(selectedDate).format("MM/DD/YYYY");
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url);
     return res.data;
   };
