@@ -24,11 +24,10 @@ const style = {
   pb: 5,
 };
 
-const StationeryEditDialog = ({ handleClose, book, refetchData }) => {
+const StationeryEditDialog = ({ handleClose, book }) => {
   const { supplier, setSupplier } = useContext(BookContext);
 
   const onClose = () => {
-    setSupplier("");
     handleClose();
   };
   // const colNames = ["รูปปก", "ISBN", "ชื่อ", "ตัวแทนจำหน่าย", "ราคา"];
@@ -80,12 +79,9 @@ const StationeryEditDialog = ({ handleClose, book, refetchData }) => {
       // }
       setLoading(false);
       toast.success("แก้ไขเสร็จเรียบร้อย");
-      setSupplier("");
-      refetchData();
-      handleClose();
+      handleClose(true);
     } else {
-      setSupplier("");
-      handleClose();
+      handleClose(false);
     }
   };
 
@@ -138,23 +134,15 @@ const StationeryEditDialog = ({ handleClose, book, refetchData }) => {
                       >
                         {colNames[i]}
                       </label>
-                      {col == "supplier_name" && (
-                        <SupplierSelect
-                          initial={book.supplier_name}
-                          onChange={(value) => setSupplier(value)}
-                          product={"other"}
-                        />
-                      )}
-                      {col !== "supplier_name" && (
-                        <Field
-                          as={col == "desc" ? "textarea" : ""}
-                          type="text"
-                          name={col}
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                          required={"ISBNtitleprice".includes(col)}
-                          disabled={col == "ISBN"}
-                        />
-                      )}
+
+                      <Field
+                        as={col == "desc" ? "textarea" : ""}
+                        type="text"
+                        name={col}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        required={"ISBNtitleprice".includes(col)}
+                        disabled={col == "ISBN" || col == "supplier_name"}
+                      />
 
                       <ErrorMessage
                         component="span"

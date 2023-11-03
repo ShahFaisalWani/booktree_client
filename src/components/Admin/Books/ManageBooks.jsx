@@ -443,6 +443,10 @@ const ManageBooks = () => {
     setEditBook(book);
   };
 
+  useEffect(() => {
+    setPersistedSelection([]);
+  }, [supplier]);
+
   const handleChange = async (e, ISBN) => {
     const index = rows.findIndex((book) => book.ISBN === ISBN);
 
@@ -462,9 +466,9 @@ const ManageBooks = () => {
     });
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (success) => {
     setModalOpen(false);
-    refetch();
+    if (success) refetch();
   };
 
   const isSelected = (rowId) => {
@@ -666,7 +670,10 @@ const ManageBooks = () => {
             disableDensitySelector
           />
           {modalOpen && (
-            <BookEditDialog handleClose={handleCloseModal} book={editBook} />
+            <BookEditDialog
+              handleClose={(success) => handleCloseModal(success)}
+              book={editBook}
+            />
           )}
         </Box>
       )}

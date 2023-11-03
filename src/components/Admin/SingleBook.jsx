@@ -32,8 +32,8 @@ const SingleBook = ({ book, handleBookChange, handleRemoveBook }) => {
 
   return (
     <div className="w-full h-36 border-2 flex gap-4 px-8 py-4 items-center my-4">
-      <div className="w-[12%]">{modifiedBook.ISBN}</div>
-      <div className="w-[8%]">
+      <div className="w-[10%]">{modifiedBook.ISBN}</div>
+      <div className="w-[7%]">
         <ImgInput
           selectedImg={modifiedBook.cover_img || null}
           handleImgChange={handleImgChange}
@@ -46,15 +46,16 @@ const SingleBook = ({ book, handleBookChange, handleRemoveBook }) => {
           ผู้แปล: {modifiedBook.translator}
         </p>
       </div>
-      <div className="w-[12%]">
+      <div className="w-[20%]">
+        <p>หมวดหมู่เดิม: {modifiedBook.old_genre}</p>
         <ExcelGenreSelect
           handleGenreChange={handleGenreChange}
           selectedGenre={modifiedBook.genre || null}
         />
       </div>
-      <div className="w-[15%]">สำนักพิมพ์: {modifiedBook.publisher}</div>
-      <div className="w-[10%]">{modifiedBook.price}</div>
-      <div className="w-[15%] flex gap-5 justify-center">
+      <div className="w-[20%]">สำนักพิมพ์: {modifiedBook.publisher}</div>
+      <div className="w-[5%]">{modifiedBook.price}</div>
+      <div className="w-[10%] flex gap-5 justify-center">
         <button className="text-blue-500" onClick={() => setOpen(true)}>
           Edit
         </button>

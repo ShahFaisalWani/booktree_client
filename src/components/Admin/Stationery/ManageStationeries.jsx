@@ -287,6 +287,10 @@ const ManageStationeries = () => {
   const [editBook, setEditBook] = useState(null);
 
   useEffect(() => {
+    setPersistedSelection([]);
+  }, [supplier]);
+
+  useEffect(() => {
     if (data?.length >= 0) {
       const updatedRows = data.map((item) => {
         return { ...item, id: item.ISBN, isEditable: false };
@@ -302,7 +306,8 @@ const ManageStationeries = () => {
     setEditBook(book);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (success) => {
+    if (success) refetch();
     setModalOpen(false);
   };
 
@@ -490,9 +495,8 @@ const ManageStationeries = () => {
           />
           {modalOpen && (
             <StationeryEditDialog
-              handleClose={handleCloseModal}
+              handleClose={(success) => handleCloseModal(success)}
               book={editBook}
-              refetchData={() => refetch()}
             />
           )}
         </Box>

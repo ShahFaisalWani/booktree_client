@@ -161,6 +161,7 @@ function printPDF(
     const total_w = discount_w + 50;
 
     pdf.setFontSize(pdfConfig.typo.small);
+    pdf.setFont("THSarabunNew Bold", "normal");
     pdf.text("ที่", index_w, pdf_position_y, null, null, "left");
     pdf.text("ISBN", ISBN_w, pdf_position_y, null, null, "left");
     pdf.text("ชื่อ", title_w, pdf_position_y, null, null, "left");
@@ -174,6 +175,7 @@ function printPDF(
       if (i != 0 && i % 32 == 0) {
         pdf.addPage();
         pdf_position_y = 40;
+        pdf.setFont("THSarabunNew Bold", "normal");
         pdf.text("ที่", index_w, pdf_position_y, null, null, "left");
         pdf.text("ISBN", ISBN_w, pdf_position_y, null, null, "left");
         pdf.text("ชื่อ", title_w, pdf_position_y, null, null, "left");
@@ -183,7 +185,7 @@ function printPDF(
         pdf.text("รวม", total_w, pdf_position_y, null, null, "left");
         pdf_position_y += 20;
       }
-
+      pdf.setFont("THSarabunNew", "normal");
       pdf.text(`${book.index}`, index_w, pdf_position_y, null, null, "left");
       pdf.text(`${book.ISBN}`, ISBN_w, pdf_position_y, null, null, "left");
       pdf.text(
@@ -251,7 +253,17 @@ function printPDF(
     pdf.text(`${totalTransfer}`, total_w, pdf_position_y, null, null, "left");
 
     setTimeout(() => {
-      const textDate = new Date().toString();
+      // const textDate = new Date().toString();
+      const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false, // Use 24-hour time
+      };
+      const textDate = new Date().toLocaleString("th-TH", options);
       pdf.setFont("THSarabunNew", "normal");
       pdf.setFontSize(pdfConfig.typo.small);
       const pages = pdf.internal.getNumberOfPages();
@@ -275,7 +287,7 @@ function printPDF(
         );
       }
       window.open(pdf.output("bloburl"), "_blank");
-    }, 0);
+    }, 100);
   } catch (err) {
     console.log(err);
   }

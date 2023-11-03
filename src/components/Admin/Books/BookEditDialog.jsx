@@ -18,7 +18,7 @@ import SupplierSelect from "./SupplierSelect";
 import { BookContext } from "./Book";
 
 const style = {
-  position: "absolute",
+  position: "relative",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -26,16 +26,14 @@ const style = {
   height: "80%",
   bgcolor: "background.paper",
   boxShadow: 24,
-  px: 8,
   py: 6,
 };
 
 const BookEditDialog = ({ handleClose, book }) => {
-  const { supplier, setSupplier } = useContext(BookContext);
+  const { supplier } = useContext(BookContext);
 
   const onClose = () => {
-    setSupplier("");
-    handleClose();
+    handleClose(false);
   };
   const colNames = [
     "รูปปก",
@@ -128,11 +126,9 @@ const BookEditDialog = ({ handleClose, book }) => {
       }
       setLoading(false);
       toast.success("แก้ไขเสร็จเรียบร้อย");
-      setSupplier("");
-      handleClose();
+      handleClose(true);
     } else {
-      setSupplier("");
-      handleClose();
+      handleClose(false);
     }
   };
 
@@ -163,13 +159,15 @@ const BookEditDialog = ({ handleClose, book }) => {
             onSubmit={handleSubmit}
           >
             <Form>
-              <button
-                onClick={onClose}
-                className="absolute right-7 top-7 text-gray-400 hover:text-red-500"
-              >
-                <CloseIcon fontSize="medium" />
-              </button>
-              <div className="">
+              <div className="sticky top-0 w-fit ml-auto px-8">
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-red-500"
+                >
+                  <CloseIcon fontSize="medium" />
+                </button>
+              </div>
+              <div className="px-16">
                 <div>
                   <label
                     htmlFor="cover_img"
@@ -218,20 +216,24 @@ const BookEditDialog = ({ handleClose, book }) => {
                             </FormControl>
                           </Box>
                         )}
-                        {col == "supplier_name" && (
+                        {/* {col == "supplier_name" && (
                           <SupplierSelect
                             initial={book.supplier_name}
                             product={"book"}
                           />
-                        )}
-                        {col !== "supplier_name" && col !== "genre" && (
+                        )} */}
+                        {col !== "genre" && (
                           <>
                             <Field
                               as={col == "desc" ? "textarea" : ""}
                               type="text"
                               name={col}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                              disabled={col == "ISBN" || col == "supplier_name"}
+                              disabled={
+                                col == "ISBN" ||
+                                col == "supplier_name" ||
+                                col == "old_genre"
+                              }
                             />
                             <ErrorMessage
                               component="span"
