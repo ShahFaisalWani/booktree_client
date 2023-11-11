@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext } from "react";
+import React, { useEffect, useRef, useContext, useState } from "react";
 import { clearCart } from "../../redux/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { FormContext } from "../../pages/Checkout";
 import { useNavigate } from "react-router-dom";
 import AdminOrderEmail from "../../services/AdminOrderEmail";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const PaymentBtn = ({ paymentMethod }) => {
   const cart = useSelector((state) => state.cart);
@@ -26,7 +27,8 @@ const PaymentBtn = ({ paymentMethod }) => {
   };
   const netTotal = calcNetTotal();
 
-  const { isPressed, setIsPressed } = useContext(FormContext);
+  const { isPressed, setIsPressed, paymentLoading, setPaymentLoading } =
+    useContext(FormContext);
 
   useEffect(() => {
     if (isPressed) {
@@ -49,7 +51,7 @@ const PaymentBtn = ({ paymentMethod }) => {
     );
     const adminEmailObj = render(
       <AdminOrderEmail
-        userDetail={userDetail.email}
+        userDetail={userDetail}
         order_date={order_date}
         order_num={order_num}
       />
@@ -71,7 +73,7 @@ const PaymentBtn = ({ paymentMethod }) => {
 
   const addOrderDetail = async (order_details) => {
     try {
-      await axios.post(
+      const res = await axios.post(
         import.meta.env.VITE_API_BASEURL + "/order/addorderdetail",
         order_details
       );
@@ -91,6 +93,7 @@ const PaymentBtn = ({ paymentMethod }) => {
           shipping.label == "รับที่ร้าน" ? "Booktree" : userDetail?.address,
         shipping: shipping.label,
         shipping_fee: shipping.price,
+        status: "pending",
       };
 
       const res = await axios.post(
@@ -104,7 +107,6 @@ const PaymentBtn = ({ paymentMethod }) => {
         quantity: cart.items[item].quantity,
         discount: cart.items[item].discount * cart.items[item].quantity,
       }));
-
       await addOrderDetail(order_details);
       return { id: res.data.insertId, date: res.data.date };
     } catch (err) {
@@ -115,6 +117,7 @@ const PaymentBtn = ({ paymentMethod }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (paymentMethod) {
+      setPaymentLoading(true);
       const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PK);
       const response = await axios.post(
         import.meta.env.VITE_API_BASEURL + "/order/intent",
@@ -122,18 +125,23 @@ const PaymentBtn = ({ paymentMethod }) => {
           amount: netTotal * 100,
         }
       );
+      if (!response.data) return toast.error("เกิดข้อผิดพลาด");
       const data = await response.data;
       const clientSecret = data.client_secret;
+      setTimeout(() => {
+        setPaymentLoading(false);
+      }, 2000);
+      const options = {
+        payment_method: {
+          type: "promptpay",
+          billing_details: {
+            email: userDetail.email,
+          },
+        },
+      };
 
       stripe
-        .confirmPromptPayPayment(clientSecret, {
-          payment_method: {
-            type: "promptpay",
-            billing_details: {
-              email: userDetail.email,
-            },
-          },
-        })
+        .confirmPromptPayPayment(clientSecret, options)
         .then(async (res) => {
           if (res.paymentIntent.status === "succeeded") {
             try {
@@ -141,7 +149,7 @@ const PaymentBtn = ({ paymentMethod }) => {
               const order_num = "INV" + String(id).padStart(5, "0");
               const order_date = new Date(date).toString();
 
-              await sendEmail(order_num, order_date);
+              // await sendEmail(order_num, order_date);
 
               sessionStorage.setItem("success", "1");
               sessionStorage.setItem("successCart", JSON.stringify(cart.items));
@@ -171,6 +179,7 @@ const PaymentBtn = ({ paymentMethod }) => {
         type="submit"
         className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
         ref={btnRef}
+        disabled={paymentLoading}
       >
         ชำระเงิน
       </button>

@@ -105,7 +105,11 @@ function rowContent(_index, row) {
           key={column.dataKey}
           align={column.numeric || false ? "center" : "left"}
         >
-          {row[column.dataKey]}
+          {column.dataKey === "price" ||
+          column.dataKey === "total" ||
+          column.dataKey === "discount"
+            ? row[column.dataKey].toFixed(2)
+            : row[column.dataKey]}
         </TableCell>
       ))}
     </>
@@ -320,10 +324,10 @@ const OrderDetailTable = forwardRef((props, ref) => {
     return {
       ISBN: data.ISBN || "",
       title: data.title || "",
-      price: parseFloat(data.price).toFixed(2) || "",
+      price: parseFloat(data.price) || "",
       quantity: parseInt(data.quantity) || "",
-      discount: parseFloat(data.discount).toFixed(2),
-      total: parseFloat(data.total).toFixed(2),
+      discount: parseFloat(data.discount),
+      total: parseFloat(data.total),
     };
   }
 

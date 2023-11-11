@@ -48,7 +48,7 @@ const CartCard = ({ cartItem }) => {
       <div className="w-[40%] max-h-32 flex gap-4">
         <div className="h-32 w-28">
           <img
-            src={cartItem.cover_img}
+            src={cartItem?.cover_img}
             className="h-full w-full object-cover"
             onLoad={() => {
               setLoading(false);
@@ -70,8 +70,8 @@ const CartCard = ({ cartItem }) => {
         </div>
         <div className="flex flex-col justify-evenly w-72">
           <p className="text-md tracking-widest font-bold ">
-            {cartItem.title.length > 60
-              ? cartItem.title.substring(0, 60) + "..."
+            {cartItem?.title?.length > 60
+              ? cartItem?.title?.substring(0, 60) + "..."
               : cartItem.title}
           </p>
           <p className="text-xs text-gray-500">{cartItem.author}</p>

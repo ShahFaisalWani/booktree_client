@@ -9,6 +9,7 @@ const Checkout = () => {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   return (
     <FormContext.Provider
@@ -19,6 +20,8 @@ const Checkout = () => {
         setIsSubmitted,
         isPressed,
         setIsPressed,
+        paymentLoading,
+        setPaymentLoading,
       }}
     >
       <div className="">

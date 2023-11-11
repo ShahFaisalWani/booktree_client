@@ -10,7 +10,12 @@ import {
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import LoadingScreen from "../Loading/LoadingScreen";
-import { FormControl, Input, InputAdornment } from "@mui/material";
+import {
+  CircularProgress,
+  FormControl,
+  Input,
+  InputAdornment,
+} from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Link } from "react-router-dom";
@@ -30,8 +35,13 @@ const OrderSummary = () => {
   const totalDiscount = useSelector(getTotalDiscount);
 
   const dispatch = useDispatch();
-  const { activeStepIndex, setActiveStepIndex, setIsSubmitted, setIsPressed } =
-    useContext(FormContext);
+  const {
+    activeStepIndex,
+    setActiveStepIndex,
+    setIsSubmitted,
+    setIsPressed,
+    paymentLoading,
+  } = useContext(FormContext);
 
   const handleNext = () => {
     if (activeStepIndex == 0) {
@@ -226,7 +236,7 @@ const OrderSummary = () => {
         <div className="pb-4">
           <button
             type="submit"
-            className="m-auto flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            className="m-auto w-full min-w-[25%] flex justify-center items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center"
             onClick={handleNext}
           >
             {(() => {
@@ -244,7 +254,20 @@ const OrderSummary = () => {
                     </>
                   );
                 default:
-                  return <>ชำระเงิน</>;
+                  return (
+                    <>
+                      {paymentLoading ? (
+                        <CircularProgress
+                          style={{
+                            color: "white",
+                          }}
+                          size={20}
+                        />
+                      ) : (
+                        "ชำระเงิน"
+                      )}
+                    </>
+                  );
               }
             })()}
           </button>

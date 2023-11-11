@@ -7,8 +7,7 @@ import ImgInput from "../Books/ImgInput";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Modal, TextField } from "@mui/material";
 import LoadingScreen from "../../Loading/LoadingScreen";
-import SupplierSelect from "../Books/SupplierSelect";
-import { BookContext } from "../Books/Book";
+import EditSupplierSelect from "../EditSupplierSelect";
 
 const style = {
   position: "absolute",
@@ -25,11 +24,16 @@ const style = {
 };
 
 const StationeryEditDialog = ({ handleClose, book }) => {
-  const { supplier, setSupplier } = useContext(BookContext);
+  const [supplier, setSupplier] = useState("");
+
+  const onSupplierChange = (sup) => {
+    setSupplier(sup);
+  };
 
   const onClose = () => {
     handleClose();
   };
+
   // const colNames = ["รูปปก", "ISBN", "ชื่อ", "ตัวแทนจำหน่าย", "ราคา"];
   const colNames = ["ISBN", "ชื่อ", "ตัวแทนจำหน่าย", "ราคา"];
 
@@ -55,10 +59,13 @@ const StationeryEditDialog = ({ handleClose, book }) => {
   // };
 
   const handleSubmit = async (values) => {
-    const isSame = JSON.stringify(initialValues) === JSON.stringify(values);
+    const data = {
+      ...values,
+      supplier_name: supplier.supplier_name || book.supplier_name,
+    };
+    const isSame = JSON.stringify(initialValues) === JSON.stringify(data);
     if (!isSame) {
       setLoading(true);
-      const data = { ...values, supplier_name: supplier.supplier_name };
 
       await axios
         .post(import.meta.env.VITE_API_BASEURL + "/stationery/edit", data)
@@ -90,7 +97,6 @@ const StationeryEditDialog = ({ handleClose, book }) => {
       {loading && <LoadingScreen />}
       <Modal
         open={true}
-        onClose={onClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -134,21 +140,31 @@ const StationeryEditDialog = ({ handleClose, book }) => {
                       >
                         {colNames[i]}
                       </label>
+                      {col == "supplier_name" && (
+                        <EditSupplierSelect
+                          initial={book.supplier_name}
+                          product={"other"}
+                          onChange={onSupplierChange}
+                        />
+                      )}
+                      {col !== "supplier_name" && (
+                        <>
+                          <Field
+                            as={col == "desc" ? "textarea" : ""}
+                            type="text"
+                            name={col}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            required={"ISBNtitleprice".includes(col)}
+                            disabled={col == "ISBN" || col == "supplier_name"}
+                          />
 
-                      <Field
-                        as={col == "desc" ? "textarea" : ""}
-                        type="text"
-                        name={col}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        required={"ISBNtitleprice".includes(col)}
-                        disabled={col == "ISBN" || col == "supplier_name"}
-                      />
-
-                      <ErrorMessage
-                        component="span"
-                        name={col}
-                        className="text-red-500 text-sm"
-                      />
+                          <ErrorMessage
+                            component="span"
+                            name={col}
+                            className="text-red-500 text-sm"
+                          />
+                        </>
+                      )}
                     </div>
                   ))}
                 </div>

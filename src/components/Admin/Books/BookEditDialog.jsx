@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -14,8 +14,7 @@ import {
 } from "@mui/material";
 import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
-import SupplierSelect from "./SupplierSelect";
-import { BookContext } from "./Book";
+import EditSupplierSelect from "../EditSupplierSelect";
 
 const style = {
   position: "relative",
@@ -30,7 +29,7 @@ const style = {
 };
 
 const BookEditDialog = ({ handleClose, book }) => {
-  const { supplier } = useContext(BookContext);
+  const [supplier, setSupplier] = useState("");
 
   const onClose = () => {
     handleClose(false);
@@ -92,15 +91,20 @@ const BookEditDialog = ({ handleClose, book }) => {
     setCoverImg(file);
   };
 
+  const onSupplierChange = (sup) => {
+    setSupplier(sup);
+  };
+
   const handleSubmit = async (values) => {
-    const isSame = JSON.stringify(initialValues) === JSON.stringify(values);
+    const data = {
+      ...values,
+      genre: genre,
+      supplier_name: supplier.supplier_name || book.supplier_name,
+    };
+    const isSame = JSON.stringify(initialValues) === JSON.stringify(data);
     if (!isSame) {
       setLoading(true);
-      const data = {
-        ...values,
-        genre: genre,
-        supplier_name: supplier.supplier_name,
-      };
+
       await axios
         .post(import.meta.env.VITE_API_BASEURL + "/book/edit", data)
         .catch((err) => {
@@ -148,7 +152,6 @@ const BookEditDialog = ({ handleClose, book }) => {
       {loading && <LoadingScreen />}
       <Modal
         open={true}
-        onClose={onClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -216,13 +219,14 @@ const BookEditDialog = ({ handleClose, book }) => {
                             </FormControl>
                           </Box>
                         )}
-                        {/* {col == "supplier_name" && (
-                          <SupplierSelect
+                        {col == "supplier_name" && (
+                          <EditSupplierSelect
                             initial={book.supplier_name}
                             product={"book"}
+                            onChange={onSupplierChange}
                           />
-                        )} */}
-                        {col !== "genre" && (
+                        )}
+                        {col !== "genre" && col !== "supplier_name" && (
                           <>
                             <Field
                               as={col == "desc" ? "textarea" : ""}

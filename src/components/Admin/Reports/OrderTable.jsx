@@ -66,7 +66,7 @@ const OrderTable = ({ data, isLoading }) => {
                   {item.order.order_id}
                 </td>
                 <td className="text-center p-[8px] w-[20%]">
-                  {item.order.customer_phone_number || "0948025972"}
+                  {item.order.customer_phone_number}
                 </td>
                 <td className="text-center p-[8px] w-[20%]">
                   {item.order.date}
