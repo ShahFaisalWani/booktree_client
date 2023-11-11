@@ -108,7 +108,7 @@ function rowContent(_index, row) {
           {column.dataKey === "price" ||
           column.dataKey === "total" ||
           column.dataKey === "discount"
-            ? row[column.dataKey].toFixed(2)
+            ? (row[column.dataKey] || 0).toFixed(2)
             : row[column.dataKey]}
         </TableCell>
       ))}
@@ -363,9 +363,9 @@ const OrderDetailTable = forwardRef((props, ref) => {
             ++index,
             orderObj(data[item].order_details[i])
           );
-          total_q += parseInt(data[item].order_details[i].quantity);
-          total_d += parseFloat(data[item].order_details[i].discount);
-          total_s += parseFloat(data[item].order_details[i].total);
+          total_q += parseInt(data[item].order_details[i].quantity || 0);
+          total_d += parseFloat(data[item].order_details[i].discount || 0);
+          total_s += parseFloat(data[item].order_details[i].total || 0);
         }
         setRows(tempArray);
       }
