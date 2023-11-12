@@ -14,15 +14,13 @@ import SupplierSelect from "../Books/SupplierSelect";
 import toast from "react-hot-toast";
 
 const CartList = () => {
-  const { cart, setCart, member, memberId } = useContext(SellContext);
+  const { cart, setCart, member, memberId, selectedSearch, setSelectedSearch } =
+    useContext(SellContext);
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [addStockModal, setAddStockModal] = useState(false);
 
   const addToCartRef = useRef();
-
-  const input1 = useRef(null);
-  const input2 = useRef(null);
 
   const calcQuantity = () => {
     let total = 0;
@@ -135,6 +133,14 @@ const CartList = () => {
     await addBookFunc();
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (selectedSearch) {
+      document.getElementById("ISBN").value = selectedSearch.ISBN;
+      addToCartRef.current.click();
+    }
+  }, [selectedSearch]);
+
   return (
     <>
       <div className="mt-16 px-16">

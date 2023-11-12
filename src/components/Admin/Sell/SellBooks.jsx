@@ -5,6 +5,7 @@ import LoadingScreen from "../../Loading/LoadingScreen";
 import MemberInput from "./MemberInput";
 import CartList from "./CartList";
 import ConfirmBox from "./ConfirmBox";
+import SearchItem from "./SearchItem";
 
 export const SellContext = createContext();
 
@@ -18,6 +19,7 @@ const SellBooks = () => {
   const [slip, setSlip] = useState(null);
   const [loading, setLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [selectedSearch, setSelectedSearch] = useState("");
 
   useEffect(() => {
     if (localSellCart) {
@@ -127,7 +129,7 @@ const SellBooks = () => {
       if (book.quantity > book.in_stock) {
         toast.error(
           "มี " +
-            book.title.substring(0, 15) +
+            book.title?.substring(0, 15) +
             " แค่ " +
             book.in_stock +
             " ในสต็อก"
@@ -208,12 +210,16 @@ const SellBooks = () => {
         cash,
         setCash,
         confirmLoading,
+        selectedSearch,
+        setSelectedSearch,
       }}
     >
       {loading && <LoadingScreen />}
       <div className="mt-16">
-        <div>
+        <div className="flex justify-between px-16">
+          <div></div>
           <MemberInput />
+          <SearchItem />
         </div>
         <div>
           <CartList />
