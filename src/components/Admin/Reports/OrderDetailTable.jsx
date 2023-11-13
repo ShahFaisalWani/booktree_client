@@ -204,7 +204,14 @@ function printPDF(
         null,
         "left"
       );
-      pdf.text(`${book.price}`, price_w, pdf_position_y, null, null, "left");
+      pdf.text(
+        `${book.price.toFixed(2)}`,
+        price_w,
+        pdf_position_y,
+        null,
+        null,
+        "left"
+      );
       pdf.text(
         `${book.quantity}`,
         quantity_w,
@@ -214,21 +221,28 @@ function printPDF(
         "left"
       );
       pdf.text(
-        `${book.discount}`,
+        `${book.discount.toFixed(2)}`,
         discount_w,
         pdf_position_y,
         null,
         null,
         "left"
       );
-      pdf.text(`${book.total}`, total_w, pdf_position_y, null, null, "left");
+      pdf.text(
+        `${book.total.toFixed(2)}`,
+        total_w,
+        pdf_position_y,
+        null,
+        null,
+        "left"
+      );
       pdf_position_y += 15;
     });
     pdf_position_y += 10;
 
     pdf.setFont("THSarabunNew Bold", "normal");
     pdf.setFontSize(pdfConfig.typo.normal);
-    pdf.text("ยอดรวม", index_w, pdf_position_y, null, null, "left");
+    pdf.text("ยอดรวม", price_w, pdf_position_y, null, null, "left");
     pdf.text(
       `${totalQuantity}`,
       quantity_w,
@@ -249,11 +263,11 @@ function printPDF(
     pdf.text(`${totalSum}`, total_w, pdf_position_y, null, null, "left");
     pdf_position_y += 15;
 
-    pdf.text("เงินสด", index_w, pdf_position_y, null, null, "left");
+    pdf.text("เงินสด", price_w, pdf_position_y, null, null, "left");
     pdf.text(`${totalCash}`, total_w, pdf_position_y, null, null, "left");
     pdf_position_y += 15;
 
-    pdf.text("เงินโอน", index_w, pdf_position_y, null, null, "left");
+    pdf.text("เงินโอน", price_w, pdf_position_y, null, null, "left");
     pdf.text(`${totalTransfer}`, total_w, pdf_position_y, null, null, "left");
 
     setTimeout(() => {
