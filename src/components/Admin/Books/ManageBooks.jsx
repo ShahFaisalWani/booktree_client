@@ -155,7 +155,6 @@ const GridToolbar = ({
   };
 
   const handleExportExcel = () => {
-    rowSelection.map((row) => console.log(row));
     const data = [
       {
         A: "ที่",

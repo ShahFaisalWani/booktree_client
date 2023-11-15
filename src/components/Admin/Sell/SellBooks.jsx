@@ -148,8 +148,8 @@ const SellBooks = () => {
         await handlePrint(order_num);
         setCartFunc([]);
         setPayment("");
-        setMember(false);
-        setMemberId("none");
+        setMember("none");
+        setMemberId("");
       }
     } catch (err) {
       console.log(err);
