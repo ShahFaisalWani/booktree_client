@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import "../../styles/Navbar.scss";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Searchbar from "./Searchbar";
 import GenreDropdown from "./GenreDropdown";
@@ -76,11 +76,6 @@ const Navbar = () => {
           {genres.map((genre) => (
             <GenreDropdown key={genre.name} genre={genre} />
           ))}
-          <Link to="/stationeries">
-            <p className="text-sm h-full flex items-center">
-              เครื่องเขียน / อื่นๆ
-            </p>
-          </Link>
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "80%",
-  height: "70vh",
+  height: "80vh",
   bgcolor: "background.paper",
   boxShadow: 24,
 };
@@ -29,8 +29,8 @@ export default function BookModal({ open, toggleModal, book }) {
       setContent(
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam alias quo cupiditate molestiae. Pariatur repellat perspiciatis impedit similique, facilis error! Error vitae labore quae, eos ipsum odit voluptas praesentium enim magni ab id earum, dolorem voluptatibus porro dolorum, tenetur omnis."
       );
-    } else if (book.desc.length > 1100 && !isExpanded) {
-      setContent(book.desc.substring(0, 1100).replace(/\s+/g, " ") + "...");
+    } else if (book.desc.length > 850 && !isExpanded) {
+      setContent(book.desc.substring(0, 850).replace(/\s+/g, " ") + "...");
     } else {
       setContent(book.desc.replace(/\s+/g, " "));
     }
@@ -69,10 +69,10 @@ export default function BookModal({ open, toggleModal, book }) {
           >
             <CloseIcon fontSize="medium" />
           </button>
-          <div className="flex flex-col xl:flex-row h-full">
-            <div className="w-full xl:w-1/2">
+          <div className="flex flex-row h-full">
+            <div className="w-1/2">
               {/* <div className="h-full flex items-center"> */}
-              <div className="h-full w-96 m-auto flex items-center">
+              <div className="h-full xl:w-full m-auto flex items-center">
                 <img
                   src={book.cover_img}
                   className="m-auto h-[80%] object-cover"
@@ -96,19 +96,19 @@ export default function BookModal({ open, toggleModal, book }) {
                 )}
               </div>
             </div>
-            <div className="w-full max-h-[750px] h-fit my-auto xl:w-1/2 pr-16 py-12 flex flex-col gap-7">
+            <div className="h-fit my-auto w-1/2 pr-16 py-12 flex flex-col gap-7">
               <div>
                 <p className="text-2xl mb-3">{book.title}</p>
                 <p>{book.author}</p>
               </div>
               <div
-                className={`overflow-y-auto max-h-[350px] mb-3 ${
+                className={`overflow-y-auto max-h-[30vh] mb-3 ${
                   isExpanded ? "max-h-full" : ""
                 }`}
               >
-                <p className=" text-left">
+                <p className="text-left">
                   {content}
-                  {book.desc && book.desc.length > 1100 && (
+                  {book.desc && book.desc.length > 800 && (
                     <button
                       onClick={() => setIsExpanded(!isExpanded)}
                       className="underline text-gray-400"
