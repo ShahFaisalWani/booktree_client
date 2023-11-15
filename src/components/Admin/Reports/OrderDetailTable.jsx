@@ -345,7 +345,7 @@ const OrderDetailTable = forwardRef((props, ref) => {
     };
   }
 
-  const updateOrPushOrder = (rows, index, order) => {
+  const updateOrPushOrder = (rows, order) => {
     const existingOrderIndex = rows.findIndex((row) => row.ISBN === order.ISBN);
 
     if (existingOrderIndex !== -1) {
@@ -353,7 +353,7 @@ const OrderDetailTable = forwardRef((props, ref) => {
       rows[existingOrderIndex].discount += parseFloat(order.discount);
       rows[existingOrderIndex].total += parseFloat(order.total);
     } else {
-      rows.push({ ...order, index });
+      rows.push({ ...order });
     }
   };
 
@@ -365,22 +365,20 @@ const OrderDetailTable = forwardRef((props, ref) => {
     let total_cash = 0;
     let total_transfer = 0;
     const tempArray = [];
-    let index = 0;
     Object.keys(data).map((item, i) => {
       if (
         data[item].order.payment === "cash" ||
         data[item].order.payment === "transfer"
       ) {
         for (let i = 0; i < Object.keys(data[item].order_details).length; i++) {
-          updateOrPushOrder(
-            tempArray,
-            ++index,
-            orderObj(data[item].order_details[i])
-          );
+          updateOrPushOrder(tempArray, orderObj(data[item].order_details[i]));
           total_q += parseInt(data[item].order_details[i].quantity || 0);
           total_d += parseFloat(data[item].order_details[i].discount || 0);
           total_s += parseFloat(data[item].order_details[i].total || 0);
         }
+        tempArray.map((row, i) => {
+          row.index = i + 1;
+        });
         setRows(tempArray);
       }
 
