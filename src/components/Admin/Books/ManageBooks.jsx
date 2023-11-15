@@ -22,15 +22,15 @@ import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import ManualForm from "./ManualForm";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SupplierSelect from "./SupplierSelect";
-import ManageStocks, { StockSuccessModal } from "../Stocks/ManageStocks";
-import toast from "react-hot-toast";
+import ManageStocks, {
+  StockSuccessModal,
+  handleExport,
+} from "../Stocks/ManageStocks";
 import AddExcel from "./AddExcel";
 import BooksList from "../BooksList";
 import { BookContext } from "./Book";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import * as XLSX from "xlsx";
 
 const style = {
   position: "absolute",
@@ -148,9 +148,47 @@ const GridToolbar = ({
     setType("add");
     orderExcelRef.current.openFileInput();
   };
+
   const clickReturnExcel = () => {
     setType("return");
     orderExcelRef.current.openFileInput();
+  };
+
+  const handleExportExcel = () => {
+    rowSelection.map((row) => console.log(row));
+    const data = [
+      {
+        A: "ที่",
+        B: "ISBN",
+        C: "ชื่อ",
+        D: "ตัวแทนจำหน่าย",
+        E: "%",
+        F: "ราคา",
+        G: "หลังหัก %",
+      },
+      ...rowSelection.map((stock, i) => ({
+        A: i + 1,
+        B: stock.ISBN,
+        C: stock.title,
+        D: stock.supplier_name,
+        E: stock.percent,
+        F: stock.price,
+        G: (stock.price * (1 - stock.percent / 100)).toFixed(2),
+      })),
+    ];
+    const ws = XLSX.utils.json_to_sheet(data, {
+      header: ["A", "B", "C"],
+      skipHeader: true,
+    });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Books");
+
+    XLSX.writeFile(wb, "Export Excel" + ".xlsx");
+  };
+
+  const clickExportExcel = () => {
+    handleExportExcel();
   };
 
   const orderExcelFunc = async (books) => {
@@ -201,11 +239,17 @@ const GridToolbar = ({
             setOpenActionModal(true);
           }}
           className={`flex justify-center items-center gap-1 text-blue-500 p-2 rounded-lg h-12 transition-all ${
-            rowSelection.length == 0
+            rowSelection.length == 0 ||
+            !supplier ||
+            supplier.supplier_name == "All"
               ? "text-gray-400 hover:bg-none"
               : "hover:bg-gray-200"
           }`}
-          disabled={rowSelection.length == 0}
+          disabled={
+            rowSelection.length == 0 ||
+            !supplier ||
+            supplier.supplier_name == "All"
+          }
         >
           สั่งสินค้า
         </button>
@@ -215,11 +259,17 @@ const GridToolbar = ({
             setOpenActionModal(true);
           }}
           className={`flex justify-center items-center gap-1 text-blue-500 p-2 rounded-lg h-12 transition-all ${
-            rowSelection.length == 0
+            rowSelection.length == 0 ||
+            !supplier ||
+            supplier.supplier_name == "All"
               ? "text-gray-400 hover:bg-none"
               : "hover:bg-gray-200"
           }`}
-          disabled={rowSelection.length == 0}
+          disabled={
+            rowSelection.length == 0 ||
+            !supplier ||
+            supplier.supplier_name == "All"
+          }
         >
           รับสินค้า
         </button>
@@ -229,11 +279,17 @@ const GridToolbar = ({
             setOpenActionModal(true);
           }}
           className={`flex justify-center items-center gap-1 text-blue-500 p-2 rounded-lg h-12 transition-all ${
-            rowSelection.length == 0
+            rowSelection.length == 0 ||
+            !supplier ||
+            supplier.supplier_name == "All"
               ? "text-gray-400 hover:bg-none"
               : "hover:bg-gray-200"
           }`}
-          disabled={rowSelection.length == 0}
+          disabled={
+            rowSelection.length == 0 ||
+            !supplier ||
+            supplier.supplier_name == "All"
+          }
         >
           คืนสินค้า
         </button>
@@ -272,6 +328,18 @@ const GridToolbar = ({
         >
           <AddIcon />
           คืน Excel
+        </button>
+        <button
+          onClick={clickExportExcel}
+          className={`flex justify-center items-center gap-1 p-2 rounded-lg h-12 transition-all ${
+            rowSelection.length == 0
+              ? "text-gray-400 hover:bg-none"
+              : "text-blue-500 hover:bg-gray-200"
+          }`}
+          disabled={rowSelection.length == 0}
+        >
+          <FileDownloadIcon />
+          Export Excel
         </button>
       </div>
       <Modal
@@ -528,7 +596,7 @@ const ManageBooks = () => {
       renderCell: (params) => {
         return (
           <Checkbox
-            disabled={!supplier || supplier.supplier_name == "All"}
+            // disabled={!supplier || supplier.supplier_name == "All"}
             checked={isSelected(params.id)}
             onChange={(e) => {
               handleCustomSelection(e, params.row);

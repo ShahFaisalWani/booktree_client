@@ -59,11 +59,11 @@ const ConfirmBox = ({ handleSubmit }) => {
           <div className="border-b-4 px-4 pb-4 mb-4">
             {payment == "cash" && (
               <div className="py-4 flex flex-col gap-8 items-stretch">
-                <p className="flex items-center justify-between text-green-600">
+                <p className="flex items-center justify-between text-green-600 text-xl font-bold">
                   <label>รับเงิน:</label>
                   <span>
                     <input
-                      className="w-20 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="text-xl w-20 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       type="number"
                       name="amount"
                       onChange={(e) => setCash(e.target.value)}
@@ -73,7 +73,7 @@ const ConfirmBox = ({ handleSubmit }) => {
                   </span>
                 </p>
 
-                <p className="flex items-center justify-between text-red-600">
+                <p className="flex items-center justify-between text-red-600 text-xl font-bold">
                   <span>เงินทอน:</span>
                   <span>
                     {cash && calcNetTotal() > 0
