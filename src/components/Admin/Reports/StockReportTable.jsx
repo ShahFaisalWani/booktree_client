@@ -136,6 +136,13 @@ export default function StockReportTable({ rows, month, supplier }) {
   const lastPart = [
     { field: "price", headerName: "ราคา", width: 80 },
     {
+      field: "overflow",
+      headerName: "ยกมา",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       field: "total_add_quantity",
       headerName: "รับ",
       width: 100,
@@ -172,6 +179,9 @@ export default function StockReportTable({ rows, month, supplier }) {
       width: 150,
       align: "center",
       headerAlign: "center",
+      renderCell: (params) => {
+        return <p>{params.row.in_stock_revenue.toFixed(2)}</p>;
+      },
     },
   ];
   columns.push(...firstPart);

@@ -55,7 +55,7 @@ export default function EditSupplierSelect({ initial, onChange, product }) {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={supplier.supplier_name || ""}
-          label="Age"
+          label="Supplier"
           onChange={handleChange}
         >
           {suppliersList?.map((item, i) => (

@@ -57,14 +57,15 @@ var styles = {
 const AdminLinks = [
   { label: "หน้าหลัก", path: "/" },
   { label: "ขายสินค้า", path: "/sellbooks" },
-  { label: "เช็คสต็อก", path: "/checkstock" },
-  { label: "ยอดขายรายวัน", path: "/dailyreport" },
-  { label: "รายงานตามตัวแทนจำหน่าย", path: "/supplierreport" },
-  { label: "รายงานสต็อก", path: "/stockreport" },
-  { label: "จัดการสมาชิก", path: "/managemembers" },
-  { label: "ข้อมูลตัวแทนจำหน่าย", path: "/managesuppliers" },
+  { label: "รับ/คืนสินค้า", path: "/restockbooks" },
   { label: "จัดการสินค้า", path: "/manageproducts" },
   { label: "รายงานการจัดการสินค้า", path: "/restockreport" },
+  { label: "เช็คสต็อก", path: "/checkstock" },
+  { label: "รายงานสต็อก", path: "/stockreport" },
+  { label: "ยอดขายรายวัน", path: "/dailyreport" },
+  { label: "ยอดขายรายเดือน", path: "/supplierreport" },
+  { label: "ตัวแทนจำหน่าย", path: "/managesuppliers" },
+  { label: "สมาชิก", path: "/managemembers" },
 ];
 
 const AdminNav = () => {

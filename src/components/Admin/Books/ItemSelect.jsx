@@ -21,7 +21,7 @@ export default function ItemSelect() {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={item}
-          label="Item"
+          label="ประเภทสินค้า"
           onChange={handleChange}
         >
           <MenuItem value={"book"}>หนังสือ</MenuItem>

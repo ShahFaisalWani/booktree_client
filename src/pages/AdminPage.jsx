@@ -6,6 +6,9 @@ const AdminDashboard = lazy(() =>
   import("../components/Admin/Dashboard/AdminDashboard")
 );
 const SellBooks = lazy(() => import("../components/Admin/Sell/SellBooks"));
+const ReturnBooks = lazy(() =>
+  import("../components/Admin/Stocks/ReturnBooks")
+);
 const BookProvider = lazy(() => import("../components/Admin/Books/Book"));
 const CheckStock = lazy(() => import("../components/Admin/Stocks/CheckStock"));
 const DailyReport = lazy(() =>
@@ -31,27 +34,29 @@ const RestockReport = lazy(() =>
 const AdminLinks = {
   default: "หน้าหลัก",
   sellbooks: "ขายสินค้า",
-  checkstock: "เช็คสต็อก",
-  dailyreport: "ยอดขายรายวัน",
-  supplierreport: "รายงานตามตัวแทนจำหน่าย",
-  stockreport: "รายงานสต็อก",
-  managemembers: "จัดการสมาชิก",
-  managesuppliers: "ข้อมูลตัวแทนจำหน่าย",
+  restockbooks: "รับ/คืนสินค้า",
   manageproducts: "จัดการสินค้า",
   restockreport: "รายงานการจัดการสินค้า",
+  checkstock: "เช็คสต็อก",
+  stockreport: "รายงานสต็อก",
+  dailyreport: "ยอดขายรายวัน",
+  supplierreport: "ยอดขายรายเดือน",
+  managesuppliers: "ตัวแทนจำหน่าย",
+  managemembers: "สมาชิก",
 };
 
 const ComponentMapping = {
   default: AdminDashboard,
   sellbooks: SellBooks,
-  checkstock: CheckStock,
-  dailyreport: DailyReport,
-  supplierreport: SupplierReport,
-  stockreport: StockReport,
-  managemembers: ManageMembers,
-  managesuppliers: ManageSuppliers,
+  restockbooks: ReturnBooks,
   manageproducts: ManageProducts,
   restockreport: RestockReport,
+  checkstock: CheckStock,
+  stockreport: StockReport,
+  dailyreport: DailyReport,
+  supplierreport: SupplierReport,
+  managesuppliers: ManageSuppliers,
+  managemembers: ManageMembers,
 };
 
 const AdminPage = () => {

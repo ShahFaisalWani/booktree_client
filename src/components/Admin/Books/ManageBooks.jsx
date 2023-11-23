@@ -252,7 +252,7 @@ const GridToolbar = ({
         >
           สั่งสินค้า
         </button>
-        <button
+        {/* <button
           onClick={() => {
             setType("add");
             setOpenActionModal(true);
@@ -271,8 +271,8 @@ const GridToolbar = ({
           }
         >
           รับสินค้า
-        </button>
-        <button
+        </button> */}
+        {/* <button
           onClick={() => {
             setType("return");
             setOpenActionModal(true);
@@ -291,7 +291,7 @@ const GridToolbar = ({
           }
         >
           คืนสินค้า
-        </button>
+        </button> */}
         <button
           onClick={clickOrderExcel}
           className={`flex justify-center items-center gap-1 p-2 rounded-lg h-12 transition-all ${
@@ -304,7 +304,7 @@ const GridToolbar = ({
           <AddIcon />
           สั่ง Excel
         </button>
-        <button
+        {/* <button
           onClick={clickAddExcel}
           className={`flex justify-center items-center gap-1 p-2 rounded-lg h-12 transition-all ${
             !supplier || supplier.supplier_name == "All"
@@ -315,8 +315,8 @@ const GridToolbar = ({
         >
           <AddIcon />
           รับ Excel
-        </button>
-        <button
+        </button> */}
+        {/* <button
           onClick={clickReturnExcel}
           className={`flex justify-center items-center gap-1 p-2 rounded-lg h-12 transition-all ${
             !supplier || supplier.supplier_name == "All"
@@ -327,7 +327,7 @@ const GridToolbar = ({
         >
           <AddIcon />
           คืน Excel
-        </button>
+        </button> */}
         <button
           onClick={clickExportExcel}
           className={`flex justify-center items-center gap-1 p-2 rounded-lg h-12 transition-all ${

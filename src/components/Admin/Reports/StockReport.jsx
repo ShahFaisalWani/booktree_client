@@ -39,11 +39,12 @@ const StockReport = () => {
           ISBN: item.ISBN,
           title: item.title,
           price: item.price,
+          overflow: parseInt(item.overflow),
           total_add_quantity: parseInt(item.total_add_quantity),
           total_return_quantity: -parseInt(item.total_return_quantity),
           sold_quantity: -parseInt(item.sold_quantity),
           in_stock: item.in_stock,
-          in_stock_revenue: parseFloat(item.in_stock_revenue).toFixed(2),
+          in_stock_revenue: parseFloat(item.in_stock_revenue),
           supplier_name: item.supplier_name,
           percent: item.percent,
         });

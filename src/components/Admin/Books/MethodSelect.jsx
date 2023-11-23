@@ -21,7 +21,7 @@ export default function MethodSelect() {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={method}
-          label="Age"
+          label="Method"
           onChange={handleChange}
         >
           <MenuItem value={"manual"}>Manual</MenuItem>

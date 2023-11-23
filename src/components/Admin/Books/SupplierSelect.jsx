@@ -22,6 +22,7 @@ export default function SupplierSelect({ initial, onChange, product }) {
 
   useEffect(() => {
     if (initial) {
+      console.log(data);
       const sup = data.filter((s) => s.supplier_name == initial);
       setSupplier(sup[0]);
     }
@@ -69,7 +70,7 @@ export default function SupplierSelect({ initial, onChange, product }) {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={supplier.supplier_name || ""}
-          label="Age"
+          label="Supplier"
           onChange={handleChange}
         >
           {suppliersList?.map((item, i) => (
