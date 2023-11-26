@@ -148,7 +148,7 @@ const ReturnBooks = () => {
     let hasInvalidValue = false;
 
     bookList.forEach((book) => {
-      if (book.quantity > book.in_stock) {
+      if (type == "return" && book.quantity > book.in_stock) {
         toast.error(
           "มี " +
             book.title?.substring(0, 15) +
@@ -491,7 +491,6 @@ const ReturnBooks = () => {
                     className="w-14 h-[2rem] text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     type="number"
                     min={1}
-                    max={book.in_stock}
                     name="quantity"
                     value={book.quantity}
                     onChange={(e) => {
