@@ -34,14 +34,14 @@ function exportToExcel(data, days, supplier) {
     rowArray.push(row["id"]);
     rowArray.push(row["title"]);
 
-    for (let i = 1; i <= 31; i++) {
+    for (let i = 1; i <= days; i++) {
       let dayField = String(i).padStart(2, "0");
-      rowArray.push(row[dayField] || "0");
+      rowArray.push(parseInt(row[dayField]) || 0);
     }
 
-    rowArray.push(row["price"]);
-    rowArray.push(row["total_quantity"]);
-    rowArray.push(row["total_revenue"]);
+    rowArray.push(parseFloat(row["price"]));
+    rowArray.push(parseInt(row["total_quantity"]));
+    rowArray.push(parseFloat(row["total_revenue"]));
 
     totalQuantity += parseInt(row["total_quantity"]);
     totalSold += parseFloat(row["total_revenue"]);

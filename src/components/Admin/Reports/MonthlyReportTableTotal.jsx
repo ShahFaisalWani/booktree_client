@@ -16,7 +16,13 @@ function exportToExcel(data, columns) {
   let formattedData = data.map((row) => {
     let newRow = {};
     columns.forEach(({ field, headerName }) => {
-      newRow[headerName] = row[field];
+      if (headerName == "จำนวนขายทั้งหมด")
+        newRow[headerName] = parseInt(row[field]);
+      else if (headerName == "ยอดขายทั้งหมด")
+        newRow[headerName] = parseFloat(row[field]);
+      else if (headerName == "ยอดขายหลังหักเปอร์เซนต์")
+        newRow[headerName] = parseFloat(row[field]);
+      else newRow[headerName] = row[field];
     });
     return newRow;
   });
