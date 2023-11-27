@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import {
   DataGrid,
@@ -8,24 +8,24 @@ import {
   GridToolbarExportContainer,
   GridCsvExportMenuItem,
   GridPrintExportMenuItem,
+  GridPagination,
 } from "@mui/x-data-grid";
 
 import * as XLSX from "xlsx";
 
-function exportToExcel(data, columns, month, supplier) {
-  let totalAdd = 0;
-  let totalReturn = 0;
-  let TotalSold = 0;
-  let TotalInStock = 0;
-  let TotalRevenue = 0;
-
+function exportToExcel(
+  data,
+  columns,
+  month,
+  supplier,
+  total_overflow,
+  total_add,
+  total_return,
+  total_sold,
+  total_in_stock,
+  total_revenue
+) {
   let formattedData = data.map((row) => {
-    totalAdd += row.total_add_quantity ? row.total_add_quantity : 0;
-    totalReturn += row.total_return_quantity ? row.total_return_quantity : 0;
-    TotalSold += row.sold_quantity ? row.sold_quantity : 0;
-    TotalInStock += row.in_stock ? row.in_stock : 0;
-    TotalRevenue += row.in_stock_revenue ? parseFloat(row.in_stock_revenue) : 0;
-
     let newRow = {};
     columns.forEach(({ field, headerName }) => {
       newRow[headerName] = row[field];
@@ -42,11 +42,12 @@ function exportToExcel(data, columns, month, supplier) {
       "",
       "",
       "",
-      totalAdd,
-      totalReturn,
-      TotalSold,
-      TotalInStock,
-      TotalRevenue.toFixed(2),
+      total_overflow,
+      total_add,
+      total_return,
+      total_sold,
+      total_in_stock,
+      total_revenue.toFixed(2),
     ];
   } else {
     footerRow = [
@@ -54,11 +55,12 @@ function exportToExcel(data, columns, month, supplier) {
       "",
       "",
       "",
-      totalAdd,
-      totalReturn,
-      TotalSold,
-      TotalInStock,
-      TotalRevenue.toFixed(2),
+      total_overflow,
+      total_add,
+      total_return,
+      total_sold,
+      total_in_stock,
+      total_revenue.toFixed(2),
     ];
   }
 
@@ -84,17 +86,47 @@ const GridToolbarExport = ({
   month,
   supplier,
   printOptions,
+  total_overflow,
+  total_add,
+  total_return,
+  total_sold,
+  total_in_stock,
+  total_revenue,
   ...other
 }) => (
   <GridToolbarExportContainer {...other}>
     <GridCsvExportMenuItem
-      onClick={() => exportToExcel(rows, columns, month, supplier)}
+      onClick={() =>
+        exportToExcel(
+          rows,
+          columns,
+          month,
+          supplier,
+          total_overflow,
+          total_add,
+          total_return,
+          total_sold,
+          total_in_stock,
+          total_revenue
+        )
+      }
     />
     <GridPrintExportMenuItem options={printOptions} />
   </GridToolbarExportContainer>
 );
 
-function CustomToolbar({ rows, columns, month, supplier }) {
+function CustomToolbar({
+  rows,
+  columns,
+  month,
+  supplier,
+  total_overflow,
+  total_add,
+  total_return,
+  total_sold,
+  total_in_stock,
+  total_revenue,
+}) {
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
@@ -104,14 +136,147 @@ function CustomToolbar({ rows, columns, month, supplier }) {
         columns={columns}
         month={month}
         supplier={supplier}
+        total_overflow={total_overflow}
+        total_add={total_add}
+        total_return={total_return}
+        total_sold={total_sold}
+        total_in_stock={total_in_stock}
+        total_revenue={total_revenue}
       />
     </GridToolbarContainer>
   );
 }
+const CustomFooter = ({
+  total_overflow,
+  total_add,
+  total_return,
+  total_sold,
+  total_in_stock,
+  total_revenue,
+  supplier,
+}) => {
+  return (
+    <div className="">
+      <Box
+        sx={{
+          display: "flex",
+          borderBlock: "1px solid #eee",
+          alignItems: "center",
+          height: "50px",
+        }}
+      >
+        <div
+          style={{ flexBasis: "150px", textAlign: "left", paddingLeft: "10px" }}
+        >
+          รวม
+        </div>
+        <div style={{ flexBasis: "150px" }}></div>
+        <div
+          style={{
+            flexBasis: supplier.supplier_name == "All" ? "420px" : "240px",
+          }}
+        ></div>
+
+        <div
+          style={{
+            flexBasis: "100px",
+            textAlign: "center",
+          }}
+        >
+          {total_overflow}
+        </div>
+        <div
+          style={{
+            flexBasis: "100px",
+            textAlign: "center",
+          }}
+        >
+          {total_add}
+        </div>
+        <div
+          style={{
+            flexBasis: "100px",
+            textAlign: "center",
+          }}
+        >
+          {total_return}
+        </div>
+        <div
+          style={{
+            flexBasis: "100px",
+            textAlign: "center",
+          }}
+        >
+          {total_sold}
+        </div>
+        <div
+          style={{
+            flexBasis: "100px",
+            textAlign: "center",
+          }}
+        >
+          {total_in_stock}
+        </div>
+        <div
+          style={{
+            flexBasis: "150px",
+            textAlign: "center",
+          }}
+        >
+          {total_revenue.toFixed(2)}
+        </div>
+      </Box>
+      <Box>
+        <GridPagination />
+      </Box>
+    </div>
+  );
+};
 
 export default function StockReportTable({ rows, month, supplier }) {
-  const columns = [];
+  const [total_overflow, setTotalOverflow] = useState(0);
+  const [total_add, setTotalAdd] = useState(0);
+  const [total_return, setTotalReturn] = useState(0);
+  const [total_sold, setTotalSold] = useState(0);
+  const [total_in_stock, setTotalInStock] = useState(0);
+  const [total_revenue, setTotalRevenue] = useState(0);
 
+  useEffect(() => {
+    setTotalOverflow(0);
+    setTotalAdd(0);
+    setTotalReturn(0);
+    setTotalSold(0);
+    setTotalInStock(0);
+    setTotalRevenue(0);
+    if (rows)
+      rows.map((row) => {
+        setTotalOverflow(
+          (prev) => prev + (row.overflow ? parseInt(row.overflow) : 0)
+        );
+        setTotalAdd(
+          (prev) =>
+            prev +
+            (row.total_add_quantity ? parseInt(row.total_add_quantity) : 0)
+        );
+        setTotalReturn((prev) =>
+          prev + row.total_return_quantity
+            ? parseInt(row.total_return_quantity)
+            : 0
+        );
+        setTotalSold(
+          (prev) => prev + (row.sold_quantity ? parseInt(row.sold_quantity) : 0)
+        );
+        setTotalInStock(
+          (prev) => prev + (row.in_stock ? parseInt(row.in_stock) : 0)
+        );
+        setTotalRevenue(
+          (prev) =>
+            prev + (row.in_stock_revenue ? parseInt(row.in_stock_revenue) : 0)
+        );
+      });
+  }, [rows]);
+
+  const columns = [];
   const firstPart = [
     { field: "id", headerName: "ที่", width: 75, maxWidth: 75, minWidth: 75 },
     { field: "ISBN", headerName: "ISBN", width: 150 },
@@ -209,8 +374,30 @@ export default function StockReportTable({ rows, month, supplier }) {
         }}
         pageSizeOptions={[20]}
         disableColumnFilter
-        slots={{ toolbar: CustomToolbar }}
-        slotProps={{ toolbar: { rows, columns, month, supplier } }}
+        slots={{ toolbar: CustomToolbar, footer: CustomFooter }}
+        slotProps={{
+          toolbar: {
+            rows,
+            columns,
+            month,
+            supplier,
+            total_overflow,
+            total_add,
+            total_return,
+            total_sold,
+            total_in_stock,
+            total_revenue,
+          },
+          footer: {
+            total_overflow,
+            total_add,
+            total_return,
+            total_sold,
+            total_in_stock,
+            total_revenue,
+            supplier,
+          },
+        }}
         sx={{
           "@media print": {
             ".MuiDataGrid-main": {
