@@ -143,33 +143,16 @@ function CustomToolbar({
         total_in_stock={total_in_stock}
         total_revenue={total_revenue}
       />
-    </GridToolbarContainer>
-  );
-}
-const CustomFooter = ({
-  total_overflow,
-  total_add,
-  total_return,
-  total_sold,
-  total_in_stock,
-  total_revenue,
-  supplier,
-}) => {
-  return (
-    <div className="">
       <Box
         sx={{
           display: "flex",
+          width: "100%",
           borderBlock: "1px solid #eee",
           alignItems: "center",
           height: "50px",
         }}
       >
-        <div
-          style={{ flexBasis: "150px", textAlign: "left", paddingLeft: "10px" }}
-        >
-          รวม
-        </div>
+        <div style={{ flexBasis: "150px" }}>รวม</div>
         <div style={{ flexBasis: "150px" }}></div>
         <div
           style={{
@@ -226,12 +209,9 @@ const CustomFooter = ({
           {total_revenue.toFixed(2)}
         </div>
       </Box>
-      <Box>
-        <GridPagination />
-      </Box>
-    </div>
+    </GridToolbarContainer>
   );
-};
+}
 
 export default function StockReportTable({ rows, month, supplier }) {
   const [total_overflow, setTotalOverflow] = useState(0);
@@ -374,7 +354,7 @@ export default function StockReportTable({ rows, month, supplier }) {
         }}
         pageSizeOptions={[20]}
         disableColumnFilter
-        slots={{ toolbar: CustomToolbar, footer: CustomFooter }}
+        slots={{ toolbar: CustomToolbar }}
         slotProps={{
           toolbar: {
             rows,
@@ -387,15 +367,6 @@ export default function StockReportTable({ rows, month, supplier }) {
             total_sold,
             total_in_stock,
             total_revenue,
-          },
-          footer: {
-            total_overflow,
-            total_add,
-            total_return,
-            total_sold,
-            total_in_stock,
-            total_revenue,
-            supplier,
           },
         }}
         sx={{
