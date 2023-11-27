@@ -28,7 +28,14 @@ function exportToExcel(
   let formattedData = data.map((row) => {
     let newRow = {};
     columns.forEach(({ field, headerName }) => {
-      newRow[headerName] = row[field];
+      if (headerName == "คงเหลือ") newRow[headerName] = parseInt(row[field]);
+      else if (headerName == "มูลค่า")
+        newRow[headerName] = parseFloat(row[field]);
+      else if (headerName == "ขาย") newRow[headerName] = parseInt(row[field]);
+      else if (headerName == "รับ") newRow[headerName] = parseInt(row[field]);
+      else if (headerName == "คืน") newRow[headerName] = parseInt(row[field]);
+      else if (headerName == "ยกมา") newRow[headerName] = parseInt(row[field]);
+      else newRow[headerName] = row[field];
     });
     return newRow;
   });
