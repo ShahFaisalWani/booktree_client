@@ -263,23 +263,31 @@ const ReturnBooks = () => {
 
   function dataToHTMLTable(data) {
     let html =
-      '<table style="width: 100%; border-collapse: collapse; border: 1px solid black; font-size: 13px;">';
+      '<table style="width: 100%; border-collapse: collapse; border: none; font-size: 13px;">';
 
-    data.forEach((row) => {
+    data.forEach((row, i) => {
       html += "<tr>";
       let colspanEndIndex = null;
 
       ["A", "B", "C", "D", "E", "F"].forEach((col, index, array) => {
         if (row.colspanStart === col && row.colspan) {
           colspanEndIndex = index + parseInt(row.colspan);
-          html += `<td colspan="${
-            row.colspan
-          }" style="border: 1px solid black;">${row[col] || ""}</td>`;
+          html += `<td colspan="${row.colspan}" style="border: none;">${
+            row[col] || ""
+          }</td>`;
+        } else if (
+          (colspanEndIndex === null || index >= colspanEndIndex) &&
+          i < 3
+        ) {
+          html += `<td style="border: none;${
+            ["A", "B", "C", "D", "E", "F"].includes(col)
+              ? " text-align: left;"
+              : ""
+          } padding: 5px;">${row[col] || ""}</td>`;
         } else if (
           (colspanEndIndex === null || index >= colspanEndIndex) &&
           col == "C"
         ) {
-          console.log(row[col], col, index);
           html += `<td style="border: 1px solid black;${
             ["C", "D", "E", "F"].includes(col) ? " text-align: left;" : ""
           } padding: 5px;">${row[col] || ""}</td>`;
@@ -595,12 +603,12 @@ const ReturnBooks = () => {
               />
             </>
           )}
-          <button
+          {/* <button
             className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             onClick={printList}
           >
             ปริ้นรายละเอียดการคืนรายเล่ม
-          </button>
+          </button> */}
           <button
             className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             onClick={handleReturn}
