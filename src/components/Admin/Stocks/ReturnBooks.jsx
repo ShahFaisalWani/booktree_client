@@ -275,6 +275,14 @@ const ReturnBooks = () => {
           html += `<td colspan="${
             row.colspan
           }" style="border: 1px solid black;">${row[col] || ""}</td>`;
+        } else if (
+          (colspanEndIndex === null || index >= colspanEndIndex) &&
+          col == "C"
+        ) {
+          console.log(row[col], col, index);
+          html += `<td style="border: 1px solid black;${
+            ["C", "D", "E", "F"].includes(col) ? " text-align: left;" : ""
+          } padding: 5px;">${row[col] || ""}</td>`;
         } else if (colspanEndIndex === null || index >= colspanEndIndex) {
           html += `<td style="border: 1px solid black;${
             ["C", "D", "E", "F"].includes(col) ? " text-align: center;" : ""
@@ -289,7 +297,13 @@ const ReturnBooks = () => {
     return html;
   }
 
-  const createExcelData = (modalData) => {
+  const createExcelData = () => {
+    // const createExcelData = (modalData) => {
+    const modalData = {
+      id: "123",
+      supplier: supplier,
+      stockList: bookList,
+    };
     const extraRows = [
       {
         A: "ร้านหนังสือบุ๊คทรี",
@@ -357,7 +371,7 @@ const ReturnBooks = () => {
         A: "",
         B: "",
         C: "",
-        D: quantitySum,
+        D: "",
         E: `หัก ${modalData.supplier.percent}%`,
         F: subtract.toFixed(2),
       },
@@ -581,6 +595,12 @@ const ReturnBooks = () => {
               />
             </>
           )}
+          <button
+            className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            onClick={printList}
+          >
+            ปริ้นรายละเอียดการคืนรายเล่ม
+          </button>
           <button
             className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             onClick={handleReturn}
