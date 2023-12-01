@@ -59,12 +59,18 @@ const SearchItem = () => {
     <Autocomplete
       disablePortal
       options={options}
-      sx={{ width: 300 }}
+      sx={{ width: 350 }}
       getOptionLabel={(option) => option.title || ""}
       onChange={(event, newValue) => {
         setSelected(newValue);
       }}
       value={selected}
+      renderOption={(props, option) => (
+        <li {...props}>
+          <div className="w-[80%]">{option.title}</div>
+          <div className="w-[20%] text-right">{option.price}</div>
+        </li>
+      )}
       renderInput={(params) => (
         <TextField
           {...params}
