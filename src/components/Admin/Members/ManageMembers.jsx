@@ -22,6 +22,8 @@ import MemberCard from "../../User/MemberCard";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import MyModal from "../../MyModal";
+import EditIcon from "@mui/icons-material/Edit";
+import moment from "moment";
 
 const style = {
   position: "absolute",
@@ -54,7 +56,7 @@ const MemberForm = ({ handleChange }) => {
     await axios
       .post(import.meta.env.VITE_API_BASEURL + "/member/create", memberData)
       .then((res) => handleChange({ ...res.data, ...memberData }))
-      .catch((err) => toast.error("เบอร์นี้มีไรระบบแล้ว"));
+      .catch((err) => toast.error("เบอร์นี้มีในระบบแล้ว"));
   };
 
   const handleSubmit = async (values) => {
@@ -138,6 +140,224 @@ const MemberForm = ({ handleChange }) => {
           </div>
 
           <div className="flex gap-5 justify-center pt-5">
+            <button
+              type="submit"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            >
+              สมัครสมาชิก
+            </button>
+          </div>
+        </Form>
+      </Formik>
+    </div>
+  );
+};
+
+const MemberEditForm = ({ member, onFinish }) => {
+  const initialValues = {
+    first_name: member.first_name,
+    last_name: member.last_name,
+    phone_number: member.member_id,
+    start_date: member.start_date,
+    end_date: member.end_date,
+  };
+
+  const validationSchema = Yup.object({
+    first_name: Yup.string().required("กรอกข้อมูล"),
+    last_name: Yup.string().required("กรอกข้อมูล"),
+    phone_number: Yup.string()
+      .matches(/^[0-9]{10}$/, "เบอร์โทรไม่ถูกต้อง")
+      .required("กรอกข้อมูล"),
+  });
+
+  const editMember = async (memberData) => {
+    await axios
+      .put(import.meta.env.VITE_API_BASEURL + "/member/edit", memberData)
+      .then((res) => onFinish())
+      .catch((err) => {
+        toast.error("เบอร์นี้มีในระบบแล้ว");
+      });
+  };
+
+  const handleSubmit = async (values) => {
+    const memberData = {
+      member_id: member.member_id,
+      new_member_id: values.phone_number,
+      first_name: values.first_name,
+      last_name: values.last_name,
+      start_date: values.start_date,
+      end_date: values.end_date,
+    };
+    editMember(memberData);
+  };
+  return (
+    <div>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        <Form>
+          <div className="mb-6 flex  gap-5">
+            <div className="w-full">
+              <label
+                htmlFor="first_name"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                ชื่อ
+              </label>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="first_name"
+                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                />
+              </div>
+              <ErrorMessage
+                component="span"
+                name="first_name"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            <div className="w-full">
+              <label
+                htmlFor="last_name"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                นามสกุล
+              </label>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="last_name"
+                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                />
+              </div>
+              <ErrorMessage
+                component="span"
+                name="last_name"
+                className="text-red-500 text-sm"
+              />
+            </div>
+          </div>
+          <div className=" mb-6">
+            <label
+              htmlFor="phone_number"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              เบอร์โทร
+            </label>
+            <div className="relative">
+              <Field
+                type="text"
+                name="phone_number"
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+              />
+            </div>
+            <ErrorMessage
+              component="span"
+              name="phone_number"
+              className="text-red-500 text-sm"
+            />
+          </div>
+          <div className="mb-6 flex  gap-5">
+            <div className="w-full">
+              <label
+                htmlFor="start_date"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                วันที่ออกบัตร
+              </label>
+              <div className="relative">
+                <Field type="date" name="start_date">
+                  {({ form, field }) => {
+                    const { setFieldValue } = form;
+                    const { value } = field;
+                    const startDate = moment(value, "DD/MM/YYYY").format(
+                      "YYYY-MM-DD"
+                    );
+                    return (
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => {
+                          setFieldValue(
+                            "start_date",
+                            moment(e.target.value, "YYYY-MM-DD").format(
+                              "DD/MM/YYYY"
+                            )
+                          );
+                          setFieldValue(
+                            "end_date",
+                            moment(e.target.value, "YYYY-MM-DD")
+                              .add(365, "days")
+                              .format("DD/MM/YYYY")
+                          );
+                        }}
+                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                      />
+                    );
+                  }}
+                </Field>
+              </div>
+              <ErrorMessage
+                component="span"
+                name="start_date"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            <div className="w-full">
+              <label
+                htmlFor="end_date"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                วันหมดอายุ
+              </label>
+              <div className="relative">
+                <Field type="date" name="end_date">
+                  {({ form, field }) => {
+                    const { setFieldValue } = form;
+                    const { value } = field;
+                    const endDate = moment(value, "DD/MM/YYYY").format(
+                      "YYYY-MM-DD"
+                    );
+                    return (
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => {
+                          setFieldValue(
+                            "end_date",
+                            moment(e.target.value, "YYYY-MM-DD").format(
+                              "DD/MM/YYYY"
+                            )
+                          );
+                        }}
+                        disabled
+                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                      />
+                    );
+                  }}
+                </Field>
+              </div>
+              <ErrorMessage
+                component="span"
+                name="end_date"
+                className="text-red-500 text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-5 justify-center pt-5">
+            <button
+              type="button"
+              className="text-red-500 bg-white hover:bg-gray-200 border-2 border-gray-200 ring-red-300 focus:ring-4 focus:outline-nonefont-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+              onClick={onFinish}
+            >
+              ยกเลือก
+            </button>
             <button
               type="submit"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
@@ -312,6 +532,7 @@ const ManageMembers = () => {
   const [rows, setRows] = useState([]);
   const [orginalData, setOrginalData] = useState([]);
   const [openRenewModal, setOpenRenewModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const url = "/book/table/members";
   const fetchMyData = async () => {
@@ -358,6 +579,20 @@ const ManageMembers = () => {
   };
 
   const columns = [
+    {
+      field: "edit",
+      headerName: "แก้ไข",
+      width: 75,
+      renderCell: (params) => {
+        return (
+          <div className="opacity-30 hover:opacity-100">
+            <IconButton onClick={() => setOpenEditModal(params.row)}>
+              <EditIcon />
+            </IconButton>
+          </div>
+        );
+      },
+    },
     { field: "member_id", headerName: "รหัสสมาชิก", width: 150 },
     { field: "first_name", headerName: "ชื่อจริง", width: 150 },
     { field: "last_name", headerName: "นามสกุล", width: 150 },
@@ -456,6 +691,22 @@ const ManageMembers = () => {
             </div>
           }
           onClose={() => setOpenRenewModal(false)}
+        />
+      )}
+      {openEditModal && (
+        <MyModal
+          children={
+            <div className="flex flex-col mt-6 gap-10">
+              <MemberEditForm
+                member={openEditModal}
+                onFinish={() => {
+                  setOpenEditModal(false);
+                  refetch();
+                }}
+              />
+            </div>
+          }
+          onClose={() => setOpenEditModal(false)}
         />
       )}
     </div>
