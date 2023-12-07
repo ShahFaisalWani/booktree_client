@@ -46,7 +46,7 @@ const CheckStock = () => {
       })
     );
 
-    if (isEmpty) toast.error("ไม่มีในตต็อก");
+    if (isEmpty) toast.error("ไม่มีในสต็อก");
     if (inputRef.current) inputRef.current.value = "";
     setLoading(false);
   };
