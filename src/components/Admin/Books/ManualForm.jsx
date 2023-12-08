@@ -24,10 +24,10 @@ const ManualForm = ({ onFinish }) => {
     "เรื่อง",
     "ผู้แต่ง",
     "หมวดหมู่",
+    "ผู้แปล",
     "ราคา",
     "สำนักพิมพ์",
     "เนื้อเรื่อง",
-    "ผู้แปล",
     "น้ำหนัก",
     "ปีพิมพ์",
   ];
@@ -37,10 +37,10 @@ const ManualForm = ({ onFinish }) => {
     title: "",
     author: "",
     genre: "",
+    translator: "",
     price: "",
     publisher: "",
     desc: "",
-    translator: "",
     weight: "",
     published_year: "",
   };

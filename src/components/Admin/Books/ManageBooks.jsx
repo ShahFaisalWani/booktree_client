@@ -37,11 +37,12 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "50vw",
-  height: "fit",
+  width: "80%",
+  height: "80%",
   bgcolor: "background.paper",
   boxShadow: 24,
   borderRadius: 10,
+  overflow: "scroll",
 };
 
 function escapeRegExp(value) {
