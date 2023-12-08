@@ -284,7 +284,7 @@ const AddBookModal = ({ initialISBN, onSuccess, onClose }) => {
       return toast.error("ใส่ให้ครบถ้วน");
 
     const data = {
-      ISBN,
+      ISBN: ISBN.trim(),
       price,
       supplier_name: supplier.supplier_name,
     };
@@ -308,7 +308,7 @@ const AddBookModal = ({ initialISBN, onSuccess, onClose }) => {
     const detailData = [
       {
         restock_id: resId,
-        book_ISBN: ISBN,
+        book_ISBN: ISBN.trim(),
         quantity: quantity,
       },
     ];

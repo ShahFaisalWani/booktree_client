@@ -36,7 +36,11 @@ const ItemForm = ({ onFinish }) => {
     if (supplier) {
       setIsLoading(true);
 
-      const data = { ...values, supplier_name: supplier.supplier_name };
+      const data = {
+        ...values,
+        ISBN: values.ISBN.trim(),
+        supplier_name: supplier.supplier_name,
+      };
 
       try {
         await axios

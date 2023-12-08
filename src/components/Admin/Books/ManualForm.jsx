@@ -63,7 +63,12 @@ const ManualForm = ({ onFinish }) => {
     if (!supplier) return toast.error("เลือกตัวแทนจำหน่าย");
     setIsLoading(true);
 
-    const data = { ...values, supplier_name: supplier.supplier_name, genre };
+    const data = {
+      ...values,
+      ISBN: values.ISBN.trim(),
+      supplier_name: supplier.supplier_name,
+      genre,
+    };
 
     try {
       await axios
