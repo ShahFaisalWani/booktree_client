@@ -305,13 +305,7 @@ const ReturnBooks = () => {
     return html;
   }
 
-  const createExcelData = () => {
-    // const createExcelData = (modalData) => {
-    const modalData = {
-      id: "123",
-      supplier: supplier,
-      stockList: bookList,
-    };
+  const createExcelData = (modalData) => {
     const extraRows = [
       {
         A: "ร้านหนังสือบุ๊คทรี",
