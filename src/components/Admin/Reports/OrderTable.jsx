@@ -1,8 +1,150 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+} from "react";
 import MyModal from "../../MyModal";
 import LoadingScreen from "../../Loading/LoadingScreen";
 
-const OrderTable = ({ data, isLoading }) => {
+function dataToHTMLTable(data) {
+  let html =
+    '<table style="width: 100%; border-collapse: collapse; border: none; font-size: 13px;">';
+
+  data.forEach((row, i) => {
+    html += "<tr>";
+    let colspanEndIndex = null;
+
+    ["A", "B", "C", "D", "E", "F", "G"].forEach((col, index, array) => {
+      if (row.colspanStart === col && row.colspan) {
+        colspanEndIndex = index + parseInt(row.colspan);
+        html += `<td colspan="${row.colspan}" style="border: none;">${
+          row[col] || ""
+        }</td>`;
+      } else if (
+        (colspanEndIndex === null || index >= colspanEndIndex) &&
+        i < 4
+      ) {
+        html += `<td style="border: none;${
+          ["A", "B", "C", "D", "E", "F", "G"].includes(col)
+            ? " text-align: left;"
+            : ""
+        } padding: 5px;">${row[col] || ""}</td>`;
+      } else if (
+        (colspanEndIndex === null || index >= colspanEndIndex) &&
+        col == "C"
+      ) {
+        html += `<td style="border: 1px solid black;${
+          ["C", "D", "E", "F", "G"].includes(col) ? " text-align: left;" : ""
+        } padding: 5px;">${row[col] || ""}</td>`;
+      } else if (colspanEndIndex === null || index >= colspanEndIndex) {
+        html += `<td style="border: 1px solid black;${
+          ["C", "D", "E", "F", "G"].includes(col) ? " text-align: center;" : ""
+        } padding: 5px;">${row[col] || ""}</td>`;
+      }
+    });
+
+    html += "</tr>";
+  });
+
+  html += "</table>";
+  return html;
+}
+
+const createExcelData = (modalData) => {
+  const extraRows = [
+    {
+      A: "ร้านหนังสือบุ๊คทรี",
+      colspanStart: "A",
+      colspan: "2",
+      C: "",
+      D: "",
+      E: "",
+      F: "",
+      G: "ใบเสร็จรับเงิน",
+    },
+    {
+      A: "19 ม.2 ต.บางนายสี อ.ตะกั่วป่า จ.พังงา 82110 โทร. 095-0259234",
+      colspanStart: "A",
+      colspan: "3",
+      D: "",
+      E: "",
+      F: "",
+    },
+    {
+      A: "ลูกค้า",
+      colspanStart: "A",
+      colspan: "2",
+      C: "",
+      D: "",
+      E: "",
+      F: "",
+    },
+    {
+      A: "",
+      B: "",
+      colspanStart: "",
+      colspan: "2",
+      E: "",
+      F: "วันที่เอกสาร",
+      G: modalData.order.date.split(",")[0],
+    },
+  ];
+
+  let quantitySum = 0;
+  let totalSum = 0;
+  let totalDiscount = 0;
+  modalData?.order_details.map((book) => {
+    quantitySum += parseFloat(book.quantity);
+    totalSum += parseFloat(book.total);
+    totalDiscount += parseFloat(book.discount);
+  });
+
+  const data = [
+    ...extraRows,
+    {
+      A: "ลำดับ",
+      B: "บาร์โค้ด",
+      C: "ชื่อหนังสือ",
+      D: "จำนวน",
+      E: "ราคา",
+      F: "ส่วนลด",
+      G: "รวมทั้งหมด",
+    },
+    ...modalData?.order_details.map((book, i) => ({
+      A: i + 1,
+      B: book.ISBN,
+      C: book.title,
+      D: book.quantity,
+      E: book.price,
+      F: book.discount,
+      G: book.total.toFixed(2),
+    })),
+    {
+      A: "",
+      B: "",
+      C: "",
+      D: quantitySum,
+      E: "ชิ้น",
+      F: totalDiscount.toFixed(2),
+      G: totalSum.toFixed(2),
+    },
+    {
+      A: "",
+      B: "",
+      C: "",
+      D: "",
+      E: "รวมทั้งหมด",
+      F: "",
+      G: totalSum.toFixed(2),
+    },
+  ];
+  return data;
+};
+
+const OrderTable = forwardRef((props, ref) => {
+  const { data, isLoading } = props;
   const [currentRow, setCurrentRow] = useState(false);
   const [rows, setRows] = useState([]);
 
@@ -19,6 +161,27 @@ const OrderTable = ({ data, isLoading }) => {
     });
     setRows(newData);
   }, []);
+
+  const printList = () => {
+    const data = createExcelData(currentRow);
+
+    const html = dataToHTMLTable(data);
+    const iframe = document.createElement("iframe");
+
+    document.body.appendChild(iframe);
+
+    iframe.style.display = "none";
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(
+      `<html><head><title>Booktree</title></head><body>`
+    );
+    iframe.contentDocument.write(html);
+    iframe.contentDocument.write("</body></html>");
+    iframe.contentDocument.close();
+
+    iframe.contentWindow.print();
+    document.body.removeChild(iframe);
+  };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -58,7 +221,7 @@ const OrderTable = ({ data, isLoading }) => {
                   i % 2 === 1 ? "bg-gray-200" : ""
                 }`}
                 onClick={() => {
-                  setCurrentRow(item.order_details);
+                  setCurrentRow(item);
                 }}
               >
                 <td className="text-center p-[8px] w-[5%]">{i + 1}</td>
@@ -88,6 +251,16 @@ const OrderTable = ({ data, isLoading }) => {
           onClose={() => setCurrentRow(false)}
           children={
             <div className="py-16 px-10">
+              <div className="mb-5">
+                <button
+                  className={`items-center text-white bg-blue-700 hover:bg-blue-800  px-20 py-2.5 text-center `}
+                  onClick={printList}
+                >
+                  <p className="text-lg flex gap-3 justify-center items-center">
+                    Print
+                  </p>
+                </button>
+              </div>
               <table className="w-full">
                 <thead className="">
                   <tr className="bg-black">
@@ -118,7 +291,7 @@ const OrderTable = ({ data, isLoading }) => {
               <div className="max-h-[500px] overflow-y-scroll">
                 <table className="w-full">
                   <tbody>
-                    {currentRow?.map((row, i) => (
+                    {currentRow?.order_details?.map((row, i) => (
                       <tr key={i} className={i % 2 === 1 ? "bg-gray-200" : ""}>
                         <td className="text-left p-[8px] w-[7%]">{i + 1}</td>
                         <td className="text-left p-[8px] w-[20%]">
@@ -150,6 +323,6 @@ const OrderTable = ({ data, isLoading }) => {
       )}
     </>
   );
-};
+});
 
 export default OrderTable;

@@ -173,7 +173,10 @@ const MemberEditForm = ({ member, onFinish }) => {
   const editMember = async (memberData) => {
     await axios
       .put(import.meta.env.VITE_API_BASEURL + "/member/edit", memberData)
-      .then((res) => onFinish())
+      .then((res) => {
+        onFinish();
+        toast.success("แก้ไขสำเร็จ");
+      })
       .catch((err) => {
         toast.error("เบอร์นี้มีในระบบแล้ว");
       });
@@ -362,7 +365,7 @@ const MemberEditForm = ({ member, onFinish }) => {
               type="submit"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             >
-              สมัครสมาชิก
+              แก้ไข
             </button>
           </div>
         </Form>
