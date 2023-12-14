@@ -378,26 +378,26 @@ const ManageStationeries = () => {
       },
     },
     { field: "id", headerName: "ISBN", width: 150 },
-    // {
-    //   field: "coverImg",
-    //   headerName: "รูปปก",
-    //   width: 150,
-    //   renderCell: (params) => {
-    //     if (params.row.cover_img)
-    //       return (
-    //         <img
-    //           src={params.row.cover_img}
-    //           className="object-cover h-full w-2/3 cursor-pointer"
-    //         />
-    //       );
-    //     else
-    //       return (
-    //         <div className="h-full w-2/3 text-gray-400 bg-gray-200 items-center flex justify-center">
-    //           No Image
-    //         </div>
-    //       );
-    //   },
-    // },
+    {
+      field: "coverImg",
+      headerName: "รูปปก",
+      width: 150,
+      renderCell: (params) => {
+        if (params.row.cover_img)
+          return (
+            <img
+              src={params.row.cover_img}
+              className="object-cover h-full w-2/3 cursor-pointer"
+            />
+          );
+        else
+          return (
+            <div className="h-full w-2/3 text-gray-400 bg-gray-200 items-center flex justify-center">
+              No Image
+            </div>
+          );
+      },
+    },
     {
       field: "title",
       headerName: "ชื่อสินค้า",
@@ -495,7 +495,10 @@ const ManageStationeries = () => {
           />
           {modalOpen && (
             <StationeryEditDialog
-              handleClose={(success) => handleCloseModal(success)}
+              handleClose={(success) => {
+                handleCloseModal(success);
+                if (success) refetch();
+              }}
               book={editBook}
             />
           )}

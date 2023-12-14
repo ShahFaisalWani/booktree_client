@@ -34,8 +34,8 @@ const StationeryEditDialog = ({ handleClose, book }) => {
     handleClose();
   };
 
-  // const colNames = ["รูปปก", "ISBN", "ชื่อ", "ตัวแทนจำหน่าย", "ราคา"];
-  const colNames = ["ISBN", "ชื่อ", "ตัวแทนจำหน่าย", "ราคา"];
+  const colNames = ["รูปปก", "ISBN", "ชื่อ", "ตัวแทนจำหน่าย", "ราคา"];
+  // const colNames = ["ISBN", "ชื่อ", "ตัวแทนจำหน่าย", "ราคา"];
 
   const initialValues = {
     ISBN: book.ISBN || "",
@@ -51,12 +51,12 @@ const StationeryEditDialog = ({ handleClose, book }) => {
     price: Yup.number().required("Required"),
   });
 
-  // const [coverImg, setCoverImg] = useState(book.cover_img);
+  const [coverImg, setCoverImg] = useState(book.cover_img);
   const [loading, setLoading] = useState(false);
 
-  // const handleImgChange = (file) => {
-  //   setCoverImg(file);
-  // };
+  const handleImgChange = (file) => {
+    setCoverImg(file);
+  };
 
   const handleSubmit = async (values) => {
     const data = {
@@ -64,7 +64,8 @@ const StationeryEditDialog = ({ handleClose, book }) => {
       supplier_name: supplier.supplier_name || book.supplier_name,
     };
     const isSame = JSON.stringify(initialValues) === JSON.stringify(data);
-    if (!isSame) {
+
+    if (!(isSame && !coverImg)) {
       setLoading(true);
 
       await axios
@@ -73,17 +74,20 @@ const StationeryEditDialog = ({ handleClose, book }) => {
           console.log(err);
         });
 
-      // if (typeof coverImg != "string") {
-      //   const formData = new FormData();
-      //   formData.append("cover_img", coverImg);
-      //   formData.append("ISBN", values.ISBN);
+      if (typeof coverImg != "string") {
+        const formData = new FormData();
+        formData.append("cover_img", coverImg);
+        formData.append("ISBN", values.ISBN);
 
-      //   await axios
-      //     .post(import.meta.env.VITE_API_BASEURL + "/upload/book_cover", formData)
-      //     .catch((err) => {
-      //       console.log(err);
-      //     });
-      // }
+        await axios
+          .post(
+            import.meta.env.VITE_API_BASEURL + "/upload/book_cover",
+            formData
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+      }
       setLoading(false);
       toast.success("แก้ไขเสร็จเรียบร้อย");
       handleClose(true);
@@ -114,7 +118,7 @@ const StationeryEditDialog = ({ handleClose, book }) => {
                 >
                   <CloseIcon fontSize="medium" />
                 </button>
-                {/* <div>
+                <div>
                   <label
                     htmlFor="cover_img"
                     className="block mb-2 text-sm font-medium text-gray-900 "
@@ -130,7 +134,7 @@ const StationeryEditDialog = ({ handleClose, book }) => {
                     name="cover_img"
                     className="text-red-500 text-sm"
                   />
-                </div> */}
+                </div>
                 <div className="grid gap-6 mb-6 md:grid-cols-2 ">
                   {Object.keys(initialValues).map((col, i) => (
                     <div key={i}>

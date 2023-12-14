@@ -59,21 +59,21 @@ const ItemForm = ({ onFinish }) => {
         return;
       }
 
-      // if (coverImg) {
-      //   const formData = new FormData();
-      //   formData.append("cover_img", coverImg);
-      //   formData.append("ISBN", values.ISBN);
-      //   formData.append("item", "other");
+      if (coverImg) {
+        const formData = new FormData();
+        formData.append("cover_img", coverImg);
+        formData.append("ISBN", values.ISBN);
+        formData.append("item", "other");
 
-      //   await axios
-      //     .post(
-      //       import.meta.env.VITE_API_BASEURL + "/upload/book_cover",
-      //       formData
-      //     )
-      //     .catch((err) => {
-      //       console.log(err);
-      //     });
-      // }
+        await axios
+          .post(
+            import.meta.env.VITE_API_BASEURL + "/upload/book_cover",
+            formData
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+      }
 
       toast.success("เพิ่มสินค้าเรียบร้อย");
       setSupplier("");
@@ -94,7 +94,7 @@ const ItemForm = ({ onFinish }) => {
       >
         <Form>
           <div className="">
-            {/* <div className="mb-4">
+            <div className="mb-4">
               <label
                 htmlFor="cover_img"
                 className="block mb-2 text-sm font-medium text-gray-900 "
@@ -110,7 +110,7 @@ const ItemForm = ({ onFinish }) => {
                 name="cover_img"
                 className="text-red-500 text-sm"
               />
-            </div> */}
+            </div>
             <div className="grid gap-6 mb-6 md:grid-cols-2">
               {Object.keys(initialValues)
                 .filter((col) => col !== "cover_img")
