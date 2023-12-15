@@ -338,7 +338,7 @@ const ReturnBooks = () => {
     let totalSum = 0;
     let subtract = 0;
     modalData?.stockList.map((stock) => {
-      quantitySum += stock.quantity;
+      quantitySum += parseInt(stock.quantity);
       totalSum += stock.price * stock.quantity;
     });
     subtract = totalSum * (parseInt(supplier.percent) / 100);
