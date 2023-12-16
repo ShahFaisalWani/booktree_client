@@ -142,7 +142,7 @@ const StationeryEditDialog = ({ handleClose, book }) => {
                         htmlFor={col}
                         className="block mb-2 text-sm font-medium text-gray-900 "
                       >
-                        {colNames[i]}
+                        {colNames[i + 1]}
                       </label>
                       {col == "supplier_name" && (
                         <EditSupplierSelect
