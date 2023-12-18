@@ -14,3 +14,34 @@
   border-color: #eb4e56;
   color: #eb4e56;
 }
+
+@media screen and (max-width: 600px) {
+  .responsive-data-grid {
+    overflow-x: auto; /* Add horizontal scroll for small screens */
+  }
+  .responsive-data-grid .MuiDataGrid-columnsContainer {
+    display: none; /* Hide columns on small screens */
+  }
+  .responsive-data-grid .MuiDataGrid-cell {
+    text-align: center; /* Center-align cells on small screens */
+    max-width: 100%; /* Allow cells to take full width on small screens */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+  }
+}
+
+.responsive-data-grid {
+  overflow-x: auto; /* Add horizontal scroll for small screens */
+  width: 100vw;
+}
+.responsive-data-grid .MuiDataGrid-columnsContainer {
+  display: none; /* Hide columns on small screens */
+}
+.responsive-data-grid .MuiDataGrid-cell {
+  text-align: center; /* Center-align cells on small screens */
+  max-width: 100%; /* Allow cells to take full width on small screens */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+}

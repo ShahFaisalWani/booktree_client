@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import CartCard from "../../components/Cart/CartCard";
+import CartCardMobile from "./CartCardMobile";
 
 const CartDisplay = () => {
   const cart = useSelector((state) => state.cart.items);
@@ -16,13 +17,13 @@ const CartDisplay = () => {
             <p>จำนวน</p>
           </div>
           <div className="w-1/4 flex items-center justify-center">
-            <p>ราคาต่อหน่วย</p>
+            <p>ราคา</p>
           </div>
           <div className="w-1/4 flex items-center justify-center">
             <p>ส่วนลด</p>
           </div>
           <div className="w-1/4 flex items-center justify-center">
-            <p>ราคา</p>
+            <p>รวม</p>
           </div>
         </div>
         <div className="w-[10%]"></div>
@@ -34,13 +35,20 @@ const CartDisplay = () => {
       <h2 className="font-light pb-4 mb-8 border-b-2 border-gray-300">
         รายการสินค้า
       </h2>
-      <div className="px-8">
+      <div className="px-8 hidden sm:block">
         <Header />
       </div>
-      <div className="mb-4 px-8 py-4 border-b-2 border-gray-300  h-[40vh] overflow-scroll">
+      <div className="mb-4 py-4 border-b-2 border-gray-300  h-[40vh] overflow-scroll">
         {Object.values(cart).length ? (
           Object.values(cart).map((item, i) => (
-            <CartCard key={i} cartItem={item} />
+            <div key={i}>
+              <div className="hidden sm:block px-8">
+                <CartCard cartItem={item} />
+              </div>
+              <div className="block sm:hidden">
+                <CartCardMobile cartItem={item} />
+              </div>
+            </div>
           ))
         ) : (
           <div className="flex justify-start border-b-2 border-t-2 py-8 mt-10 text-xl">

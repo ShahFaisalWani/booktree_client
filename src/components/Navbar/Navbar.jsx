@@ -13,11 +13,19 @@ import LoadingScreen from "../Loading/LoadingScreen";
 import Cookies from "js-cookie";
 import { clearUser } from "../../redux/userSlice";
 import axios from "axios";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 
 const Navbar = () => {
   const userToken = Cookies.get("access-token");
   const dispatch = useDispatch();
   const [decodedToken, setDecodedToken] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const genreList =
+    window.innerWidth < 640
+      ? [{ name: "หน้าหลัก", subGenres: [] }, ...genres]
+      : genres;
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -46,7 +54,7 @@ const Navbar = () => {
   return (
     <div className="Navbar">
       <div className="top">
-        <div className="logo w-[150px]">
+        <div className="logo w-[150px] hidden sm:block">
           <div className="absolute top-4 h-[130px] w-[200px]">
             <Link to="/">
               <img
@@ -56,6 +64,12 @@ const Navbar = () => {
               />
             </Link>
           </div>
+        </div>
+        <div
+          className="block sm:hidden"
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
         </div>
         <div className="searchBar">
           <Searchbar />
@@ -67,14 +81,23 @@ const Navbar = () => {
               <UserDropdown />
             </Suspense>
           ) : (
-            <Link to="/login">Log in</Link>
+            <Link
+              to="/login"
+              className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
+            >
+              เข้าสู่ระบบ
+            </Link>
           )}
         </div>
       </div>
       <div className="bottom">
-        <div className="dropdowns">
-          {genres.map((genre) => (
-            <GenreDropdown key={genre.name} genre={genre} />
+        <div className={`dropdowns ${open ? "open" : "close"}`}>
+          {genreList.map((genre) => (
+            <GenreDropdown
+              key={genre.name}
+              genre={genre}
+              closeNav={() => setOpen(false)}
+            />
           ))}
         </div>
       </div>

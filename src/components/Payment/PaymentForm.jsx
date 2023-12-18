@@ -6,7 +6,8 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 const PaymentForm = () => {
   const [paymentMethod, setPaymentMethod] = useState(0);
 
-  const { activeStepIndex, setActiveStepIndex } = useContext(FormContext);
+  const { activeStepIndex, setActiveStepIndex, setIsPressed } =
+    useContext(FormContext);
 
   const handleChange = () => {
     setPaymentMethod(1);
@@ -17,6 +18,11 @@ const PaymentForm = () => {
     const shippingFee = shipping && JSON.parse(shipping);
     if (shippingFee.price == 0) setActiveStepIndex(activeStepIndex - 2);
     else setActiveStepIndex(activeStepIndex - 1);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -59,16 +65,20 @@ const PaymentForm = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-between">
-          <div>
-            <button
-              className="flex items-center text-blue-700 bg-white border-2 border-gray-400 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-              onClick={handlePrev}
-            >
-              <NavigateBeforeIcon />
-              ย้อนกลับ
-            </button>
-          </div>
+        <div className="flex justify-between gap-20">
+          <button
+            className="flex items-center text-blue-700 bg-white border-2 border-gray-400 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            onClick={handlePrev}
+          >
+            <NavigateBeforeIcon />
+            ย้อนกลับ
+          </button>
+          <button
+            className="sm:hidden flex justify-center items-center text-white bg-blue-700  hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            onClick={() => setIsPressed(true)}
+          >
+            ชำระเงิน
+          </button>
           <div className="hidden">
             <PaymentBtn paymentMethod={paymentMethod} />
           </div>

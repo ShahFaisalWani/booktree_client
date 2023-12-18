@@ -16,7 +16,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "65%",
+  width: "85vw",
+  height: "80vh",
   bgcolor: "background.paper",
   boxShadow: 24,
 };
@@ -114,7 +115,12 @@ const OrderHistory = () => {
 
   const columns = [
     { field: "order_id", headerName: "หมายเลขออเดอร์", width: 150 },
-    { field: "date", headerName: "วันที่", width: 120 },
+    {
+      field: "date",
+      headerName: "วันที่",
+      width: 120,
+      hide: true,
+    },
     { field: "items", headerName: "จำนวน", width: 75 },
     { field: "total", headerName: "ราคารวม", width: 150 },
     {
@@ -127,6 +133,7 @@ const OrderHistory = () => {
         );
       },
     },
+
     {
       field: "EMS",
       headerName: "EMS",
@@ -205,57 +212,86 @@ const OrderHistory = () => {
           >
             <CloseIcon fontSize="medium" />
           </button>
-          <div className="h-fit max-h-2/3 bg-white p-8 px-16 overflow-scroll">
-            <p className="mb-4 flex">
-              <span className="flex flex-col gap-1 w-1/3">
-                <span className="">
+          <div className="h-fit max-h-2/3 bg-white p-1 py-16 sm:p-8 sm:px-16 overflow-scroll text-xs sm:text-lg border-4">
+            <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-1">
+              <span>
+                รายการสั่งซื้อหมายเลข: <b>{currentRow.order_id}</b>
+              </span>
+              <span>
+                ราคารวม: <b>{currentRow.total + " บาท"}</b>
+              </span>
+              <span>
+                ชำระโดย: <b>{currentRow.payment}</b>
+              </span>
+              <span>
+                วันที่: <b>{currentRow.date}</b>
+              </span>
+              <span>
+                จำนวนรวม: <b>{currentRow.items}</b>
+              </span>
+              <span>
+                หมายเลขพัสดุ: <b>{currentRow.EMS || "-"}</b>
+              </span>
+              <span>
+                จัดส่งไปยังที่อยู่: <b>{currentRow.deliver_to || ""}</b>
+              </span>
+              <span>
+                ค่าจัดส่ง:{" "}
+                <b>
+                  {typeof currentRow.shipping_fee === "number"
+                    ? currentRow.shipping_fee + " บาท"
+                    : "0 บาท"}
+                </b>
+              </span>
+              {/* <span className="flex flex-col gap-1">
+                <span>
                   รายการสั่งซื้อหมายเลข: <b>{currentRow.order_id}</b>
                 </span>
-                <span className="">
+                <span>
                   ราคารวม: <b>{currentRow.total + " บาท"}</b>
                 </span>
-                <span className="">
+                <span>
                   ชำระโดย: <b>{currentRow.payment}</b>
                 </span>
               </span>
-              <span className="flex flex-col gap-1 w-1/3">
+              <span className="flex flex-col gap-1">
                 <span>
                   วันที่: <b>{currentRow.date}</b>
                 </span>
                 <span>
                   จำนวนรวม: <b>{currentRow.items}</b>
                 </span>
-                <span className="w-1/3">
+                <span>
                   หมายเลขพัสดุ: <b>{currentRow.EMS || "-"}</b>
                 </span>
               </span>
-              <span className="flex flex-col gap-1 w-1/3">
+              <span className="flex flex-col gap-1">
                 <span>
-                  จัดส่งไปยังที่อยู่: <b>{currentRow.deliver_to || ""}</b>
+                  จัดส่งไปยังที่อยู่: <b>{currentRow.deliver_to || ""}</b>
                 </span>
                 <span>
                   ค่าจัดส่ง:{" "}
                   <b>
-                    {typeof currentRow.shipping_fee == "number"
+                    {typeof currentRow.shipping_fee === "number"
                       ? currentRow.shipping_fee + " บาท"
                       : "0 บาท"}
                   </b>
                 </span>
-              </span>
-            </p>
+              </span> */}
+            </div>
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-black">
-                  <th className="border-0 text-left p-[8px] text-white">
+                  <th className="border-0 text-left w-[35%] p-1 sm:p-[8px] text-white">
                     ISBN
                   </th>
-                  <th className="border-0 text-left p-[8px] text-white">
+                  <th className="border-0 text-left w-[40%] p-1 sm:p-[8px] text-white">
                     ชื่อสินค้า
                   </th>
-                  <th className="border-0 text-left p-[8px] text-white">
+                  <th className="border-0 text-left w-[15%] p-1 sm:p-[8px] text-white">
                     ราคา
                   </th>
-                  <th className="border-0 text-left p-[8px] text-white">
+                  <th className="border-0 text-left w-[10%] p-1 sm:p-[8px] text-white">
                     จำนวน
                   </th>
                 </tr>
@@ -263,10 +299,18 @@ const OrderHistory = () => {
               <tbody>
                 {currentRow?.order_details?.map((item, i) => (
                   <tr key={i} className={i % 2 === 1 ? "bg-gray-200" : ""}>
-                    <td className="text-left p-[8px]">{item.book.ISBN}</td>
-                    <td className="text-left p-[8px]">{item.book.title}</td>
-                    <td className="text-left p-[8px]">{item.book.price}</td>
-                    <td className="text-left p-[8px]">{item.quantity}</td>
+                    <td className="text-left w-[35%] p-1 sm:p-[8px]">
+                      {item.book.ISBN}
+                    </td>
+                    <td className="text-left w-[40%] p-1 sm:p-[8px]">
+                      {item.book.title}
+                    </td>
+                    <td className="text-left w-[15%] p-1 sm:p-[8px]">
+                      {item.book.price}
+                    </td>
+                    <td className="text-left w-[10%] p-1 sm:p-[8px]">
+                      {item.quantity}
+                    </td>
                   </tr>
                 ))}
               </tbody>

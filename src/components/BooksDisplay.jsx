@@ -7,7 +7,7 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import SortButton from "./SortButton";
 import StationeryCard from "./StationeryCard";
 
-const limit = 25;
+const limit = window.innerWidth < 640 ? 20 : 25;
 
 const BooksDisplay = ({
   books,
@@ -17,6 +17,7 @@ const BooksDisplay = ({
   totalCount,
   show,
 }) => {
+  const path = window.location.pathname;
   const [booksArray, setBooksArray] = useState(books);
   useEffect(() => {
     setBooksArray(books);
@@ -38,16 +39,32 @@ const BooksDisplay = ({
 
   return (
     <div className="">
-      <div className="flex justify-between mb-8 px-20">
+      <div className="flex justify-around items-center my-4 sm:mb-8 sm:px-20">
         <div>
-          <p className="">
+          <p className="hidden sm:block">
             แสดง {from} ถึง {to} จาก {totalCount} รายการ
           </p>
+          <div className="block sm:hidden">
+            {path.split("/")[2] !== null &&
+            path.split("/")[2] !== undefined &&
+            path.split("/")[2] !== "topsales" ? (
+              <p className="w-screen flex justify-center">
+                แสดง {from} ถึง {to} จาก {totalCount} รายการ
+              </p>
+            ) : (
+              <div className="">
+                <p>
+                  แสดง {from} ถึง {to}
+                </p>
+                <p>จาก {totalCount} รายการ</p>
+              </div>
+            )}
+          </div>
         </div>
         <div>{show == "no" ? null : <SortButton />}</div>
       </div>
       <div className="mb-16">
-        <div className="grid gap-y-10 justify-items-center grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="grid sm:gap-y-10 justify-items-center grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {booksArray.map((book, i) => (
             <BookCard book={book} key={i} />
           ))}
@@ -59,21 +76,31 @@ const BooksDisplay = ({
           page={page}
           count={pages}
           onChange={handleChange}
-          size="large"
-          boundaryCount={1} // Shows the first and last number
-          siblingCount={3}
+          size={window.innerWidth < 640 ? "small" : "large"}
+          boundaryCount={window.innerWidth < 640 ? 1 : 1} // Shows the first and last number
+          siblingCount={window.innerWidth < 640 ? 1 : 3}
           renderItem={(item) => (
             <PaginationItem
               components={{
                 next: () => (
-                  <div className="text-sm flex items-center">
-                    ต่อไป <NavigateNextIcon />
+                  <div>
+                    <div className="text-sm items-center hidden sm:flex">
+                      ต่อไป <NavigateNextIcon />
+                    </div>
+                    <div className=" block sm:hidden">
+                      <NavigateNextIcon />
+                    </div>
                   </div>
                 ),
                 previous: () => (
-                  <div className="text-sm flex items-center">
-                    <NavigateBeforeIcon />
-                    ย้อนกลับ
+                  <div>
+                    <div className="text-sm items-center hidden sm:flex">
+                      <NavigateBeforeIcon />
+                      ย้อนกลับ
+                    </div>
+                    <div className=" block sm:hidden">
+                      <NavigateBeforeIcon />
+                    </div>
                   </div>
                 ),
               }}

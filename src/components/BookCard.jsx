@@ -19,14 +19,17 @@ const BookCard = ({ book }) => {
   };
 
   return (
-    <div className="BookCard w-[250px] cursor-pointer">
+    <div className="BookCard w-[150px] sm:w-[200px] md:w-[250px] cursor-pointer">
       <div
         onClick={() => setOpen(true)}
-        className="mb-4 px-8 py-6 bg-gray-200 rounded-md hover:shadow-xl transition-all"
+        className="sm:mb-4 sm:px-8 py-6 sm:bg-gray-200 rounded-md hover:shadow-xl transition-all"
       >
         <div
-          className="h-full w-36 m-auto"
-          style={{ boxShadow: "-10px 5px 10px 2px #00000066" }}
+          className="h-full w-36 m-auto shadow-lg sm:shadow-none"
+          style={{
+            boxShadow:
+              window.innerWidth < 640 ? "" : "-10px 5px 10px 2px #00000066",
+          }}
         >
           {book.cover_img ? (
             <>
@@ -60,8 +63,9 @@ const BookCard = ({ book }) => {
       </div>
       <div className="mb-2 flex justify-between">
         <p className="text-sm font-bold">
-          {book?.title?.length > 30
-            ? book?.title?.substring(0, 27) + "..."
+          {book?.title?.length > (window.innerWidth < 640 ? 18 : 30)
+            ? book?.title?.substring(0, window.innerWidth < 640 ? 15 : 27) +
+              "..."
             : book?.title}
         </p>
       </div>

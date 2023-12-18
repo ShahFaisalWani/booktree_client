@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -6,7 +6,7 @@ import LoadingScreen from "../components/Loading/LoadingScreen";
 import BooksDisplay from "../components/BooksDisplay";
 import { SortContext } from "../App";
 
-const limit = 10;
+const limit = window.innerWidth < 640 ? 20 : 25;
 
 export const SearchContext = createContext();
 
@@ -39,6 +39,9 @@ const SearchResult = () => {
     ["search", keyword, location.search, page, type?.sort, type?.way],
     fetchMyData
   );
+  useEffect(() => {
+    setPage(1);
+  }, [keyword]);
 
   const handleChange = (value) => {
     setPage(value);
@@ -53,7 +56,7 @@ const SearchResult = () => {
         type,
       }}
     >
-      <p className="text-lg mb-2 px-20">
+      <p className="text-lg sm:mb-2 flex justify-center">
         ผลการค้นหา : {decodeURIComponent(keyword)}
       </p>
       <BooksDisplay

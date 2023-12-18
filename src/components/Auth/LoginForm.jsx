@@ -55,7 +55,7 @@ const LoginForm = () => {
             htmlFor="email"
             className="block mb-2 text-sm font-medium text-gray-900"
           >
-            Email
+            อีเมล
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -87,7 +87,7 @@ const LoginForm = () => {
             htmlFor="password"
             className="block mb-2 text-sm font-medium text-gray-900"
           >
-            Password
+            รหัสผ่าน
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -123,7 +123,7 @@ const LoginForm = () => {
             htmlFor="show_password"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Show password
+            แสดงรหัสผ่าน
           </label>
         </div>
         <div className="flex gap-5">
@@ -131,13 +131,13 @@ const LoginForm = () => {
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >
-            Log in
+            เข้าสู่ระบบ
           </button>
           <button
             className="text-blue-700 bg-white hover:bg-gray-200 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={() => navigateTo("/register")}
           >
-            Register
+            สมัครบัญชี
           </button>
         </div>
       </Form>

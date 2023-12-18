@@ -60,11 +60,11 @@ const ProfileModal = ({ user, onClose }) => {
         onSubmit={handleSubmit}
       >
         <Form>
-          <div className="mb-6 flex  gap-5">
+          <div className="mb-6 flex gap-2">
             <div className="w-full">
               <label
                 htmlFor="first_name"
-                className="block mb-2 text-sm font-medium text-gray-900"
+                className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
               >
                 ชื่อ
               </label>
@@ -72,20 +72,20 @@ const ProfileModal = ({ user, onClose }) => {
                 <Field
                   type="first_name"
                   name="first_name"
-                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                  className="w-[100px] sm:w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                 />
               </div>
               <ErrorMessage
                 component="span"
                 name="first_name"
-                className="text-red-500 text-sm"
+                className="text-red-500 text-xs sm:text-sm"
               />
             </div>
 
             <div className="w-full">
               <label
                 htmlFor="last_name"
-                className="block mb-2 text-sm font-medium text-gray-900"
+                className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
               >
                 นามสกุล
               </label>
@@ -93,20 +93,20 @@ const ProfileModal = ({ user, onClose }) => {
                 <Field
                   type="last_name"
                   name="last_name"
-                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                  className="w-[100px] sm:w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                 />
               </div>
               <ErrorMessage
                 component="span"
                 name="last_name"
-                className="text-red-500 text-sm"
+                className="text-red-500 text-xs sm:text-sm"
               />
             </div>
           </div>
           <div className=" mb-6">
             <label
               htmlFor="address"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
               ที่อยู่
             </label>
@@ -114,26 +114,26 @@ const ProfileModal = ({ user, onClose }) => {
               <Field
                 type="address"
                 name="address"
-                className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
               />
             </div>
             <ErrorMessage
               component="span"
               name="address"
-              className="text-red-500 text-sm"
+              className="text-red-500 text-xs sm:text-sm"
             />
           </div>
 
           <div className="flex gap-5 justify-center pt-5">
             <button
               type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-xs sm:text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             >
               ยืนยัน
             </button>
             <button
               onClick={() => onClose()}
-              className="text-red bg-gray-300 hover:bg-gray-400 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+              className="text-red bg-gray-300 hover:bg-gray-400 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-xs sm:text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             >
               ยกเลิก
             </button>

@@ -5,15 +5,21 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const GenreDropdown = ({ genre }) => {
+const GenreDropdown = ({ genre, closeNav }) => {
   const navigateTo = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    if (event.currentTarget.innerText.includes("หน้าหลัก")) {
+      navigateTo("/");
+      return closeNav();
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
   };
   const handleClose = () => {
     setAnchorEl(null);
+    return closeNav();
   };
   const handleSelect = (selectedValue) => {
     setAnchorEl(null);
@@ -21,7 +27,9 @@ const GenreDropdown = ({ genre }) => {
     else if (genre.name == "สำนักพิมพ์")
       navigateTo(`/books?publisher=${selectedValue}`);
     else navigateTo(`/books?genre=${selectedValue}`);
+    return closeNav();
   };
+
   return (
     <div className="Dropdown">
       <Button
@@ -33,7 +41,7 @@ const GenreDropdown = ({ genre }) => {
         sx={{ color: "black" }}
       >
         {genre.name}
-        <ArrowDropDownIcon />
+        {genre.subGenres.length == 0 ? "" : <ArrowDropDownIcon />}
       </Button>
       <Menu
         id="basic-menu"
@@ -49,7 +57,7 @@ const GenreDropdown = ({ genre }) => {
             key={sub}
             value={sub}
             onClick={() => {
-              handleClose;
+              handleClose();
               handleSelect(sub);
             }}
           >

@@ -40,6 +40,11 @@ const OrderForm = () => {
   const handleSubmit = (values) => {
     localStorage.setItem("user_order", JSON.stringify(values));
     setActiveStepIndex(activeStepIndex + 1);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
   };
 
   useEffect(() => {
@@ -55,6 +60,11 @@ const OrderForm = () => {
 
   const handlePrev = () => {
     setActiveStepIndex(activeStepIndex - 1);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -172,13 +182,19 @@ const OrderForm = () => {
             className="text-red-500 text-sm"
           />
         </div>
-        <div>
+        <div className="flex justify-between gap-20">
           <button
             className="flex items-center text-blue-700 bg-white border-2 border-gray-400 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={handlePrev}
           >
             <NavigateBeforeIcon />
             ย้อนกลับ
+          </button>
+          <button
+            className="sm:hidden flex justify-center items-center text-white bg-blue-700  hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            onClick={() => setIsSubmitted(true)}
+          >
+            ต่อไป
           </button>
         </div>
       </Form>

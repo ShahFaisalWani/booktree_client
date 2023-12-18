@@ -26,12 +26,22 @@ const UserPage = () => {
   }
 
   return (
-    <div className="flex gap-16 pt-8 ">
-      <div className="w-1/3 flex flex-col items-center">
-        <UserNav />
+    <div>
+      <div className="gap-16 pt-8 hidden sm:flex">
+        <div className="w-1/3 flex flex-col items-center">
+          <UserNav />
+        </div>
+        <div className="w-2/3">
+          <Suspense fallback={<LoadingScreen />}>{renderedComponent}</Suspense>
+        </div>
       </div>
-      <div className="w-2/3">
-        <Suspense fallback={<LoadingScreen />}>{renderedComponent}</Suspense>
+      <div className="gap-16 pt-8 block sm:hidden">
+        <div className="w-fullflex flex-col items-center">
+          <Suspense fallback={<LoadingScreen />}>{renderedComponent}</Suspense>
+        </div>
+        <div className="w-full flex mt-10">
+          <UserNav />
+        </div>
       </div>
     </div>
   );

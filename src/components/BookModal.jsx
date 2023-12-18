@@ -13,7 +13,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "80%",
-  height: "80vh",
+  height: "85vh",
   bgcolor: "background.paper",
   boxShadow: 24,
 };
@@ -69,13 +69,13 @@ export default function BookModal({ open, toggleModal, book }) {
           >
             <CloseIcon fontSize="medium" />
           </button>
-          <div className="flex flex-row h-full">
-            <div className="w-1/2">
+          <div className="flex flex-col sm:flex-row h-full">
+            <div className="sm:w-1/2 h-[30%] sm:h-full flex">
               {/* <div className="h-full flex items-center"> */}
               <div className="h-full xl:w-full m-auto flex items-center">
                 <img
                   src={book.cover_img}
-                  className="m-auto h-[80%] object-cover"
+                  className="m-auto h-[80%] sm:h-[80%] object-cover"
                   onLoad={() => {
                     setLoading(false);
                   }}
@@ -96,16 +96,12 @@ export default function BookModal({ open, toggleModal, book }) {
                 )}
               </div>
             </div>
-            <div className="h-fit my-auto w-1/2 pr-16 py-12 flex flex-col gap-7">
+            <div className="h-fit my-auto sm:w-1/2 px-3 sm:px-0 sm:pr-16  sm:py-12 flex flex-col gap-3 sm:gap-7 text-[0.70rem] sm:text-[1em]">
               <div>
-                <p className="text-2xl mb-3">{book.title}</p>
+                <p className="text-[1.5em] sm:text-2xl sm:mb-3">{book.title}</p>
                 <p>{book.author}</p>
               </div>
-              <div
-                className={`overflow-y-auto max-h-[30vh] mb-3 ${
-                  isExpanded ? "max-h-full" : ""
-                }`}
-              >
+              <div className="overflow-y-auto max-h-[30vh] mb-3">
                 <p className="text-left">
                   {content}
                   {book.desc && book.desc.length > 800 && (
@@ -119,41 +115,41 @@ export default function BookModal({ open, toggleModal, book }) {
                 </p>
               </div>
               <div className="flex justify-between">
-                <div className="text-2xl mb-3">
+                <div className="text-lg sm:text-2xl mb-3">
                   <p className="font-bold">{book.price} บาท</p>
                 </div>
                 {book.in_stock > 0 ? (
-                  <div className="flex gap-2 items-center text-2xl">
+                  <div className="flex gap-2 items-center sm:text-2xl">
                     <button
-                      className="flex justify-center items-center w-8 h-8 rounded-[100%] bg-blue-500 text-white"
+                      className="flex justify-center items-center text-xs sm:text-xl w-4 sm:w-8 h-4 sm:h-8 rounded-[100%] bg-blue-500 text-white"
                       onClick={handleRemoveItem}
                     >
                       -
                     </button>
-                    <div className="p-2 w-10 h-10 flex justify-center items-center">
+                    <div className="p-2 w-10 h-10 text-lg sm:text-xl flex justify-center items-center">
                       <p>{quantity}</p>
                     </div>
 
                     <button
-                      className="flex justify-center items-center w-8 h-8 rounded-[100%] bg-blue-500 text-white"
+                      className="flex justify-center items-center text-xs sm:text-xl w-4 sm:w-8 h-4 sm:h-8 rounded-[100%] bg-blue-500 text-white"
                       onClick={handleAddItem}
                     >
                       +
                     </button>
                   </div>
                 ) : (
-                  <p>Out of stock</p>
+                  <p>สินค้าหมดสต็อก</p>
                 )}
               </div>
               <div className="">
                 <button
                   onClick={handleAddToCart}
                   type="button"
-                  className={`w-full text-white ${
+                  className={`w-full flex justify-center items-center text-white ${
                     book.in_stock == 0
                       ? "bg-gray-400"
                       : "bg-blue-700 hover:bg-blue-800"
-                  } focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full px-2 py-4`}
+                  } focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full px-2 py-2 sm:py-4`}
                   disabled={book.in_stock == 0}
                 >
                   {book.in_stock == 0 ? "หมด" : "เพิ่มลงตะกร้า"}

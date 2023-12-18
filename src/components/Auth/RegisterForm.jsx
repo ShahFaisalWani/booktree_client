@@ -59,126 +59,120 @@ const RegisterForm = () => {
       onSubmit={handleSubmit}
     >
       <Form>
-        <div className="grid gap-6 mb-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 mb-6 grid-cols-2 md:grid-cols-2">
           <div>
             <label
               htmlFor="first_name"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
-              First name
+              ชื่อจริง
             </label>
             <Field
               type="text"
               name="first_name"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="John"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
             />
             <ErrorMessage
               component="span"
               name="first_name"
-              className="text-red-500 text-sm"
+              className="text-red-500 text-xs sm:text-sm"
             />
           </div>
           <div>
             <label
               htmlFor="last_name"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
-              Last name
+              นามสกุล
             </label>
             <Field
               type="text"
               name="last_name"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="Doe"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
             />
             <ErrorMessage
               component="span"
               name="last_name"
-              className="text-red-500 text-sm"
+              className="text-red-500 text-xs sm:text-sm"
             />
           </div>
           <div>
             <label
               htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
-              Email
+              อีเมล
             </label>
             <Field
               type="text"
               name="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="example@booktree.com"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
             />
             <ErrorMessage
               component="span"
               name="email"
-              className="text-red-500 text-sm"
+              className="text-red-500 text-xs sm:text-sm"
             />
           </div>
           <div>
             <label
               htmlFor="phone_number"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
-              Phone number
+              เบอร์โทร
             </label>
             <Field
               type="tel"
               name="phone_number"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="0123456789"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               pattern="[0-9]{10}"
               required
             />
             <ErrorMessage
               component="span"
               name="phone_number"
-              className="text-red-500 text-sm"
+              className="text-red-500 text-xs sm:text-sm"
             />
           </div>
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
-              Password
+              รหัสผ่าน
             </label>
             <Field
               type={showPass ? "text" : "password"}
               name="password"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="•••••••••"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
             />
             <ErrorMessage
               component="span"
               name="password"
-              className="text-red-500 text-sm"
+              className="text-red-500 text-xs sm:text-sm"
             />
           </div>
           <div className="mb-6">
             <label
               htmlFor="confirm_password"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
-              Confirm password
+              ยืนยันรหัสผ่าน
             </label>
             <Field
               type={showPass ? "text" : "password"}
               name="confirm_password"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="•••••••••"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
             />
             <ErrorMessage
               component="span"
               name="confirm_password"
-              className="text-red-500 text-sm"
+              className="text-red-500 text-xs sm:text-sm"
             />
           </div>
           <div className="flex gap-4">
@@ -189,27 +183,27 @@ const RegisterForm = () => {
             />
             <label
               htmlFor="show_password"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block mb-2 text-xs sm:text-sm font-medium text-gray-900"
             >
-              Show password
+              แสดงรหัสผ่าน
             </label>
           </div>
         </div>
         <div>
           <button
             type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs sm:text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >
-            Register
+            ยืนยัน
           </button>
         </div>
-        <div>
-          <label htmlFor="login">Already have an account?</label>
+        <div className="text-center mt-5 sm:text-left sm:mt-1">
+          <label htmlFor="login">มีบัญชีแล้ว</label>
           <button
-            className="text-blue-700 bg-white hover:bg-gray-200 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            className="text-blue-700 bg-white hover:bg-gray-200 focus:ring-4 focus:outline-none hover:ring-blue-300 font-medium rounded-lg text-xs sm:text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={() => navigateTo("/login")}
           >
-            Back to log in
+            กลับสู่หน้าเข้าสู่ระบบ
           </button>
         </div>
       </Form>

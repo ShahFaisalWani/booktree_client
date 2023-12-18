@@ -6,7 +6,7 @@ import LoadingScreen from "../components/Loading/LoadingScreen";
 import BooksDisplay from "../components/BooksDisplay";
 import { SortContext } from "../App";
 
-const limit = 25;
+const limit = window.innerWidth < 640 ? 20 : 25;
 
 const typeArray = {
   topsales: { name: "หนังสือยอดนิยม", url: "topsales" },
@@ -62,7 +62,7 @@ const SpecialBooks = () => {
   return (
     <div>
       <div className="w-full flex justify-center items-center">
-        <p className="text-2xl ">{title?.name}</p>
+        <p className="text-2xl">{title?.name}</p>
       </div>
       <BooksDisplay
         books={books}

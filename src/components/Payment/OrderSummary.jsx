@@ -47,8 +47,18 @@ const OrderSummary = () => {
     if (activeStepIndex == 0) {
       if (shippingFee.price == 0) setActiveStepIndex(activeStepIndex + 2);
       else setActiveStepIndex(activeStepIndex + 1);
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
     } else if (activeStepIndex == 1) {
       setIsSubmitted(true);
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
     } else {
       setIsPressed(true);
     }

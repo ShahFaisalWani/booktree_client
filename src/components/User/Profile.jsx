@@ -12,7 +12,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "30vw",
+  width: "fit",
   height: "fit",
   bgcolor: "background.paper",
   boxShadow: 24,
@@ -31,45 +31,49 @@ const Profile = () => {
   };
 
   return (
-    <div className="w-[50vw]">
+    <div className="w-full sm:w-[50vw]">
       <p className="border-b-2 w-full mb-10 pb-5 text-lg text-blue-500 font-bold tracking-wider">
         ประวัติของฉัน
       </p>
       {user && (
-        <div className="flex h-1/2 w-full gap-10 ">
-          <div className="my-auto">
+        <div className="block w-full sm:flex gap-10">
+          <div className="flex justify-center items-center mb-4 sm:mb-0">
             <Avatar
+              // sx={{ width: "20vh", height: "20vh", fontSize: 50 }}
               sx={{ width: 170, height: 170, fontSize: 50 }}
               children={`${user.first_name[0]}${user.last_name[0]}`}
             />
           </div>
-          <div className="w-2/3 my-auto flex flex-col gap-4 mr-10">
+          <div className="w-full sm:w-2/3 my-auto flex flex-col gap-4 mr-10">
             <p className="flex justify-between">
-              <span>บัญชีของ</span>
+              <span className="font-bold">บัญชีของ</span>
               <span>
                 {user.first_name} {user.last_name}
               </span>
             </p>
             <p className="flex justify-between">
-              <span>อีเมล</span>
+              <span className="font-bold">อีเมล</span>
               <span>{user.email}</span>
             </p>
             <p className="flex justify-between">
-              <span>เบอร์โทร</span>
+              <span className="font-bold">เบอร์โทร</span>
               <span>{user.phone_number}</span>
             </p>
             <p className="flex justify-between">
-              <span>ที่อยู่</span>
+              <span className="font-bold">ที่อยู่</span>
               <span>{user.address}</span>
             </p>
             <p className="flex justify-between">
-              <span>วันที่ลงทะเบียน</span>
+              <span className="font-bold">วันที่ลงทะเบียน</span>
               <span>
                 {new Date(user.signed_up_on).toISOString().split("T")[0]}
               </span>
             </p>
           </div>
-          <button onClick={handleEdit} className="flex gap-1">
+          <button
+            onClick={handleEdit}
+            className="flex gap-1 w-full justify-end my-5 text-xl text-blue-500 sm:w-fit"
+          >
             <span>แก้ไข</span>
             <EditIcon />
           </button>
@@ -86,7 +90,7 @@ const Profile = () => {
                 >
                   <CloseIcon fontSize="medium" />
                 </button>
-                <div className="flex flex-col justify-center items-center p-16">
+                <div className="flex flex-col justify-center items-center my-16 mx-8">
                   <ProfileModal user={user} onClose={onClose} />
                 </div>
               </div>

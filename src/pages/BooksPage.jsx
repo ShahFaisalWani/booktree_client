@@ -6,7 +6,7 @@ import LoadingScreen from "../components/Loading/LoadingScreen";
 import BooksDisplay from "../components/BooksDisplay";
 import { SortContext } from "../App";
 
-const limit = 25;
+const limit = window.innerWidth < 640 ? 20 : 25;
 
 const BooksPage = () => {
   const location = useLocation();
@@ -61,6 +61,9 @@ const BooksPage = () => {
 
   return (
     <div>
+      <div className="w-full flex justify-center items-center">
+        <p className="text-2xl mb-6">หมวดหมู่ {genre}</p>
+      </div>
       <BooksDisplay
         books={books}
         page={page}

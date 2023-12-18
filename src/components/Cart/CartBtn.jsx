@@ -4,6 +4,7 @@ import { getTotalItems } from "../../redux/cartSlice";
 import { Badge, IconButton } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useNavigate } from "react-router-dom";
+import { document } from "postcss";
 
 const CartBtn = () => {
   const totalItems = useSelector(getTotalItems);
@@ -17,7 +18,9 @@ const CartBtn = () => {
       onClick={() => navigateTo("/checkout")}
     >
       <Badge badgeContent={totalItems} color="error">
-        <ShoppingCartIcon sx={{ fontSize: "1.2em" }} />
+        <ShoppingCartIcon
+          sx={{ fontSize: window.innerWidth < 640 ? "0.9em" : "1.2em" }}
+        />
       </Badge>
     </IconButton>
   );
