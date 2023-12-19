@@ -160,7 +160,7 @@ const OrderTable = forwardRef((props, ref) => {
       };
     });
     setRows(newData);
-  }, []);
+  }, [data]);
 
   const printList = () => {
     const data = createExcelData(currentRow);

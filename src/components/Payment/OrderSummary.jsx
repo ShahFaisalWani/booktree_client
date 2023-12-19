@@ -33,6 +33,7 @@ const OrderSummary = () => {
   const totalItems = useSelector(getTotalItems);
   const totalPrice = useSelector(getTotalPrice);
   const totalDiscount = useSelector(getTotalDiscount);
+  const cart = useSelector((state) => state.cart.items);
 
   const dispatch = useDispatch();
   const {
@@ -45,7 +46,21 @@ const OrderSummary = () => {
 
   const handleNext = () => {
     if (activeStepIndex == 0) {
-      if (shippingFee.price == 0) setActiveStepIndex(activeStepIndex + 2);
+      let hasInvalidValue = false;
+      Object.keys(cart).forEach((book) => {
+        if (cart[book].quantity > cart[book].in_stock) {
+          toast.error(
+            "มี " +
+              cart[book].title?.substring(0, 15) +
+              " แค่ " +
+              cart[book].in_stock +
+              " ในสต็อก"
+          );
+          hasInvalidValue = true;
+        }
+      });
+      if (hasInvalidValue) return toast.error("err");
+      else if (shippingFee.price == 0) setActiveStepIndex(activeStepIndex + 2);
       else setActiveStepIndex(activeStepIndex + 1);
       window.scrollTo({
         top: 0,

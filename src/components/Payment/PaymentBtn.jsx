@@ -116,6 +116,7 @@ const PaymentBtn = ({ paymentMethod }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     if (paymentMethod) {
       setPaymentLoading(true);
       const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PK);

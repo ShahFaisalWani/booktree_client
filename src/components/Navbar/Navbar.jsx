@@ -74,7 +74,7 @@ const Navbar = () => {
         <div className="searchBar">
           <Searchbar />
         </div>
-        <div className="login flex gap-5 items-center">
+        <div className="login flex gap-1 sm:gap-10 items-center">
           <CartBtn />
           {decodedToken?.valid ? (
             <Suspense fallback={<LoadingScreen />}>
@@ -83,7 +83,7 @@ const Navbar = () => {
           ) : (
             <Link
               to="/login"
-              className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs w-full sm:w-auto p-2 text-center"
+              className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs sm:text-[15px] p-2 sm:p-3 w-full sm:w-auto text-center"
             >
               เข้าสู่ระบบ
             </Link>

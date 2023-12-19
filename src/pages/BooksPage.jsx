@@ -19,8 +19,10 @@ const BooksPage = () => {
 
   const { type, setType } = useContext(SortContext);
 
+  const path = window.location.search.slice(1).split("=")[0];
+
   useEffect(() => {
-    setGenre(queryParams.get("genre"));
+    setGenre(queryParams.get(path));
   }, [location]);
 
   const fetchMyData = async () => {
@@ -38,7 +40,7 @@ const BooksPage = () => {
         "&way=" +
         type?.way
     );
-
+    console.log(res);
     setTotalCount(res.data.total_count);
     setBooks(res.data.books);
     setPages(Math.ceil(res.data.total_count / limit));
@@ -62,7 +64,14 @@ const BooksPage = () => {
   return (
     <div>
       <div className="w-full flex justify-center items-center">
-        <p className="text-2xl mb-6">หมวดหมู่ {genre}</p>
+        <p className="text-xl sm:text-2xl pt-2 mb-6">
+          {path == "genre"
+            ? "หมวดหมู่"
+            : path == "author"
+            ? "ผู้เขียน"
+            : "สนพ."}{" "}
+          {genre}
+        </p>
       </div>
       <BooksDisplay
         books={books}

@@ -70,7 +70,9 @@ const UserDropdown = () => {
         onClick={handleProfileClick}
         sx={{ color: "black" }}
       >
-        <PersonIcon sx={{ fontSize: "2.1em" }} />
+        <PersonIcon
+          sx={{ fontSize: window.innerWidth < 640 ? "1.8em" : "2.1em" }}
+        />
         <ArrowDropDownIcon />
       </Button>
       <Menu

@@ -19,7 +19,7 @@ const CartBtn = () => {
     >
       <Badge badgeContent={totalItems} color="error">
         <ShoppingCartIcon
-          sx={{ fontSize: window.innerWidth < 640 ? "0.9em" : "1.2em" }}
+          sx={{ fontSize: window.innerWidth < 640 ? "1em" : "1.2em" }}
         />
       </Badge>
     </IconButton>

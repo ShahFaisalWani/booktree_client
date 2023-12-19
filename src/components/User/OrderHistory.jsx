@@ -56,6 +56,7 @@ const OrderHistory = () => {
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url, {
       withCredentials: true,
     });
+
     return res.data;
   };
 
@@ -163,26 +164,78 @@ const OrderHistory = () => {
       <p className="border-b-2 w-full mb-10 pb-5 text-lg text-blue-500 font-bold tracking-wider">
         ประวัติการซื้อ
       </p>
-      <Box sx={{ maxHeight: "90vh", width: "100%", margin: "auto" }}>
-        <DataGrid
-          disableColumnFilter
-          disableDensitySelector
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 15,
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2 max-h-[650px] overflow-y-scroll md:hidden ">
+        {rows.map((row, i) => (
+          <div
+            key={i}
+            className="bg-white space-y-3 p-4 rounded-lg shadow"
+            onClick={() => {
+              setRowModal(true);
+              setCurrentRow(row);
+            }}
+          >
+            <div className="flex items-center space-x-2 text-sm">
+              <div>
+                <a href="#" className="text-blue-500 font-bold hover:underline">
+                  #{row.order_id}
+                </a>
+              </div>
+              <div className="text-gray-500">{row.date}</div>
+              <div>
+                {/* <span
+                  className={`p-1.5 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${
+                    row.status == "pending"
+                      ? "text-yellow-800 bg-yellow-200"
+                      : row.status == "delivering"
+                      ? "text-blue-800 bg-blue-200"
+                      : "text-green-800 bg-green-200"
+                  }`}
+                >
+                  {row.status}
+                </span> */}
+                <RenderTracking order_id={row.order_id} track_id={row.EMS} />
+              </div>
+            </div>
+            <div className="text-sm text-gray-700">
+              ที่อยู่จัดส่ง {row.deliver_to}
+            </div>
+            <div className="text-sm text-gray-700">EMS {row.EMS}</div>
+            <div className="text-sm font-medium text-black">
+              {row.total} บาท
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden md:block">
+        <Box
+          sx={{
+            maxHeight: "90vh",
+            width: "100%",
+            margin: "auto",
+          }}
+        >
+          <DataGrid
+            disableColumnFilter
+            disableDensitySelector
+            rows={rows}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 15,
+                },
               },
-            },
-          }}
-          pageSizeOptions={[15]}
-          onRowClick={(params) => {
-            setRowModal(true);
-            setCurrentRow(params.row);
-          }}
-        />
-      </Box>
+            }}
+            pageSizeOptions={[15]}
+            onRowClick={(params) => {
+              setRowModal(true);
+              setCurrentRow(params.row);
+            }}
+          />
+        </Box>
+      </div>
+
       <Modal
         open={open}
         onClose={handleClose}
