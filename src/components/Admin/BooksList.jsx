@@ -46,7 +46,7 @@ const BooksList = forwardRef((props, ref) => {
     const booksWithImage = books.filter((book) => book.cover_img);
 
     books.map((book) => {
-      book.ISBN = book.ISBN.trim();
+      book.ISBN = book.ISBN.toString().trim();
       book.supplier_name = supplier.supplier_name;
     });
 
