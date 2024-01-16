@@ -13,10 +13,12 @@ import Box from "@mui/material/Box";
 import MonthlyReportTableTotal from "./MonthlyReportTableTotal";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import MonthSelect from "./MonthSelect";
+import YearSelect from "./YearSelect";
 
 const SupplierReport = () => {
   const { supplier } = useContext(BookContext);
   const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
 
   const [type, setType] = useState("");
   const handleChange = (e) => {
@@ -26,14 +28,15 @@ const SupplierReport = () => {
   const handleMonthChange = (value) => {
     setMonth(value);
   };
+  const handleYearChange = (value) => {
+    setYear(value);
+  };
 
-  const today = new Date();
-  const year = today.getFullYear();
   const days = new Date(year, month, 0).getDate();
 
   const url = `/order/monthlysalesby${
     type == "full" ? "dates" : "books"
-  }?supplier_name=${supplier.supplier_name}&month=${month}`;
+  }?supplier_name=${supplier.supplier_name}&month=${month}&year=${year}`;
 
   const fetchMyData = async () => {
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url);
@@ -41,10 +44,10 @@ const SupplierReport = () => {
   };
 
   const { isLoading, data } = useQuery(
-    ["supplier report", supplier, month, type],
+    ["supplier report", supplier, month, year, type],
     fetchMyData,
     {
-      enabled: !!supplier && !!month && !!type,
+      enabled: !!supplier && !!month && !!year && !!type,
     }
   );
   let rowData = [];
@@ -101,8 +104,9 @@ const SupplierReport = () => {
         <div className="w-full">
           <SupplierSelect />
         </div>
-        <div className="w-full">
+        <div className="w-full flex gap-4">
           <MonthSelect month={month} handleMonthChange={handleMonthChange} />
+          <YearSelect year={year} handleYearChange={handleYearChange} />
         </div>
         <div className="w-full">
           <Box sx={{ minWidth: 120 }}>
