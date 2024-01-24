@@ -205,7 +205,7 @@ function printPDF(
         "left"
       );
       pdf.text(
-        `${book.price.toFixed(2)}`,
+        `${book?.price.toFixed(2)}`,
         price_w,
         pdf_position_y,
         null,

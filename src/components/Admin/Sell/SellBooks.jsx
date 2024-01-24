@@ -69,6 +69,7 @@ const SellBooks = () => {
   };
 
   const addOrder = async () => {
+    if (cart.length < 1) return;
     try {
       const data = {
         customer_phone_number: memberId,
