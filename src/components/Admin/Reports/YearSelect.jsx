@@ -6,14 +6,14 @@ import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 
 const thisYear = new Date().getFullYear();
-const years = [thisYear - 3, thisYear - 2, thisYear - 1, thisYear];
+const years = [thisYear - 2, thisYear - 1, thisYear];
 
 const YearSelect = ({ year, handleYearChange }) => {
   const onChange = (e) => {
     handleYearChange(e.target.value);
   };
   return (
-    <Box sx={{ minWidth: 120 }}>
+    <Box sx={{ minWidth: 200 }}>
       <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label1">Year</InputLabel>
         <Select

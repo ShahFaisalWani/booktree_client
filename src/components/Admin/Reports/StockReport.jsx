@@ -6,27 +6,33 @@ import MonthSelect from "./MonthSelect";
 import axios from "axios";
 import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
+import YearSelect from "./YearSelect";
 
 const StockReport = () => {
   const { supplier } = useContext(BookContext);
   const [month, setMonth] = useState("");
   const [rows, setRows] = useState([]);
+  const [year, setYear] = useState("");
 
   const handleMonthChange = (value) => {
     setMonth(value);
   };
 
-  const url = `/stock/report?supplier_name=${supplier?.supplier_name}&month=${month}`;
+  const handleYearChange = (value) => {
+    setYear(value);
+  };
+
+  const url = `/stock/report?supplier_name=${supplier?.supplier_name}&month=${month}&year=${year}`;
   const fetchMyData = async () => {
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url);
     return res.data;
   };
 
   const { isLoading, data } = useQuery(
-    ["stock report", supplier, month],
+    ["stock report", supplier, month, year],
     fetchMyData,
     {
-      enabled: !!supplier && !!month,
+      enabled: !!supplier && !!month && !!year,
     }
   );
 
@@ -56,13 +62,10 @@ const StockReport = () => {
   if (isLoading) return <LoadingScreen />;
   return (
     <div className="flex flex-col items-center">
-      <div className="w-1/2 flex gap-10 mb-5">
-        <div className="w-full">
-          <SupplierSelect />
-        </div>
-        <div className="w-full ">
-          <MonthSelect month={month} handleMonthChange={handleMonthChange} />
-        </div>
+      <div className="flex w-full justify-center items-center gap-10 mb-5">
+        <SupplierSelect />
+        <MonthSelect month={month} handleMonthChange={handleMonthChange} />
+        <YearSelect year={year} handleYearChange={handleYearChange} />
       </div>
       <div className="mt-16">
         {rows && (
