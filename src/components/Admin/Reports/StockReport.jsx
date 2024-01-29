@@ -7,6 +7,7 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import YearSelect from "./YearSelect";
+import toast from "react-hot-toast";
 
 const StockReport = () => {
   const { supplier } = useContext(BookContext);
@@ -28,13 +29,22 @@ const StockReport = () => {
     return res.data;
   };
 
-  const { isLoading, data } = useQuery(
+  const { isLoading, data, refetch } = useQuery(
     ["stock report", supplier, month, year],
     fetchMyData,
     {
-      enabled: !!supplier && !!month && !!year,
+      refetchOnWindowFocus: false,
+      enabled: false,
     }
   );
+
+  const handleSearch = () => {
+    if (!supplier || !month || !year) {
+      toast.error("เลือกให้ครบ");
+      return;
+    }
+    refetch();
+  };
 
   useEffect(() => {
     if (data) {
@@ -60,12 +70,19 @@ const StockReport = () => {
   }, [data]);
 
   if (isLoading) return <LoadingScreen />;
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex w-full justify-center items-center gap-10 mb-5">
         <SupplierSelect />
         <MonthSelect month={month} handleMonthChange={handleMonthChange} />
         <YearSelect year={year} handleYearChange={handleYearChange} />
+        <button
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xs px-4 py-2 text-center"
+          onClick={handleSearch}
+        >
+          ค้นหา
+        </button>
       </div>
       <div className="mt-16">
         {rows && (
