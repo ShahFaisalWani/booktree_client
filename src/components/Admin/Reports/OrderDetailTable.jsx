@@ -175,7 +175,7 @@ function printPDF(
     pdf.text("รวม", total_w, pdf_position_y, null, null, "left");
     pdf_position_y += 20;
 
-    const filteredRows = rows.filter((book) => book.price !== undefined);
+    const filteredRows = rows.filter((book) => book.price);
 
     filteredRows.map((book, i) => {
       if (i != 0 && i % 32 == 0) {
