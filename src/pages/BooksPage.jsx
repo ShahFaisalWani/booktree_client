@@ -40,7 +40,7 @@ const BooksPage = () => {
         "&way=" +
         type?.way
     );
-    console.log(res);
+
     setTotalCount(res.data.total_count);
     setBooks(res.data.books);
     setPages(Math.ceil(res.data.total_count / limit));

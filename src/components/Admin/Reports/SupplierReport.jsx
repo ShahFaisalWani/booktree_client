@@ -164,7 +164,11 @@ const SupplierReport = () => {
           />
         )}
         {type == "total" && tableData.length > 0 && (
-          <MonthlyReportTableTotal rows={tableData} footerData={footerData} />
+          <MonthlyReportTableTotal
+            rows={tableData}
+            footerData={footerData}
+            fileData={{ supplier, month, year }}
+          />
         )}
       </div>
     </div>

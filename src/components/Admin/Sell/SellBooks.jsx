@@ -146,7 +146,7 @@ const SellBooks = () => {
         const { id, date } = await addOrder();
         const order_num = "INV" + String(id).padStart(5, "0");
         // const order_date = new Date(date).toString();
-        await handlePrint(order_num);
+        // await handlePrint(order_num);
         setCartFunc([]);
         setPayment("");
         setMember("none");

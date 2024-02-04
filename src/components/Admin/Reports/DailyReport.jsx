@@ -30,7 +30,6 @@ const DailyReport = () => {
     ["daily report", selectedDate],
     fetchMyData
   );
-  console.log(data);
 
   if (isLoading) return <LoadingScreen />;
   return (

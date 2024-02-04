@@ -73,9 +73,6 @@ const OrderForm = () => {
       validationSchema={validationSchema}
       innerRef={formRef}
       onSubmit={handleSubmit}
-      validateOnChange={() => {
-        console.log("HIIII");
-      }}
     >
       <Form className="">
         <p className="text-xl mb-8 text-center">การจัดส่งสินค้า</p>

@@ -175,7 +175,9 @@ function printPDF(
     pdf.text("รวม", total_w, pdf_position_y, null, null, "left");
     pdf_position_y += 20;
 
-    rows.map((book, i) => {
+    const filteredRows = rows.filter((book) => book.price !== undefined);
+
+    filteredRows.map((book, i) => {
       if (i != 0 && i % 32 == 0) {
         pdf.addPage();
         pdf_position_y = 40;
@@ -205,7 +207,7 @@ function printPDF(
         "left"
       );
       pdf.text(
-        `${book?.price.toFixed(2)}`,
+        `${book.price?.toFixed(2)}`,
         price_w,
         pdf_position_y,
         null,

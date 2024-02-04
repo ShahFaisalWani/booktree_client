@@ -12,16 +12,16 @@ import {
 } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
 
-function exportToExcel(data, columns) {
+function exportToExcel(data, columns, fileData) {
   let formattedData = data.map((row) => {
     let newRow = {};
     columns.forEach(({ field, headerName }) => {
       if (headerName == "จำนวนขายทั้งหมด")
-        newRow[headerName] = parseInt(row[field]);
+        newRow["จำนวน"] = parseInt(row[field]);
       else if (headerName == "ยอดขายทั้งหมด")
-        newRow[headerName] = parseFloat(row[field]);
+        newRow["ยอดขาย"] = parseFloat(row[field]);
       else if (headerName == "ยอดขายหลังหักเปอร์เซนต์")
-        newRow[headerName] = parseFloat(row[field]);
+        newRow["ยอดหลังหัก%"] = parseFloat(row[field]);
       else newRow[headerName] = row[field];
     });
     return newRow;
@@ -31,7 +31,14 @@ function exportToExcel(data, columns) {
 
   columns.forEach(({ field, headerName }) => {
     if (["total_quantity", "total_revenue", "net"].includes(field)) {
-      totalsRow[headerName] = data.reduce(
+      let header_name = "";
+      if (headerName == "จำนวนขายทั้งหมด") header_name = "จำนวน";
+      else if (headerName == "ยอดขายทั้งหมด") header_name = "ยอดขาย";
+      else if (headerName == "ยอดขายหลังหักเปอร์เซนต์")
+        header_name = "ยอดหลังหัก%";
+      else header_name = headerName;
+
+      totalsRow[header_name] = data.reduce(
         (sum, row) => sum + (parseFloat(row[field]) || 0),
         0
       );
@@ -39,31 +46,38 @@ function exportToExcel(data, columns) {
       totalsRow[headerName] = "";
     }
   });
-  totalsRow["ยอดขายทั้งหมด"] = totalsRow["ยอดขายทั้งหมด"].toFixed(2);
-  totalsRow["ยอดขายหลังหักเปอร์เซนต์"] =
-    totalsRow["ยอดขายหลังหักเปอร์เซนต์"].toFixed(2);
+  // totalsRow["ยอดขาย"] = totalsRow["ยอดขาย"].toFixed(2);
+  // totalsRow["ยอดหลังหัก%"] = totalsRow["ยอดหลังหัก%"].toFixed(2);
 
   formattedData.push(totalsRow);
-
+  const fileName = `${fileData.supplier.supplier_name}-${fileData.month}-${fileData.year}`;
   const worksheet = XLSX.utils.json_to_sheet(formattedData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-  XLSX.writeFile(workbook, "report.xlsx");
+  XLSX.writeFile(workbook, fileName + ".xlsx");
 }
 
-const GridToolbarExport = ({ rows, columns, printOptions, ...other }) => (
+const GridToolbarExport = ({
+  rows,
+  columns,
+  fileData,
+  printOptions,
+  ...other
+}) => (
   <GridToolbarExportContainer {...other}>
-    <GridCsvExportMenuItem onClick={() => exportToExcel(rows, columns)} />
+    <GridCsvExportMenuItem
+      onClick={() => exportToExcel(rows, columns, fileData)}
+    />
     <GridPrintExportMenuItem options={printOptions} />
   </GridToolbarExportContainer>
 );
 
-function CustomToolbar({ rows, columns }) {
+function CustomToolbar({ rows, columns, fileData }) {
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarDensitySelector />
-      <GridToolbarExport rows={rows} columns={columns} />
+      <GridToolbarExport rows={rows} columns={columns} fileData={fileData} />
     </GridToolbarContainer>
   );
 }
@@ -135,7 +149,11 @@ const columns = [
     headerAlign: "center",
   },
 ];
-export default function MonthlyReportTableTotal({ rows, footerData }) {
+export default function MonthlyReportTableTotal({
+  rows,
+  footerData,
+  fileData,
+}) {
   return (
     <Box
       sx={{
@@ -157,7 +175,7 @@ export default function MonthlyReportTableTotal({ rows, footerData }) {
         pageSizeOptions={[15, 50]}
         slots={{ toolbar: CustomToolbar, footer: CustomFooter }}
         slotProps={{
-          toolbar: { rows, columns },
+          toolbar: { rows, columns, fileData },
           footer: { footerData, rows, columns },
         }}
         sx={{
