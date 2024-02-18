@@ -208,13 +208,18 @@ export default function RestockReportTable({
       >
         <DataGrid
           columnVisibilityModel={
-            type == "add"
+            type == "order"
+              ? {
+                  ref_id: false,
+                  delivery_date: false,
+                }
+              : type == "add"
               ? {
                   ref_id: true,
                   delivery_date: true,
                 }
               : {
-                  ref_id: false,
+                  ref_id: true,
                   delivery_date: false,
                 }
           }

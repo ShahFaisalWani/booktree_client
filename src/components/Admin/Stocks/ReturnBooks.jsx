@@ -578,15 +578,17 @@ const ReturnBooks = () => {
               </Select>
             </FormControl>
           </Box>
+          {type && (
+            <input
+              name="refNum"
+              className="border border-gray-500 placeholder-gray-400 p-2 py-1"
+              placeholder="เลขที่อ้างอิง"
+              value={refNum}
+              onChange={(e) => setRefNum(e.target.value)}
+            />
+          )}
           {type == "add" && (
             <>
-              <input
-                name="refNum"
-                className="border border-gray-500 placeholder-gray-400 p-2 py-1"
-                placeholder="เลขที่อ้างอิง"
-                value={refNum}
-                onChange={(e) => setRefNum(e.target.value)}
-              />
               <input
                 name="deliverDate"
                 type="date"
