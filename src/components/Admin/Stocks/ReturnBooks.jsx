@@ -202,18 +202,18 @@ const ReturnBooks = () => {
   };
   const printBoxPaper = () => {
     const html = `
-    <div style="margin-top: 2em">
-        <div style="margin-bottom: 2.5em">
+    <div style="margin-inline: auto; padding-top: 1em; width: 80%; margin-block: auto;">
+        <div style="margin-bottom: 1em">
             <h2>
                 ผู้รับ
             </h2>
-            <h3 style="margin-left: 2em">
-                <p>${supplier.full_name}</p>
-                <p>${supplier.address}</p>
+            <h3 style="margin-left: 1em">
+                <p style="margin-block: 0px;">${supplier.full_name}</p>
+                <p style="margin-block: 0px;">${supplier.address}</p>
             </h3>
         </div>
         <div>
-            <h3 style="margin-left: 3em">
+            <h3 style="margin-left: 1.5em">
                 เลขที่อ้างอิง: ${openModal.id}
             </h3>
         </div>
@@ -221,9 +221,9 @@ const ReturnBooks = () => {
             <h2>
                 ผู้ส่ง
             </h2>
-            <h3 style="margin-left: 2em">
-                <p>ร้านหนังสือบุ๊คทรี</p>
-                <p>19 หมู่ 2 ต.บางนายสี อ.ตะกัวป่า จ.พังงา 82110 โทร.099-1915521</p>
+            <h3 style="margin-left: 1em">
+                <p style="margin-block: 0px;">ร้านหนังสือบุ๊คทรี</p>
+                <p style="margin-block: 0px;">19 หมู่ 2 ต.บางนายสี อ.ตะกัวป่า จ.พังงา 82110 โทร.099-1915521</p>
             </h3>
         </div>
     </div>`;
@@ -620,6 +620,12 @@ const ReturnBooks = () => {
             ) : (
               <p>{type == "return" ? "ยืนยันการคืน" : "ยืนยันการรับ"}</p>
             )}
+          </button>
+          <button
+            className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            onClick={printBoxPaper}
+          >
+            ปริ้นใบแปะหน้ากล่อง
           </button>
         </div>
       )}
