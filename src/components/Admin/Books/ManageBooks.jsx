@@ -31,6 +31,8 @@ import BooksList from "../BooksList";
 import { BookContext } from "./Book";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import * as XLSX from "xlsx";
+import SwapHorizontalCircleIcon from "@mui/icons-material/SwapHorizontalCircle";
+import { Button } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -493,7 +495,9 @@ const ManageBooks = () => {
 
   const [rows, setRows] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
   const [editBook, setEditBook] = useState(null);
+  const [copyBook, setCopyBook] = useState(null);
 
   useEffect(() => {
     if (data?.length >= 0) {
@@ -509,6 +513,16 @@ const ManageBooks = () => {
     const book = rows.find((row) => row.id === id);
     setModalOpen(true);
     setEditBook(book);
+  };
+  const handleAddCopy = (id) => {
+    const book = rows.find((row) => row.id === id);
+    const copyOfBook = Object.assign({}, book);
+
+    copyOfBook.ISBN = "0" + book.ISBN;
+    copyOfBook.supplier_name = "Booktree";
+
+    setAddModalOpen(true);
+    setCopyBook(copyOfBook);
   };
 
   useEffect(() => {
@@ -625,14 +639,11 @@ const ManageBooks = () => {
       headerName: "รูปปก",
       width: 150,
       renderCell: (params) => {
-        if (params.row.cover_img)
-          return (
-            <img
-              src={params.row.cover_img}
-              className="object-cover h-full w-2/3 cursor-pointer"
-            />
-          );
-        else
+        if (params.row.cover_img) {
+          const uid = params.row.cover_img?.split("=")[1];
+          const url = `https://drive.google.com/thumbnail?id=${uid}&sz=w1000`;
+          return <img src={url} className="object-cover h-full w-2/3" />;
+        } else
           return (
             <div className="h-full w-2/3 text-gray-400 bg-gray-200 items-center flex justify-center">
               No Image
@@ -673,6 +684,18 @@ const ManageBooks = () => {
             checked={Boolean(params.row.recommend)}
             onChange={(e) => handleChange(e, params.row.ISBN)}
           />
+        );
+      },
+    },
+    {
+      field: "swap",
+      headerName: "รับเป็น Booktree",
+      width: 75,
+      renderCell: (params) => {
+        return (
+          <IconButton onClick={() => handleAddCopy(params.id)}>
+            <SwapHorizontalCircleIcon color="info" />
+          </IconButton>
         );
       },
     },
@@ -743,6 +766,32 @@ const ManageBooks = () => {
               book={editBook}
             />
           )}
+          <Modal
+            open={addModalOpen}
+            onClose={() => setAddModalOpen(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <div>
+                <button
+                  onClick={() => setAddModalOpen(false)}
+                  className="absolute right-7 top-7 text-gray-400 hover:text-red-400"
+                >
+                  <CloseIcon fontSize="medium" />
+                </button>
+                <div className="p-10">
+                  <ManualForm
+                    initial={copyBook}
+                    onFinish={() => {
+                      setSupplier({ supplier_name: "Booktree" });
+                      setAddModalOpen(false);
+                    }}
+                  />
+                </div>
+              </div>
+            </Box>
+          </Modal>
         </Box>
       )}
     </>

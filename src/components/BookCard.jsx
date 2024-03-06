@@ -18,6 +18,9 @@ const BookCard = ({ book }) => {
     setOpen(value);
   };
 
+  const uid = book.cover_img?.split("=")[1];
+  const url = `https://drive.google.com/thumbnail?id=${uid}&sz=w1000`;
+
   return (
     <div className="BookCard w-[150px] sm:w-[200px] md:w-[250px] cursor-pointer">
       <div
@@ -34,7 +37,7 @@ const BookCard = ({ book }) => {
           {book.cover_img ? (
             <>
               <img
-                src={book?.cover_img}
+                src={url}
                 className="h-56 w-full object-cover"
                 onLoad={() => {
                   setLoading(false);

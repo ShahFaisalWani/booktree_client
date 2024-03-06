@@ -8,9 +8,16 @@ import LoadingScreen from "../../Loading/LoadingScreen";
 import ImgInput from "./ImgInput";
 import { BookContext } from "./Book";
 
-const ManualForm = ({ onFinish }) => {
+const ManualForm = ({ initial, onFinish }) => {
   const { genre, setGenre, supplier, setSupplier, setCoverImg, coverImg } =
     useContext(BookContext);
+
+  useEffect(() => {
+    if (initial) {
+      setGenre(initial.genre);
+      setCoverImg(initial.cover_img);
+    }
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,16 +40,16 @@ const ManualForm = ({ onFinish }) => {
   ];
 
   const initialValues = {
-    ISBN: "",
-    title: "",
-    author: "",
-    genre: "",
-    translator: "",
-    price: "",
-    publisher: "",
-    desc: "",
-    weight: "",
-    published_year: "",
+    ISBN: initial.ISBN || "",
+    title: initial.title || "",
+    author: initial.author || "",
+    genre: initial.genre || "",
+    translator: initial.translator || "",
+    price: initial.price || "",
+    publisher: initial.publisher || "",
+    desc: initial.desc || "",
+    weight: initial.weight || "",
+    published_year: initial.published_year || "",
   };
 
   const validationSchema = Yup.object({
@@ -60,13 +67,14 @@ const ManualForm = ({ onFinish }) => {
 
   const handleSubmit = async (values, { resetForm }) => {
     if (!genre) return toast.error("เลือกหมวดหมู่");
-    if (!supplier) return toast.error("เลือกตัวแทนจำหน่าย");
+    const sup = supplier.supplier_name || initial.supplier_name;
+    if (!sup) return toast.error("เลือกตัวแทนจำหน่าย");
     setIsLoading(true);
 
     const data = {
       ...values,
       ISBN: values.ISBN.trim(),
-      supplier_name: supplier.supplier_name,
+      supplier_name: sup,
       genre,
     };
 
