@@ -40,16 +40,16 @@ const ManualForm = ({ initial, onFinish }) => {
   ];
 
   const initialValues = {
-    ISBN: initial.ISBN || "",
-    title: initial.title || "",
-    author: initial.author || "",
-    genre: initial.genre || "",
-    translator: initial.translator || "",
-    price: initial.price || "",
-    publisher: initial.publisher || "",
-    desc: initial.desc || "",
-    weight: initial.weight || "",
-    published_year: initial.published_year || "",
+    ISBN: initial?.ISBN || "",
+    title: initial?.title || "",
+    author: initial?.author || "",
+    genre: initial?.genre || "",
+    translator: initial?.translator || "",
+    price: initial?.price || "",
+    publisher: initial?.publisher || "",
+    desc: initial?.desc || "",
+    weight: initial?.weight || "",
+    published_year: initial?.published_year || "",
   };
 
   const validationSchema = Yup.object({

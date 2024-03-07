@@ -490,7 +490,10 @@ const ManageBooks = () => {
   };
   const { isLoading, error, data, refetch } = useQuery(
     ["books table", supplier],
-    fetchMyData
+    fetchMyData,
+    {
+      refetchOnWindowFocus: false,
+    }
   );
 
   const [rows, setRows] = useState([]);
@@ -514,6 +517,7 @@ const ManageBooks = () => {
     setModalOpen(true);
     setEditBook(book);
   };
+
   const handleAddCopy = (id) => {
     const book = rows.find((row) => row.id === id);
     const copyOfBook = Object.assign({}, book);
@@ -690,12 +694,14 @@ const ManageBooks = () => {
     {
       field: "swap",
       headerName: "รับเป็น Booktree",
-      width: 75,
+      width: 115,
       renderCell: (params) => {
         return (
-          <IconButton onClick={() => handleAddCopy(params.id)}>
-            <SwapHorizontalCircleIcon color="info" />
-          </IconButton>
+          <div className="m-auto">
+            <IconButton onClick={() => handleAddCopy(params.id)}>
+              <SwapHorizontalCircleIcon color="info" />
+            </IconButton>
+          </div>
         );
       },
     },

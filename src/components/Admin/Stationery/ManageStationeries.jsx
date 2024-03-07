@@ -383,14 +383,11 @@ const ManageStationeries = () => {
       headerName: "รูปปก",
       width: 150,
       renderCell: (params) => {
-        if (params.row.cover_img)
-          return (
-            <img
-              src={params.row.cover_img}
-              className="object-cover h-full w-2/3 cursor-pointer"
-            />
-          );
-        else
+        if (params.row.cover_img) {
+          const uid = params.row.cover_img?.split("=")[1];
+          const url = `https://drive.google.com/thumbnail?id=${uid}&sz=w1000`;
+          return <img src={url} className="object-cover h-full w-2/3" />;
+        } else
           return (
             <div className="h-full w-2/3 text-gray-400 bg-gray-200 items-center flex justify-center">
               No Image
