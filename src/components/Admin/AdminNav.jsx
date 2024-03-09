@@ -61,6 +61,7 @@ const AdminLinks = [
   { label: "จัดการสินค้า", path: "/manageproducts" },
   { label: "รายงานการจัดการสินค้า", path: "/restockreport" },
   { label: "เช็คสต็อก", path: "/checkstock" },
+  { label: "ปรับสต็อก", path: "/comparestock" },
   { label: "รายงานสต็อก", path: "/stockreport" },
   { label: "ยอดขายรายวัน", path: "/dailyreport" },
   { label: "ยอดขายรายเดือน", path: "/supplierreport" },

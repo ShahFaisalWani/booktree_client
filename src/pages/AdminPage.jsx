@@ -11,6 +11,9 @@ const ReturnBooks = lazy(() =>
 );
 const BookProvider = lazy(() => import("../components/Admin/Books/Book"));
 const CheckStock = lazy(() => import("../components/Admin/Stocks/CheckStock"));
+const CompareStock = lazy(() =>
+  import("../components/Admin/Stocks/CompareStock")
+);
 const DailyReport = lazy(() =>
   import("../components/Admin/Reports/DailyReport")
 );
@@ -38,6 +41,7 @@ const AdminLinks = {
   manageproducts: "จัดการสินค้า",
   restockreport: "รายงานการจัดการสินค้า",
   checkstock: "เช็คสต็อก",
+  comparestock: "ปรับสต็อก",
   stockreport: "รายงานสต็อก",
   dailyreport: "ยอดขายรายวัน",
   supplierreport: "ยอดขายรายเดือน",
@@ -52,6 +56,7 @@ const ComponentMapping = {
   manageproducts: ManageProducts,
   restockreport: RestockReport,
   checkstock: CheckStock,
+  comparestock: CompareStock,
   stockreport: StockReport,
   dailyreport: DailyReport,
   supplierreport: SupplierReport,

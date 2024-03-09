@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import MyModal from "../../MyModal";
@@ -179,6 +179,7 @@ const ReturnBooks = () => {
           ...stock,
           book_ISBN: stock.ISBN,
           restock_id: resId,
+          type: type,
         }));
 
         await axios
@@ -424,7 +425,7 @@ const ReturnBooks = () => {
     setBookList((prev) => [...prev, ...newBooks]);
   };
   const clearBookList = () => {
-    setBookList([]);
+    setBookListFunc([]);
   };
 
   return (
@@ -599,12 +600,6 @@ const ReturnBooks = () => {
               />
             </>
           )}
-          {/* <button
-            className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            onClick={printList}
-          >
-            ปริ้นรายละเอียดการคืนรายเล่ม
-          </button> */}
           <button
             className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             onClick={handleReturn}
@@ -620,12 +615,6 @@ const ReturnBooks = () => {
             ) : (
               <p>{type == "return" ? "ยืนยันการคืน" : "ยืนยันการรับ"}</p>
             )}
-          </button>
-          <button
-            className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            onClick={printBoxPaper}
-          >
-            ปริ้นใบแปะหน้ากล่อง
           </button>
         </div>
       )}

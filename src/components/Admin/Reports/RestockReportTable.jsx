@@ -93,7 +93,8 @@ const CustomFooter = ({ footerData, type }) => {
           รวม
         </div>
         <div style={{ flexBasis: "150px" }}></div>
-        <div style={{ flexBasis: type == "add" ? "155px" : "200px" }}></div>
+        <div style={{ flexBasis: "150px" }}></div>
+        <div style={{ flexBasis: "200px" }}></div>
         <div
           style={{
             flexBasis: "100px",
@@ -299,24 +300,23 @@ const DetailList = ({ row, type }) => {
       <table className="w-full">
         <thead className="">
           <tr className="bg-black">
-            <th className="border-0 text-left p-[8px] text-white w-[7%]">
-              ที่
-            </th>
-            <th className="border-0 text-left p-[8px] text-white w-[20%]">
-              ISBN
-            </th>
-            <th className="border-0 text-left p-[8px] text-white w-[38%]">
+            <th className="border-0 text-left p-2 text-white w-[7%]">ที่</th>
+            <th className="border-0 text-left p-2 text-white w-[20%]">ISBN</th>
+            <th className="border-0 text-left p-2 text-white w-[30%]">
               ชื่อสินค้า
             </th>
-            <th className="border-0 text-centr p-[8px] text-white w-[10%]">
+            <th className="border-0 text-center p-2 text-white w-[10%]">
               ราคา
             </th>
-            <th className="border-0 text-centr p-[8px] text-white w-[5%]">
+            {row.details[0].type && (
+              <th className="border-0 text-center p-2 text-white w-[8%]">
+                ปรับ
+              </th>
+            )}
+            <th className="border-0 text-center p-2 text-white w-[5%]">
               จำนวน
             </th>
-            <th className="border-0 text-centr p-[8px] text-white w-[10%]">
-              รวม
-            </th>
+            <th className="border-0 text-center p-2 text-white w-[10%]">รวม</th>
           </tr>
         </thead>
       </table>
@@ -325,16 +325,21 @@ const DetailList = ({ row, type }) => {
           <tbody>
             {row.details?.map((item, i) => (
               <tr key={i} className={i % 2 === 1 ? "bg-gray-200" : ""}>
-                <td className="text-left p-[8px] w-[7%]">{i + 1}</td>
-                <td className="text-left p-[8px] w-[20%]">{item.ISBN}</td>
-                <td className="text-left p-[8px] w-[38%]">
-                  {item?.title?.length > 30
-                    ? item.title.substring(0, 30) + "..."
+                <td className="text-left p-2 w-[7%]">{i + 1}</td>
+                <td className="text-left p-2 w-[20%]">{item.ISBN}</td>
+                <td className="text-left p-2 w-[30%]">
+                  {item?.title?.length > 25
+                    ? item.title.substring(0, 20) + "..."
                     : item.title}
                 </td>
-                <td className="text-center p-[8px] w-[10%]">{item.price}</td>
-                <td className="text-center p-[8px] w-[5%]">{item.quantity}</td>
-                <td className="text-center p-[8px] w-[10%]">
+                <td className="text-center p-2 w-[10%]">{item.price}</td>
+                {item.type && (
+                  <td className="p-2 w-[8%]">
+                    {item.type == "add" ? "รับ" : "คืน"}
+                  </td>
+                )}
+                <td className="text-center p-2 w-[5%]">{item.quantity}</td>
+                <td className="text-center p-2 w-[10%]">
                   {(item.price * item.quantity).toFixed(2)}
                 </td>
               </tr>

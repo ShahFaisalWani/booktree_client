@@ -54,6 +54,7 @@ function dataToHTMLTable(data) {
 
 const createExcelData = (modalData) => {
   const isAdd = modalData.type == "add";
+  const isRestock = modalData.type == "restock";
   const extraRows = [
     { A: "เลขที่อ้างอิง:", B: modalData?.id },
     {
@@ -90,27 +91,38 @@ const createExcelData = (modalData) => {
       A: "ISBN",
       B: "ชื่อ",
       C: "ราคา",
-      D: "จำนวน",
-      E: "รวม",
-      F: "หลังหัก %",
+      D: isRestock ? "ปรับ" : "จำนวน",
+      E: isRestock ? "จำนวน" : "รวม",
+      F: isRestock ? "รวม" : "หลังหัก %",
+      G: isRestock ? "หลังหัก %" : "",
     },
     ...modalData?.stockList.map((stock) => ({
       A: stock.ISBN,
       B: stock.title,
       C: stock.price,
-      D: stock.quantity,
-      E: (stock.price * stock.quantity).toFixed(2),
-      F: (
-        stock.price *
-        stock.quantity *
-        (1 - modalData?.supplier?.percent / 100)
-      ).toFixed(2),
+      D: isRestock ? (stock.type == "add" ? "รับ" : "คืน") : stock.quantity,
+      E: isRestock ? stock.quantity : (stock.price * stock.quantity).toFixed(2),
+      F: isRestock
+        ? (stock.price * stock.quantity).toFixed(2)
+        : (
+            stock.price *
+            stock.quantity *
+            (1 - modalData?.supplier?.percent / 100)
+          ).toFixed(2),
+      G: isRestock
+        ? (
+            stock.price *
+            stock.quantity *
+            (1 - modalData?.supplier?.percent / 100)
+          ).toFixed(2)
+        : "",
     })),
     {
-      C: "รวม",
-      D: quantitySum,
-      E: totalSum.toFixed(2),
-      F: netSum.toFixed(2),
+      C: isRestock ? "" : "รวม",
+      D: isRestock ? "รวม" : quantitySum,
+      E: isRestock ? quantitySum : totalSum.toFixed(2),
+      F: isRestock ? totalSum.toFixed(2) : netSum.toFixed(2),
+      G: isRestock ? netSum.toFixed(2) : "",
     },
   ];
   return data;
@@ -539,7 +551,6 @@ const ManageStocks = ({
                       }}
                       onKeyDown={(e) => {
                         if (e.key == "Enter") e.preventDefault();
-                        if (e.key == "Tab") console.log("first");
                       }}
                     />
                   </td>

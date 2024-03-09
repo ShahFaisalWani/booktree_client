@@ -113,6 +113,14 @@ const RestockReport = () => {
           >
             คืนสินค้า
           </button>
+          <button
+            onClick={() => setType("restock")}
+            className={`flex justify-center items-center gap-1 text-blue-500 p-2 rounded-lg h-12 transition-all ${
+              type === "restock" ? "bg-gray-200" : "hover:bg-gray-200"
+            }`}
+          >
+            ปรับสต็อก
+          </button>
         </div>
         {rows && (
           <RestockReportTable
