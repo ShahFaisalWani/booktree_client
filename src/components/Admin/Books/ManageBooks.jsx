@@ -660,7 +660,7 @@ const ManageBooks = () => {
       headerName: "ชื่อเรื่อง",
       width: 250,
     },
-    { field: "author", headerName: "ผู้แต่ง", width: 150 },
+    { field: "publisher", headerName: "สนพ.", width: 150 },
     { field: "genre", headerName: "หมวดหมู่", width: 150 },
     {
       field: "supplier_name",
