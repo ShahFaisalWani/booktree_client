@@ -262,49 +262,6 @@ const ReturnBooks = () => {
     document.body.removeChild(iframe);
   };
 
-  // function dataToHTMLTable(data) {
-  //   let html =
-  //     '<table style="width: 100%; border-collapse: collapse; border: none; font-size: 13px;">';
-
-  //   data.forEach((row, i) => {
-  //     html += "<tr>";
-  //     let colspanEndIndex = null;
-
-  //     ["A", "B", "C", "D", "E", "F"].forEach((col, index, array) => {
-  //       if (row.colspanStart === col && row.colspan) {
-  //         colspanEndIndex = index + parseInt(row.colspan);
-  //         html += `<td colspan="${row.colspan}" style="border: none;">${
-  //           row[col] || ""
-  //         }</td>`;
-  //       } else if (
-  //         (colspanEndIndex === null || index >= colspanEndIndex) &&
-  //         i < 3
-  //       ) {
-  //         html += `<td style="border: none;${
-  //           ["A", "B", "C", "D", "E", "F"].includes(col)
-  //             ? " text-align: left;"
-  //             : ""
-  //         } padding: 5px;">${row[col] || ""}</td>`;
-  //       } else if (
-  //         (colspanEndIndex === null || index >= colspanEndIndex) &&
-  //         col == "C"
-  //       ) {
-  //         html += `<td style="border: 1px solid black;${
-  //           ["C", "D", "E", "F"].includes(col) ? " text-align: left;" : ""
-  //         } padding: 5px;">${row[col] || ""}</td>`;
-  //       } else if (colspanEndIndex === null || index >= colspanEndIndex) {
-  //         html += `<td style="border: 1px solid black;${
-  //           ["C", "D", "E", "F"].includes(col) ? " text-align: center;" : ""
-  //         } padding: 5px;">${row[col] || ""}</td>`;
-  //       }
-  //     });
-
-  //     html += "</tr>";
-  //   });
-
-  //   html += "</table>";
-  //   return html;
-  // }
   function dataToHTMLTable(data) {
     let html =
       '<table style="width: 100%; border-collapse: collapse; border: none; font-size: 13px;">';
@@ -405,30 +362,30 @@ const ReturnBooks = () => {
         E: stock.price.toFixed(2),
         F: (stock.price * stock.quantity).toFixed(2),
       })),
-      // {
-      //   A: "",
-      //   B: "",
-      //   C: "",
-      //   D: quantitySum,
-      //   E: "เล่ม",
-      //   F: totalSum.toFixed(2),
-      // },
-      // {
-      //   A: "",
-      //   B: "",
-      //   C: "",
-      //   D: "",
-      //   E: `หัก ${modalData.supplier.percent}%`,
-      //   F: subtract.toFixed(2),
-      // },
-      // {
-      //   A: "",
-      //   B: "",
-      //   C: "",
-      //   D: "",
-      //   E: "รวมทั้งหมด",
-      //   F: (totalSum - subtract).toFixed(2),
-      // },
+      {
+        A: "",
+        B: "",
+        C: "",
+        D: quantitySum,
+        E: "เล่ม",
+        F: totalSum.toFixed(2),
+      },
+      {
+        A: "",
+        B: "",
+        C: "",
+        D: "",
+        E: `หัก ${modalData.supplier.percent}%`,
+        F: subtract.toFixed(2),
+      },
+      {
+        A: "",
+        B: "",
+        C: "",
+        D: "",
+        E: "รวมทั้งหมด",
+        F: (totalSum - subtract).toFixed(2),
+      },
     ];
     return data;
   };
