@@ -224,6 +224,10 @@ const ManagePublishers = () => {
     }
   }, [data]);
 
+  function escapeRegExp(value) {
+    return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  }
+
   const requestSearch = (searchValue) => {
     setSearchText(searchValue);
     const searchRegex = new RegExp(escapeRegExp(searchValue), "i");

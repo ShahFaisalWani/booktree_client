@@ -41,7 +41,7 @@ const SpecialBooks = () => {
     );
     setTotalCount(res.data.total_count);
     setBooks(res.data.books);
-    setPages(Math.ceil(res.data.total_count / limit));
+    setPages(Math.round(res.data.total_count / limit));
     return res.data;
   };
 

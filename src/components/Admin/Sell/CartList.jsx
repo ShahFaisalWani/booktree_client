@@ -96,7 +96,7 @@ const CartList = ({
       {
         ...bookData,
         price: Math.floor(bookData.price),
-        cart_discount: bookData.price - finalPrice + memberDiscount,
+        cart_discount: bookData.price - Math.round(finalPrice + memberDiscount),
         quantity: 1,
       },
     ];
@@ -129,7 +129,8 @@ const CartList = ({
             <tr className="flex gap-5 pb-4">
               <th className="text-left w-[2.5%]">ที่</th>
               <th className="text-left w-[15%]">ISBN</th>
-              <th className="text-left w-[30%]">ชื่อ</th>
+              <th className="text-left w-[15%]">ชื่อ</th>
+              <th className="text-left w-[15%]">สนพ</th>
               <th className="text-center w-[8.5%]">ต่อหน่วย</th>
               <th className="text-center w-[8.5%]">สต็อก</th>
               <th className="text-center w-[8.5%]">จำนวน</th>
@@ -144,10 +145,24 @@ const CartList = ({
               <tr key={book.ISBN} className="flex gap-5 items-center pb-2">
                 <td className="w-[2.5%] text-left">{i + 1}</td>
                 <td className="w-[15%] text-left">{book.ISBN}</td>
-                <td className="w-[30%] text-left">
-                  {book.title?.length > 50
-                    ? book.title?.substring(0, 50) + "..."
+                <td className="w-[15%] text-left">
+                  {book.title?.length > 25
+                    ? book.title?.substring(0, 25) + ".."
                     : book.title}
+                </td>
+                <td className="w-[15%] text-left">
+                  {book.publisher?.length > 20
+                    ? book.publisher?.substring(0, 20) + ".."
+                    : book.publisher}
+                  {validateDiscount(
+                    book.publisher_discount,
+                    book.discount_start,
+                    book.discount_end
+                  ) > 0 && (
+                    <sup className="text-red-500">
+                      [{book.publisher_discount}%]
+                    </sup>
+                  )}
                 </td>
                 <td className="w-[8.5%] text-center">
                   {book.price.toFixed(2)}
@@ -170,6 +185,13 @@ const CartList = ({
                   {(book.price * book.quantity).toFixed(2)}
                 </td>
                 <td className="w-[8.5%] text-center">
+                  {/* {validateDiscount(
+                    book.publisher_discount,
+                    book.discount_start,
+                    book.discount_end
+                  ) > 0
+                    ? `${book.publisher_discount}%`
+                    : (book.cart_discount * book.quantity).toFixed(2)} */}
                   {(book.cart_discount * book.quantity).toFixed(2)}
                 </td>
                 <td className="w-[8.5%] text-center">

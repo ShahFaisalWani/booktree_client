@@ -29,7 +29,7 @@ const SellBooks = () => {
       } else {
         const newData = localCartData.map((item) => {
           const bookDiscount = item.publisher_discount
-            ? (item.price * item.publisher_discount) / 100
+            ? Math.round((item.price * item.publisher_discount) / 100)
             : 0;
           return { ...item, cart_discount: bookDiscount };
         });

@@ -5,7 +5,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { SellContext } from "./SellBooks";
-import { validateDiscount, calculateFinalPrice } from "../../../utils/pricing";
+import { validateDiscount } from "../../../utils/pricing";
 
 const MemberInput = () => {
   const { cart, setCart, member, setMember, memberId, setMemberId } =
@@ -32,14 +32,13 @@ const MemberInput = () => {
               book.discount_start,
               book.discount_end
             );
-            console.log(publisherDiscount);
 
             if (publisherDiscount > 0) {
               return {
                 ...book,
               };
             } else {
-              const memberDiscount = book.price * 0.05;
+              const memberDiscount = Math.round(book.price * 0.05); // Round up member discount
               return {
                 ...book,
                 cart_discount: memberDiscount,

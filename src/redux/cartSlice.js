@@ -26,7 +26,7 @@ const loadCartState = () => {
         const memberDiscount =
           !publisherDiscount && isMember ? value.price * 0.05 : 0;
 
-        const finalDiscount = publisherDiscount || memberDiscount;
+        const finalDiscount = Math.round(publisherDiscount || memberDiscount); // Round up discount
 
         return [key, { ...value, discount: finalDiscount }];
       })
@@ -34,15 +34,6 @@ const loadCartState = () => {
     return { items: updatedData };
   } catch (err) {
     return undefined;
-  }
-};
-
-const saveCartState = (state) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem("cart", serializedState);
-  } catch (err) {
-    console.log(err);
   }
 };
 
@@ -69,7 +60,7 @@ const cartSlice = createSlice({
       const memberDiscount =
         !publisherDiscount && isMember ? newItem.price * 0.05 : 0;
 
-      const finalDiscount = publisherDiscount || memberDiscount;
+      const finalDiscount = Math.round(publisherDiscount || memberDiscount); // Round up discount
 
       if (existingItem) {
         if (
@@ -133,7 +124,7 @@ const cartSlice = createSlice({
 
         const memberDiscount = !publisherDiscount ? item.price * 0.05 : 0;
 
-        const finalDiscount = publisherDiscount || memberDiscount;
+        const finalDiscount = Math.round(publisherDiscount || memberDiscount); // Round up discount
 
         item.discount = finalDiscount;
       });
