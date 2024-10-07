@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { SellContext } from "./SellBooks";
 import axios from "axios";
+import { calculateFinalPrice, validateDiscount } from "../../../utils/pricing";
 
 const SearchItem = () => {
   const { setSelectedSearch } = useContext(SellContext);
@@ -12,10 +13,9 @@ const SearchItem = () => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
+  const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(false);
 
-  // Function to fetch data, debounced
   const fetchOptions = debounce((inputValue, sortOrder) => {
     if (!inputValue) {
       setOptions([]);
@@ -42,7 +42,6 @@ const SearchItem = () => {
 
   useEffect(() => {
     fetchOptions(inputValue, sortOrder);
-    // Cleanup the debounce function on component unmount
     return () => {
       fetchOptions.cancel();
     };
@@ -74,18 +73,38 @@ const SearchItem = () => {
       <Autocomplete
         disablePortal
         options={options}
-        sx={{ width: 350 }}
+        sx={{ width: 450 }}
         getOptionLabel={(option) => option.title || ""}
         onChange={(event, newValue) => {
           setSelected(newValue);
         }}
         value={selected}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <div className="w-[80%]">{option.title}</div>
-            <div className="w-[20%] text-right">{option.price}</div>
-          </li>
-        )}
+        renderOption={(props, option) => {
+          const finalPrice = calculateFinalPrice(option);
+          const isDiscountValid = validateDiscount(
+            option.publisher_discount,
+            option.discount_start,
+            option.discount_end
+          );
+
+          return (
+            <li {...props} className="flex justify-between items-center px-2">
+              <div className="max-w-[70%]">{option.title}</div>
+              <div className="flex gap-1 whitespace-nowrap">
+                {isDiscountValid > 0 ? (
+                  <>
+                    <span className="line-through text-gray-500">
+                      {option.price}
+                    </span>{" "}
+                    <span className="text-red-500">{finalPrice} บาท</span>
+                  </>
+                ) : (
+                  <span>{option.price} บาท</span>
+                )}
+              </div>
+            </li>
+          );
+        }}
         renderInput={(params) => (
           <div className="flex">
             <TextField

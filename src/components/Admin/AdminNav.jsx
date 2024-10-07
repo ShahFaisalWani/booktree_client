@@ -67,6 +67,7 @@ const AdminLinks = [
   { label: "ยอดขายรายเดือน", path: "/supplierreport" },
   { label: "ตัวแทนจำหน่าย", path: "/managesuppliers" },
   { label: "สมาชิก", path: "/managemembers" },
+  { label: "สนพ.", path: "/managepublishers" },
 ];
 
 const AdminNav = () => {

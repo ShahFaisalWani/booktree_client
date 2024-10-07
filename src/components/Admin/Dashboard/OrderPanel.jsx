@@ -46,7 +46,7 @@ export default function OrderPanel() {
     }, 0);
 
     const newDate = new Date(order.date)
-      .toLocaleString("en-US", {
+      .toLocaleString("en-GB", {
         timeZone: "Asia/Bangkok",
       })
       .split(",")[0];

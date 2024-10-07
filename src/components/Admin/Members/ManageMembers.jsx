@@ -533,7 +533,7 @@ function CustomToolbar({ value, onChange, clearSearch, refetch }) {
 
 const ManageMembers = () => {
   const [rows, setRows] = useState([]);
-  const [orginalData, setOrginalData] = useState([]);
+  const [originalData, setoriginalData] = useState([]);
   const [openRenewModal, setOpenRenewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
@@ -559,7 +559,7 @@ const ManageMembers = () => {
         };
       });
       setRows(updatedRows);
-      setOrginalData(updatedRows);
+      setoriginalData(updatedRows);
     }
   }, [data]);
 
@@ -622,7 +622,7 @@ const ManageMembers = () => {
   const requestSearch = (searchValue) => {
     setSearchText(searchValue);
     const searchRegex = new RegExp(escapeRegExp(searchValue), "i");
-    const filteredRows = orginalData.filter((row) => {
+    const filteredRows = originalData.filter((row) => {
       return Object.keys(row).some((field) => {
         if (row[field]) {
           return searchRegex.test(row[field].toString());

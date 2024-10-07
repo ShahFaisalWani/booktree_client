@@ -474,8 +474,8 @@ function CustomToolbar({
 }
 
 const ManageBooks = () => {
-  const [orginalData, setOriginalData] = useState([]);
-  const { supplier, setSupplier } = useContext(BookContext);
+  const [originalData, setOriginalData] = useState([]);
+  const { supplier, setSupplier, suppliers } = useContext(BookContext);
   const [searchText, setSearchText] = useState("");
   const [persistedSelection, setPersistedSelection] = useState([]);
 
@@ -512,10 +512,14 @@ const ManageBooks = () => {
     }
   }, [data]);
 
-  const handleSave = (id) => {
+  const handleEdit = (id) => {
     const book = rows.find((row) => row.id === id);
-    setModalOpen(true);
+    const selectedSupplier = suppliers.find(
+      (supplier) => supplier.supplier_name === book.supplier_name
+    );
+    setSupplier(selectedSupplier);
     setEditBook(book);
+    setModalOpen(true);
   };
 
   const handleAddCopy = (id) => {
@@ -610,7 +614,7 @@ const ManageBooks = () => {
     {
       field: "customSelected",
       headerName: "เลือก",
-      width: 75,
+      width: 50,
       renderCell: (params) => {
         return (
           <Checkbox
@@ -626,11 +630,11 @@ const ManageBooks = () => {
     {
       field: "edit",
       headerName: "แก้ไข",
-      width: 75,
+      width: 50,
       renderCell: (params) => {
         return (
           <div className="opacity-30 hover:opacity-100">
-            <IconButton onClick={() => handleSave(params.id)}>
+            <IconButton onClick={() => handleEdit(params.id)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -638,40 +642,75 @@ const ManageBooks = () => {
       },
     },
     { field: "ISBN", headerName: "ISBN", width: 150 },
-    {
-      field: "coverImg",
-      headerName: "รูปปก",
-      width: 150,
-      renderCell: (params) => {
-        if (params.row.cover_img) {
-          const uid = params.row.cover_img?.split("=")[1];
-          const url = `https://drive.google.com/thumbnail?id=${uid}&sz=w1000`;
-          return <img src={url} className="object-cover h-full w-2/3" />;
-        } else
-          return (
-            <div className="h-full w-2/3 text-gray-400 bg-gray-200 items-center flex justify-center">
-              No Image
-            </div>
-          );
-      },
-    },
+    // {
+    //   field: "coverImg",
+    //   headerName: "รูปปก",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     if (params.row.cover_img) {
+    //       const uid = params.row.cover_img?.split("=")[1];
+    //       const url = `https://drive.google.com/thumbnail?id=${uid}&sz=w1000`;
+    //       return <img src={url} className="object-cover h-full w-2/3" />;
+    //     } else
+    //       return (
+    //         <div className="h-full w-2/3 text-gray-400 bg-gray-200 items-center flex justify-center">
+    //           No Image
+    //         </div>
+    //       );
+    //   },
+    // },
     {
       field: "title",
       headerName: "ชื่อเรื่อง",
       width: 250,
     },
-    { field: "publisher", headerName: "สนพ.", width: 150 },
     { field: "genre", headerName: "หมวดหมู่", width: 150 },
     {
       field: "supplier_name",
       headerName: "ตัวแทนจำหน่าย",
       width: 150,
     },
+    { field: "publisher", headerName: "สนพ.", width: 150 },
+    {
+      field: "base_price",
+      headerName: "ต้นทุน",
+      width: 100,
+      sortComparator: (v1, v2) => parseFloat(v1) - parseFloat(v2),
+    },
     {
       field: "price",
-      headerName: "ราคา (฿)",
-      width: 125,
+      headerName: "ราคา",
+      width: 100,
       sortComparator: (v1, v2) => parseFloat(v1) - parseFloat(v2),
+    },
+    {
+      field: "publisher_discount",
+      headerName: "ส่วนลด",
+      width: 75,
+      renderCell: (params) => {
+        if (params.row.publisher_discount > 0)
+          return (
+            <span className="text-right">
+              {parseInt(params.row.publisher_discount).toString()}%
+            </span>
+          );
+        else return <span>-</span>;
+      },
+    },
+    {
+      field: "net_price",
+      headerName: "หลังหักส่วนลด",
+      width: 100,
+      renderCell: (params) => {
+        return (
+          <span className="text-right">
+            {(
+              params.row.price *
+              (1 - params.row.publisher_discount / 100)
+            ).toFixed(2)}
+          </span>
+        );
+      },
     },
     {
       field: "in_stock",
@@ -710,7 +749,7 @@ const ManageBooks = () => {
   const requestSearch = (searchValue) => {
     setSearchText(searchValue);
     const searchRegex = new RegExp(escapeRegExp(searchValue), "i");
-    const filteredRows = orginalData.filter((row) => {
+    const filteredRows = originalData.filter((row) => {
       return Object.keys(row).some((field) => {
         if (row[field]) {
           return searchRegex.test(row[field].toString());

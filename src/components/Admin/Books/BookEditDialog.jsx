@@ -5,16 +5,12 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import ImgInput from "./ImgInput";
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  Autocomplete,
-  Box,
-  FormControl,
-  Modal,
-  TextField,
-} from "@mui/material";
+import { Box, Modal } from "@mui/material";
 import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import EditSupplierSelect from "../EditSupplierSelect";
+import GenreSelect from "./GenreSelect";
+import PublisherSelect from "./PublisherSelect";
 
 const style = {
   position: "relative",
@@ -28,27 +24,44 @@ const style = {
   py: 6,
 };
 
-const BookEditDialog = ({ handleClose, book }) => {
-  const [supplier, setSupplier] = useState("");
+const colNames = [
+  "รูปปก",
+  "ISBN",
+  "เรื่อง",
+  "ผู้แต่ง",
+  "หมวดหมู่เดิม",
+  "ผู้แปล",
+  "หมวดหมู่",
+  "สำนักพิมพ์",
+  "ตำแทนจำหน่าย",
+  "ต้นทุน",
+  "ราคา",
+  "เนื้อเรื่อง",
+  "น้ำหนัก (kg)",
+  "ปีพิมพ์",
+];
 
-  const onClose = () => {
-    handleClose(false);
-  };
-  const colNames = [
-    "รูปปก",
-    "ISBN",
-    "เรื่อง",
-    "ผู้แต่ง",
-    "หมวดหมู่เดิม",
-    "ผู้แปล",
-    "หมวดหมู่",
-    "สำนักพิมพ์",
-    "ตำแทนจำหน่าย",
-    "ราคา",
-    "เนื้อเรื่อง",
-    "น้ำหนัก (kg)",
-    "ปีพิมพ์",
-  ];
+const validationSchema = Yup.object({
+  ISBN: Yup.string().required("Required"),
+  title: Yup.string(),
+  author: Yup.string(),
+  old_genre: Yup.string(),
+  genre: Yup.string(),
+  publisher: Yup.string(),
+  base_price: Yup.number().required("Required").typeError("Must be a number"),
+  price: Yup.number().required("Required").typeError("Must be a number"),
+  desc: Yup.string(),
+  translator: Yup.string(),
+  weight: Yup.number().typeError("Must be a number"),
+  published_year: Yup.number(),
+});
+
+const BookEditDialog = ({ handleClose, book }) => {
+  const [supplier, setSupplier] = useState(book.supplier_name);
+  const [coverImg, setCoverImg] = useState(book.cover_img);
+  const [genre, setGenre] = useState(book.genre);
+  const [publisher, setPublisher] = useState(book.publisher);
+  const [loading, setLoading] = useState(false);
 
   const initialValues = {
     ISBN: book.ISBN || "",
@@ -59,93 +72,67 @@ const BookEditDialog = ({ handleClose, book }) => {
     genre: book.genre || "",
     publisher: book.publisher || "",
     supplier_name: book.supplier_name || "",
+    base_price: book.base_price || "",
     price: book.price || "",
     desc: book.desc || "",
     weight: book.weight || "",
     published_year: "",
   };
 
-  const validationSchema = Yup.object({
-    ISBN: Yup.string().required("Required"),
-    title: Yup.string(),
-    author: Yup.string(),
-    old_genre: Yup.string(),
-    genre: Yup.string(),
-    publisher: Yup.string(),
-    price: Yup.number().required("Required").typeError("Must be a number"),
-    desc: Yup.string(),
-    translator: Yup.string(),
-    weight: Yup.number().typeError("Must be a number"),
-    published_year: Yup.number(),
-  });
-
-  const [coverImg, setCoverImg] = useState(book.cover_img);
-  const [genre, setGenre] = useState(book.genre);
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (value) => {
-    setGenre(value);
-  };
-
-  const handleImgChange = (file) => {
-    setCoverImg(file);
-  };
-
-  const onSupplierChange = (sup) => {
-    setSupplier(sup);
-  };
-
-  const handleSubmit = async (values) => {
-    const data = {
-      ...values,
-      genre: genre,
-      supplier_name: supplier.supplier_name || book.supplier_name,
-    };
-    const isSame = JSON.stringify(initialValues) === JSON.stringify(data);
-    if (!isSame) {
-      setLoading(true);
-
-      await axios
-        .post(import.meta.env.VITE_API_BASEURL + "/book/edit", data)
-        .catch((err) => {
-          console.log(err);
-        });
-
-      if (coverImg) {
-        if (typeof coverImg != "string") {
-          const formData = new FormData();
-          formData.append("cover_img", coverImg);
-          formData.append("ISBN", values.ISBN);
-          formData.append("item", "book");
-
-          await axios
-            .post(
-              import.meta.env.VITE_API_BASEURL + "/upload/book_cover",
-              formData
-            )
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      }
-      setLoading(false);
-      toast.success("แก้ไขเสร็จเรียบร้อย");
-      handleClose(true);
-    } else {
-      handleClose(false);
-    }
-  };
-
+  // Fetch genres
   const fetchGenres = async () => {
     const res = await axios.get(
-      import.meta.env.VITE_API_BASEURL + "/book/genres"
+      `${import.meta.env.VITE_API_BASEURL}/book/genres`
     );
     return res.data;
   };
+  const { data: genresData } = useQuery(["genres"], fetchGenres);
+  const genresList = genresData?.map((item) => item.genre_name);
 
-  const { data } = useQuery(["genres"], fetchGenres);
+  const handleSubmit = async (values) => {
+    const updatedData = {
+      ...values,
+      genre,
+      publisher,
+      supplier_name: supplier,
+    };
 
-  const genresList = data && data?.map((item) => item.genre_name);
+    const isSame =
+      JSON.stringify(initialValues) === JSON.stringify(updatedData);
+    if (isSame) {
+      handleClose(false);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_BASEURL}/book/edit`,
+        updatedData
+      );
+
+      if (coverImg && typeof coverImg !== "string") {
+        const formData = new FormData();
+        formData.append("cover_img", coverImg);
+        formData.append("ISBN", values.ISBN);
+        formData.append("item", "book");
+
+        await axios.post(
+          `${import.meta.env.VITE_API_BASEURL}/upload/book_cover`,
+          formData
+        );
+      }
+
+      toast.success("แก้ไขเสร็จเรียบร้อย");
+      handleClose(true);
+    } catch (err) {
+      console.error("Error updating book:", err);
+      toast.error("มีข้อผิดพลาดในการแก้ไข");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -164,7 +151,7 @@ const BookEditDialog = ({ handleClose, book }) => {
             <Form>
               <div className="sticky top-0 w-fit ml-auto px-8">
                 <button
-                  onClick={onClose}
+                  onClick={() => handleClose(false)}
                   className="text-gray-400 hover:text-red-500"
                 >
                   <CloseIcon fontSize="medium" />
@@ -172,15 +159,12 @@ const BookEditDialog = ({ handleClose, book }) => {
               </div>
               <div className="px-16">
                 <div>
-                  <label
-                    htmlFor="cover_img"
-                    className="block mb-2 text-sm font-medium text-gray-900 "
-                  >
+                  <label className="block mb-2 text-sm font-medium text-gray-900">
                     {colNames[0]}
                   </label>
                   <ImgInput
                     selectedImg={coverImg}
-                    handleImgChange={handleImgChange}
+                    handleImgChange={setCoverImg}
                   />
                   <ErrorMessage
                     component="span"
@@ -188,56 +172,44 @@ const BookEditDialog = ({ handleClose, book }) => {
                     className="text-red-500 text-sm"
                   />
                 </div>
-                <div className="grid gap-6 mb-6 md:grid-cols-2 ">
+
+                <div className="grid gap-6 mb-6 md:grid-cols-2">
                   {Object.keys(initialValues)
                     .filter((col) => col !== "cover_img")
-                    .map((col, i) => (
-                      <div key={i}>
-                        <label
-                          htmlFor={col}
-                          className="block mb-2 text-sm font-medium text-gray-900 "
-                        >
-                          {colNames[i + 1]}
+                    .map((col, index) => (
+                      <div key={index}>
+                        <label className="block mb-2 text-sm font-medium text-gray-900">
+                          {colNames[index + 1]}
                         </label>
-                        {col == "genre" && (
-                          <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth>
-                              {genresList && (
-                                <Autocomplete
-                                  disablePortal
-                                  id="combo-box-demo"
-                                  options={genresList}
-                                  defaultValue={book.genre}
-                                  renderInput={(params) => (
-                                    <TextField {...params} label="หมวดหมู่" />
-                                  )}
-                                  onChange={(event, value) =>
-                                    handleChange(value)
-                                  }
-                                />
-                              )}
-                            </FormControl>
-                          </Box>
-                        )}
-                        {col == "supplier_name" && (
+
+                        {col === "genre" ? (
+                          <GenreSelect
+                            initial={book.genre}
+                            onChange={setGenre}
+                          />
+                        ) : col === "publisher" ? (
+                          <PublisherSelect
+                            initial={book.publisher}
+                            onChange={setPublisher}
+                          />
+                        ) : col === "supplier_name" ? (
                           <EditSupplierSelect
                             initial={book.supplier_name}
-                            product={"book"}
-                            onChange={onSupplierChange}
+                            product="book"
+                            onChange={setSupplier}
                           />
-                        )}
-                        {col !== "genre" && col !== "supplier_name" && (
+                        ) : (
                           <>
                             <Field
-                              as={col == "desc" ? "textarea" : ""}
+                              as={col === "desc" ? "textarea" : "input"}
                               type="text"
                               name={col}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                              disabled={
-                                col == "ISBN" ||
-                                col == "supplier_name" ||
-                                col == "old_genre"
-                              }
+                              disabled={[
+                                "ISBN",
+                                "supplier_name",
+                                "old_genre",
+                              ].includes(col)}
                             />
                             <ErrorMessage
                               component="span"
@@ -249,6 +221,7 @@ const BookEditDialog = ({ handleClose, book }) => {
                       </div>
                     ))}
                 </div>
+
                 <div>
                   <button
                     type="submit"

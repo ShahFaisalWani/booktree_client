@@ -1,5 +1,7 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
+import { validateDiscount } from "../utils/pricing";
+
 const member = sessionStorage.getItem("isMember");
 const isMember = member && JSON.parse(member);
 
@@ -10,16 +12,26 @@ const loadCartState = () => {
       return undefined;
     }
     const cartItems = JSON.parse(serializedState);
-    if (!isMember) {
-      const updatedData = Object.fromEntries(
-        Object.entries(cartItems.items).map(([key, value]) => [
-          key,
-          { ...value, discount: 0 },
-        ])
-      );
-      return { items: updatedData };
-    }
-    return cartItems;
+    console.log(cartItems);
+
+    const updatedData = Object.fromEntries(
+      Object.entries(cartItems.items).map(([key, value]) => {
+        const validatedDiscount = validateDiscount(
+          value.publisher_discount,
+          value.discount_start,
+          value.discount_end
+        );
+        const publisherDiscount = value.price * (validatedDiscount / 100);
+
+        const memberDiscount =
+          !publisherDiscount && isMember ? value.price * 0.05 : 0;
+
+        const finalDiscount = publisherDiscount || memberDiscount;
+
+        return [key, { ...value, discount: finalDiscount }];
+      })
+    );
+    return { items: updatedData };
   } catch (err) {
     return undefined;
   }
@@ -44,7 +56,21 @@ const cartSlice = createSlice({
       const newItem = action.payload;
       if (newItem.price) newItem.price = parseFloat(newItem.price);
       if (newItem.quantity) newItem.quantity = parseInt(newItem.quantity);
+
       const existingItem = state.items[newItem.ISBN];
+
+      const validatedDiscount = validateDiscount(
+        newItem.publisher_discount,
+        newItem.discount_start,
+        newItem.discount_end
+      );
+      const publisherDiscount = newItem.price * (validatedDiscount / 100);
+
+      const memberDiscount =
+        !publisherDiscount && isMember ? newItem.price * 0.05 : 0;
+
+      const finalDiscount = publisherDiscount || memberDiscount;
+
       if (existingItem) {
         if (
           newItem.type === "single" &&
@@ -69,37 +95,18 @@ const cartSlice = createSlice({
           }
         }
       } else {
-        // if (isMember && newItem.author) {
-        //   state.items[newItem.ISBN] = {
-        //     ...newItem,
-        //     quantity: newItem.quantity || 1,
-        //     discount: newItem.price * 0.05,
-        //   };
-        // } else {
-        //   state.items[newItem.ISBN] = {
-        //     ...newItem,
-        //     quantity: newItem.quantity || 1,
-        //     discount: 0,
-        //   };
-        // }
         if (newItem.in_stock == 0) {
           toast.error("Out of stock");
-        } else if (isMember) {
-          state.items[newItem.ISBN] = {
-            ...newItem,
-            quantity: newItem.quantity || 1,
-            discount: newItem.price * 0.05,
-          };
-          toast.success("เพิ่มลงตะกร้าเรียบร้อย");
         } else {
           state.items[newItem.ISBN] = {
             ...newItem,
             quantity: newItem.quantity || 1,
-            discount: 0,
+            discount: finalDiscount,
           };
           toast.success("เพิ่มลงตะกร้าเรียบร้อย");
         }
       }
+      console.log(Object.values(state.items));
       saveCartState(state);
     },
     removeItem: (state, action) => {
@@ -117,7 +124,18 @@ const cartSlice = createSlice({
     },
     applyDiscount: (state) => {
       Object.values(state.items).forEach((item) => {
-        if (item.author) item.discount = item.price * 0.05;
+        const validatedDiscount = validateDiscount(
+          item.publisher_discount,
+          item.discount_start,
+          item.discount_end
+        );
+        const publisherDiscount = item.price * (validatedDiscount / 100);
+
+        const memberDiscount = !publisherDiscount ? item.price * 0.05 : 0;
+
+        const finalDiscount = publisherDiscount || memberDiscount;
+
+        item.discount = finalDiscount;
       });
       saveCartState(state);
     },
@@ -128,14 +146,8 @@ const cartSlice = createSlice({
   },
 });
 
-export const {
-  addItem,
-  removeItem,
-  popItem,
-  applyDiscount,
-  removeDiscount,
-  clearCart,
-} = cartSlice.actions;
+export const { addItem, removeItem, popItem, applyDiscount, clearCart } =
+  cartSlice.actions;
 
 export const getTotalItems = createSelector(
   (state) => state.cart.items,
@@ -147,12 +159,14 @@ export const getTotalItems = createSelector(
     return totalItems;
   }
 );
+
 export const getTotalPrice = createSelector(
   (state) => state.cart.items,
   (items) => {
     let totalPrice = 0;
     Object.values(items).forEach((item) => {
-      totalPrice += item.quantity * item.price;
+      const discountedPrice = item.price;
+      totalPrice += item.quantity * discountedPrice;
     });
     return totalPrice;
   }
@@ -161,7 +175,6 @@ export const getTotalPrice = createSelector(
 export const getTotalDiscount = createSelector(
   (state) => state.cart.items,
   (items) => {
-    if (!isMember) return 0;
     let totalDiscount = 0;
     Object.values(items).forEach((item) => {
       totalDiscount += item.discount * item.quantity;

@@ -4,12 +4,7 @@ import { useQuery } from "react-query";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Box, TextField, IconButton } from "@mui/material";
-import {
-  DataGrid,
-  GridToolbarDensitySelector,
-  GridToolbarFilterButton,
-  GridToolbarContainer,
-} from "@mui/x-data-grid";
+import { DataGrid, GridToolbarContainer } from "@mui/x-data-grid";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { createTheme } from "@mui/material/styles";
@@ -204,10 +199,6 @@ function QuickSearchToolbar(props) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <div>
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-      </div>
       <TextField
         variant="standard"
         value={props.value}
@@ -242,13 +233,15 @@ const GridToolbar = ({ refetchData }) => {
 
   return (
     <div className="px-4">
-      <button
-        onClick={handleClick}
-        className="flex justify-center items-center gap-1 text-blue-500"
-      >
-        <AddIcon />
-        เพิ่มตัวแทนจำหน่าย
-      </button>
+      <div className="flex gap-4">
+        <button
+          onClick={handleClick}
+          className="flex justify-center items-center gap-1 text-blue-500"
+        >
+          <AddIcon />
+          เพิ่มตัวแทนจำหน่าย
+        </button>
+      </div>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -326,7 +319,7 @@ const SupplierModal = ({ onClose, row }) => {
 
 const ManageSuppliers = () => {
   const [rows, setRows] = useState([]);
-  const [orginalData, setOrginalData] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editSupplier, setEditSupplier] = useState(null);
   const [open, setOpen] = useState(false);
@@ -351,11 +344,11 @@ const ManageSuppliers = () => {
         };
       });
       setRows(updatedRows);
-      setOrginalData(updatedRows);
+      setOriginalData(updatedRows);
     }
   }, [data]);
 
-  const handleSave = (id) => {
+  const handleEdit = (id) => {
     const supplier = rows.find((row) => row.id === id);
     setModalOpen(true);
     setEditSupplier(supplier);
@@ -372,7 +365,7 @@ const ManageSuppliers = () => {
       renderCell: (params) => {
         return (
           <div className="opacity-30 hover:opacity-100">
-            <IconButton onClick={() => handleSave(params.id)}>
+            <IconButton onClick={() => handleEdit(params.id)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -403,7 +396,7 @@ const ManageSuppliers = () => {
   const requestSearch = (searchValue) => {
     setSearchText(searchValue);
     const searchRegex = new RegExp(escapeRegExp(searchValue), "i");
-    const filteredRows = orginalData.filter((row) => {
+    const filteredRows = originalData.filter((row) => {
       return Object.keys(row).some((field) => {
         if (row[field]) {
           return searchRegex.test(row[field].toString());
@@ -422,7 +415,6 @@ const ManageSuppliers = () => {
         {data && (
           <Box sx={{ maxHeight: "90vh", width: "100%", margin: "auto" }}>
             <DataGrid
-              disableColumnFilter
               disableDensitySelector
               onCellClick={(params) => {
                 if (params.field !== "edit") {
@@ -435,11 +427,11 @@ const ManageSuppliers = () => {
               initialState={{
                 pagination: {
                   paginationModel: {
-                    pageSize: 10,
+                    pageSize: 20,
                   },
                 },
               }}
-              pageSizeOptions={[10]}
+              pageSizeOptions={[10, 20, 50]}
               slots={{
                 toolbar: CustomToolbar,
               }}

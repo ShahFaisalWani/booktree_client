@@ -263,7 +263,7 @@ function CustomToolbar({
 }
 
 const ManageStationeries = () => {
-  const [orginalData, setOriginalData] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
   const { supplier, setSupplier } = useContext(BookContext);
   const [searchText, setSearchText] = useState("");
   const [persistedSelection, setPersistedSelection] = useState([]);
@@ -300,10 +300,10 @@ const ManageStationeries = () => {
     }
   }, [data]);
 
-  const handleSave = (id) => {
+  const handleEdit = (id) => {
     const book = rows.find((row) => row.id === id);
-    setModalOpen(true);
     setEditBook(book);
+    setModalOpen(true);
   };
 
   const handleCloseModal = (success) => {
@@ -406,9 +406,15 @@ const ManageStationeries = () => {
       width: 150,
     },
     {
+      field: "base_price",
+      headerName: "ต้นทุน",
+      width: 75,
+      sortComparator: (v1, v2) => parseFloat(v1) - parseFloat(v2),
+    },
+    {
       field: "price",
-      headerName: "ราคา (฿)",
-      width: 150,
+      headerName: "ราคา",
+      width: 75,
       sortComparator: (v1, v2) => parseFloat(v1) - parseFloat(v2),
     },
     {
@@ -423,7 +429,7 @@ const ManageStationeries = () => {
       renderCell: (params) => {
         return (
           <div className="opacity-30 hover:opacity-100">
-            <IconButton onClick={() => handleSave(params.id)}>
+            <IconButton onClick={() => handleEdit(params.id)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -435,7 +441,7 @@ const ManageStationeries = () => {
   const requestSearch = (searchValue) => {
     setSearchText(searchValue);
     const searchRegex = new RegExp(escapeRegExp(searchValue), "i");
-    const filteredRows = orginalData.filter((row) => {
+    const filteredRows = originalData.filter((row) => {
       return Object.keys(row).some((field) => {
         if (row[field]) {
           return searchRegex.test(row[field].toString());

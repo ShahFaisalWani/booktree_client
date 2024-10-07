@@ -33,6 +33,9 @@ const ManageProducts = lazy(() => import("../components/Admin/ManageProducts"));
 const RestockReport = lazy(() =>
   import("../components/Admin/Reports/RestockReport")
 );
+const ManagePublishers = lazy(() =>
+  import("../components/Admin/Publishers/ManagePublishers")
+);
 
 const AdminLinks = {
   default: "หน้าหลัก",
@@ -47,6 +50,7 @@ const AdminLinks = {
   supplierreport: "ยอดขายรายเดือน",
   managesuppliers: "ตัวแทนจำหน่าย",
   managemembers: "สมาชิก",
+  managepublishers: "สนพ.",
 };
 
 const ComponentMapping = {
@@ -62,6 +66,7 @@ const ComponentMapping = {
   supplierreport: SupplierReport,
   managesuppliers: ManageSuppliers,
   managemembers: ManageMembers,
+  managepublishers: ManagePublishers,
 };
 
 const AdminPage = () => {

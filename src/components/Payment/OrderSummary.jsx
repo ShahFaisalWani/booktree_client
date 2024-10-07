@@ -141,7 +141,7 @@ const OrderSummary = () => {
           setIsMember(true);
           sessionStorage.setItem("memberId", JSON.stringify(memberId));
           sessionStorage.setItem("isMember", JSON.stringify(true));
-          window.location.reload();
+          // window.location.reload();
           setIsLoading(false);
         }
       } catch (err) {

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addItem } from "../redux/cartSlice";
-import { toast } from "react-hot-toast";
 import CircularProgress from "@mui/material/CircularProgress";
 import BookModal from "./BookModal";
+import { validateDiscount, calculateFinalPrice } from "../utils/pricing";
 
 const BookCard = ({ book }) => {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ const BookCard = ({ book }) => {
     dispatch(addItem(book));
   };
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(book.cover_img ? true : false);
   const [open, setOpen] = useState(false);
   const toggleModal = (value) => {
     setOpen(value);
@@ -20,6 +20,14 @@ const BookCard = ({ book }) => {
 
   const uid = book.cover_img?.split("=")[1];
   const url = `https://drive.google.com/thumbnail?id=${uid}&sz=w1000`;
+
+  const validatedDiscount = validateDiscount(
+    book.publisher_discount,
+    book.discount_start,
+    book.discount_end
+  );
+
+  const finalPrice = calculateFinalPrice(book);
 
   return (
     <div className="BookCard w-[150px] sm:w-[200px] md:w-[250px] cursor-pointer">
@@ -73,12 +81,25 @@ const BookCard = ({ book }) => {
         </p>
       </div>
       <div className="mb-2 flex justify-between items-center">
-        <p className="text-sm font-bold text-green-500">{book?.price} บาท</p>
-        {/* <p className="text-xs text-gray-500">
-          {book?.author?.length > 15
-            ? book?.author?.substring(0, 15) + "..."
-            : book?.author}
-        </p> */}
+        <div>
+          {validatedDiscount > 0 ? (
+            <>
+              <p className="text-sm font-bold">
+                <span className="text-gray-500 line-through">
+                  {book?.price} บาท
+                </span>
+                <span className="text-red-500 ml-2">-{validatedDiscount}%</span>
+              </p>
+              <p className="text-sm font-bold text-green-500">
+                {finalPrice.toFixed(2)} บาท
+              </p>
+            </>
+          ) : (
+            <p className="text-sm font-bold text-green-500">
+              {book?.price} บาท
+            </p>
+          )}
+        </div>
         <button
           onClick={handleAddToCart}
           type="button"

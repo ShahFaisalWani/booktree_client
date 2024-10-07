@@ -8,27 +8,9 @@ import {
 import { useContext } from "react";
 import { SellContext } from "./SellBooks";
 
-const ConfirmBox = ({ handleSubmit }) => {
-  const { cart, confirmLoading, payment, setPayment, cash, setCash } =
+const ConfirmBox = ({ handleSubmit, netTotal }) => {
+  const { confirmLoading, payment, setPayment, cash, setCash } =
     useContext(SellContext);
-
-  const calcTotal = () => {
-    let total = 0;
-    cart.map((book) => {
-      total += book.price * book.quantity;
-    });
-    return total.toFixed(2);
-  };
-  const calcDiscount = () => {
-    let total = 0;
-    cart.map((book) => {
-      total += book.discount * book.quantity;
-    });
-    return total.toFixed(2);
-  };
-  const calcNetTotal = () => {
-    return (calcTotal() - calcDiscount()).toFixed(2);
-  };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -76,9 +58,7 @@ const ConfirmBox = ({ handleSubmit }) => {
                 <p className="flex items-center justify-between text-red-600 text-xl font-bold">
                   <span>เงินทอน:</span>
                   <span>
-                    {cash && calcNetTotal() > 0
-                      ? (cash - calcNetTotal()).toFixed(2)
-                      : 0}{" "}
+                    {cash && netTotal > 0 ? (cash - netTotal).toFixed(2) : 0}{" "}
                     บาท
                   </span>
                 </p>

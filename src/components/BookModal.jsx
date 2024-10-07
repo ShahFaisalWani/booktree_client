@@ -23,6 +23,7 @@ export default function BookModal({ open, toggleModal, book }) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(book.cover_img ? true : false);
 
   useEffect(() => {
     if (!book.desc) {
@@ -53,7 +54,9 @@ export default function BookModal({ open, toggleModal, book }) {
     toggleModal(false);
   };
 
-  const [loading, setLoading] = useState(true);
+  const uid = book.cover_img?.split("=")[1];
+  const url = `https://drive.google.com/thumbnail?id=${uid}&sz=w1000`;
+
   return (
     <div>
       <Modal
@@ -71,27 +74,33 @@ export default function BookModal({ open, toggleModal, book }) {
           </button>
           <div className="flex flex-col sm:flex-row h-full">
             <div className="sm:w-1/2 h-[30%] sm:h-full flex">
-              {/* <div className="h-full flex items-center"> */}
               <div className="h-full xl:w-full m-auto flex items-center">
-                <img
-                  src={book.cover_img}
-                  className="m-auto h-[80%] sm:h-[80%] object-cover"
-                  onLoad={() => {
-                    setLoading(false);
-                  }}
-                  style={{
-                    boxShadow: "-10px 5px 10px 2px #00000066",
-                    display: loading ? "none" : "block",
-                  }}
-                />
-                {loading && (
-                  <div className="h-56 w-full flex justify-center items-center">
-                    <CircularProgress
+                {book.cover_img ? (
+                  <>
+                    <img
+                      src={url}
+                      className="m-auto h-[80%] sm:h-[80%] w-f object-cover"
+                      onLoad={() => {
+                        setLoading(false);
+                      }}
                       style={{
-                        display: "block",
-                        color: "gray",
+                        boxShadow: "-10px 5px 10px 2px #00000066",
                       }}
                     />
+                    {loading && (
+                      <div className="h-56 w-full flex justify-center items-center">
+                        <CircularProgress
+                          style={{
+                            display: "block",
+                            color: "gray",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="h-2/3 w-2/3 m-auto flex justify-center items-center border">
+                    no image
                   </div>
                 )}
               </div>
@@ -116,7 +125,25 @@ export default function BookModal({ open, toggleModal, book }) {
               </div>
               <div className="flex justify-between">
                 <div className="text-lg sm:text-2xl mb-3">
-                  <p className="font-bold">{book.price} บาท</p>
+                  {book?.discount > 0 ? (
+                    <>
+                      <p className="font-bold text-gray-500 line-through">
+                        {book.price} บาท
+                      </p>
+                      <p className="font-bold text-green-500">
+                        {(
+                          book.price -
+                          (book.price * book.discount) / 100
+                        ).toFixed(2)}{" "}
+                        บาท
+                        <span className="text-red-500 ml-2">
+                          -{book.discount}%
+                        </span>
+                      </p>
+                    </>
+                  ) : (
+                    <p className="font-bold">{book.price} บาท</p>
+                  )}
                 </div>
                 {book.in_stock > 0 ? (
                   <div className="flex gap-2 items-center sm:text-2xl">
@@ -129,7 +156,6 @@ export default function BookModal({ open, toggleModal, book }) {
                     <div className="p-2 w-10 h-10 text-lg sm:text-xl flex justify-center items-center">
                       <p>{quantity}</p>
                     </div>
-
                     <button
                       className="flex justify-center items-center text-xs sm:text-xl w-4 sm:w-8 h-4 sm:h-8 rounded-[100%] bg-blue-500 text-white"
                       onClick={handleAddItem}

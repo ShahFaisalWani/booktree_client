@@ -3,30 +3,20 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import axios from "axios";
-import { useQuery } from "react-query";
 import Box from "@mui/material/Box";
 import { BookContext } from "./Book";
 
 export default function SupplierSelect({ initial, onChange, product }) {
-  const { supplier, setSupplier } = useContext(BookContext);
-
-  const fetchSuppliers = async () => {
-    const res = await axios.get(
-      import.meta.env.VITE_API_BASEURL + "/book/suppliers"
-    );
-    return res.data;
-  };
-
-  const { isLoading, error, data } = useQuery(["suppliers"], fetchSuppliers);
+  const { suppliers, supplier, setSupplier } = useContext(BookContext);
 
   useEffect(() => {
-    if (initial) {
-      console.log(data);
-      const sup = data.filter((s) => s.supplier_name == initial);
-      setSupplier(sup[0]);
+    if (initial && suppliers?.length > 0) {
+      const sup = suppliers.find((s) => s.supplier_name === initial);
+      if (sup) {
+        setSupplier(sup);
+      }
     }
-  }, [initial]);
+  }, [initial, suppliers, setSupplier]);
 
   const allSup = {
     supplier_name: "All",
@@ -41,15 +31,12 @@ export default function SupplierSelect({ initial, onChange, product }) {
     tax_number: "-",
     product: "all",
   };
+
   let suppliersList = null;
-  let newData = null;
-  if (data) {
-    if (product) {
-      newData = data.filter((s) => s.product == product);
-    } else {
-      newData = data;
-    }
-    suppliersList = [allSup, ...newData];
+  if (suppliers) {
+    suppliersList = product
+      ? [allSup, ...suppliers.filter((s) => s.product === product)]
+      : [allSup, ...suppliers];
   }
 
   const handleChange = (event) => {
@@ -65,11 +52,11 @@ export default function SupplierSelect({ initial, onChange, product }) {
   return (
     <Box sx={{ minWidth: 200 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Supplier</InputLabel>
+        <InputLabel id="supplier-select-label">Supplier</InputLabel>
         <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={supplier.supplier_name || ""}
+          labelId="supplier-select-label"
+          id="supplier-select"
+          value={supplier?.supplier_name || ""}
           label="Supplier"
           onChange={handleChange}
         >

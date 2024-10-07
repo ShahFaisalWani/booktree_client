@@ -5,6 +5,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { SellContext } from "./SellBooks";
+import { validateDiscount, calculateFinalPrice } from "../../../utils/pricing";
 
 const MemberInput = () => {
   const { cart, setCart, member, setMember, memberId, setMemberId } =
@@ -26,14 +27,23 @@ const MemberInput = () => {
         if (res.data.status === "valid") {
           setMember(true);
           const newData = cart.map((book) => {
-            if (book.author) {
+            const publisherDiscount = validateDiscount(
+              book.publisher_discount,
+              book.discount_start,
+              book.discount_end
+            );
+            console.log(publisherDiscount);
+
+            if (publisherDiscount > 0) {
               return {
                 ...book,
-                discount: Math.ceil(book.price * 0.05),
-                price: Math.floor(book.price),
               };
             } else {
-              return { ...book };
+              const memberDiscount = book.price * 0.05;
+              return {
+                ...book,
+                cart_discount: memberDiscount,
+              };
             }
           });
           setCartFunc(newData);
@@ -43,6 +53,7 @@ const MemberInput = () => {
           toast.error("หมายเลขสมาชิกนี้หมดอายุแล้ว");
         }
       } catch (err) {
+        console.log(err);
         setMember(false);
         toast.error("ไม่มีหมายเลขสมาชิกนี้");
       }

@@ -1,10 +1,4 @@
-import React, {
-  createRef,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { SellContext } from "./SellBooks";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
@@ -12,8 +6,15 @@ import MyModal from "../../MyModal";
 import { BookContext } from "../Books/Book";
 import SupplierSelect from "../Books/SupplierSelect";
 import toast from "react-hot-toast";
+import { calculateFinalPrice, validateDiscount } from "../../../utils/pricing";
 
-const CartList = () => {
+const CartList = ({
+  setCartFunc,
+  calcQuantity,
+  calcTotal,
+  calcDiscount,
+  calcNetTotal,
+}) => {
   const { cart, setCart, member, memberId, selectedSearch, setSelectedSearch } =
     useContext(SellContext);
   const [loading, setLoading] = useState(false);
@@ -21,38 +22,6 @@ const CartList = () => {
   const [addStockModal, setAddStockModal] = useState(false);
 
   const addToCartRef = useRef();
-
-  const calcQuantity = () => {
-    let total = 0;
-    cart.map((book) => {
-      total += parseInt(book.quantity) || 0;
-    });
-    return total;
-  };
-
-  const calcTotal = () => {
-    let total = 0;
-    cart.map((book) => {
-      total += book.price * book.quantity;
-    });
-    return total.toFixed(2);
-  };
-
-  const calcDiscount = () => {
-    let total = 0;
-    cart.map((book) => {
-      total += book.discount * book.quantity;
-    });
-    return total.toFixed(2);
-  };
-  const calcNetTotal = () => {
-    return (calcTotal() - calcDiscount()).toFixed(2);
-  };
-
-  const setCartFunc = (data) => {
-    setCart(data);
-    localStorage.setItem("sellCart", JSON.stringify(data));
-  };
 
   const handleRemove = (ISBN) => {
     const newArray = cart.filter((book) => book.ISBN !== ISBN);
@@ -69,68 +38,78 @@ const CartList = () => {
     setCartFunc(newArray);
   };
 
+  const addBookFunc = async (e) => {
+    if (!e.target.ISBN.value) return;
+    const ISBN = e.target.ISBN.value.trim();
+    if (!/^\d+$/.test(ISBN)) return toast.error("ไม่มีสินค้า " + ISBN);
+
+    const existingItemIndex = cart.findIndex((book) => book.ISBN === ISBN);
+
+    if (existingItemIndex !== -1) {
+      const updatedArray = cart.map((book, index) => {
+        if (index === existingItemIndex) {
+          return {
+            ...book,
+            quantity: book.quantity ? parseInt(book.quantity) + 1 : 1,
+          };
+        } else {
+          return book;
+        }
+      });
+
+      setCartFunc(updatedArray);
+      return (document.getElementById("ISBN").value = "");
+    }
+
+    const res = await axios
+      .get(import.meta.env.VITE_API_BASEURL + "/book/ISBN/" + ISBN)
+      .catch((err) => console.log(err));
+    let bookData =
+      res?.data?.length > 0
+        ? res.data[0].length > 0
+          ? res.data[0][0]
+          : res.data[1][0]
+        : null;
+
+    if (!bookData) {
+      return setOpenModal(ISBN);
+    }
+    if (bookData.in_stock == 0) {
+      return setAddStockModal(bookData);
+    }
+
+    const publisherDiscount = validateDiscount(
+      bookData.publisher_discount,
+      bookData.discount_start,
+      bookData.discount_end
+    );
+
+    const finalPrice = calculateFinalPrice(bookData);
+
+    const memberDiscount =
+      memberId && member === true && publisherDiscount === 0
+        ? finalPrice * 0.05
+        : 0;
+
+    const newData = [
+      ...cart,
+      {
+        ...bookData,
+        price: Math.floor(bookData.price),
+        cart_discount: bookData.price - finalPrice + memberDiscount,
+        quantity: 1,
+      },
+    ];
+
+    setCartFunc(newData);
+    return (document.getElementById("ISBN").value = "");
+  };
+
   const handleAddCart = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const addBookFunc = async () => {
-      if (!e.target.ISBN.value) return;
-      const ISBN = e.target.ISBN.value.trim();
-      if (!/^\d+$/.test(ISBN)) return toast.error("ไม่มีสินค้า " + ISBN);
 
-      const existingItemIndex = cart.findIndex((book) => book.ISBN === ISBN);
-
-      if (existingItemIndex !== -1) {
-        const updatedArray = cart.map((book, index) => {
-          if (index === existingItemIndex) {
-            return {
-              ...book,
-              quantity: book.quantity ? parseInt(book.quantity) + 1 : 1,
-            };
-          } else {
-            return book;
-          }
-        });
-
-        setCartFunc(updatedArray);
-        return (document.getElementById("ISBN").value = "");
-      }
-
-      const res = await axios
-        .get(import.meta.env.VITE_API_BASEURL + "/book/ISBN/" + ISBN)
-        .catch((err) => console.log(err));
-
-      let bookData =
-        res?.data?.length > 0
-          ? res.data[0].length > 0
-            ? res.data[0][0]
-            : res.data[1][0]
-          : null;
-      if (!bookData) {
-        return setOpenModal(ISBN);
-      }
-
-      if (bookData.in_stock == 0) {
-        return setAddStockModal(bookData);
-      }
-
-      const newData = [
-        ...cart,
-        {
-          ...bookData,
-          price: Math.floor(bookData.price),
-          discount:
-            memberId && member == true
-              ? bookData.author
-                ? Math.ceil(bookData.price * 0.05)
-                : 0
-              : 0,
-          quantity: 1,
-        },
-      ];
-      setCartFunc(newData);
-      return (document.getElementById("ISBN").value = "");
-    };
-    await addBookFunc();
+    await addBookFunc(e);
     setLoading(false);
   };
 
@@ -138,6 +117,7 @@ const CartList = () => {
     if (selectedSearch) {
       document.getElementById("ISBN").value = selectedSearch.ISBN;
       addToCartRef.current.click();
+      setSelectedSearch(null);
     }
   }, [selectedSearch]);
 
@@ -190,10 +170,12 @@ const CartList = () => {
                   {(book.price * book.quantity).toFixed(2)}
                 </td>
                 <td className="w-[8.5%] text-center">
-                  {(book.discount * book.quantity).toFixed(2)}
+                  {(book.cart_discount * book.quantity).toFixed(2)}
                 </td>
                 <td className="w-[8.5%] text-center">
-                  {((book.price - book.discount) * book.quantity).toFixed(2)}
+                  {((book.price - book.cart_discount) * book.quantity).toFixed(
+                    2
+                  )}
                 </td>
                 <td className="w-[2.5%] text-center">
                   <DeleteIcon
@@ -224,11 +206,11 @@ const CartList = () => {
           <div className="text-left w-[30%]"></div>
           <div className="text-center w-[8.5%]"></div>
           <div className="text-center w-[8.5%]"></div>
-          <div className="text-center w-[8.5%] text-2xl">{calcQuantity()}</div>
-          <div className="text-center w-[8.5%] text-2xl">{calcTotal()}</div>
-          <div className="text-center w-[8.5%] text-2xl">{calcDiscount()}</div>
+          <div className="text-center w-[8.5%] text-2xl">{calcQuantity}</div>
+          <div className="text-center w-[8.5%] text-2xl">{calcTotal}</div>
+          <div className="text-center w-[8.5%] text-2xl">{calcDiscount}</div>
           <div className="text-center w-[8.5%] text-2xl bg-green-500 text-white">
-            {calcNetTotal()}
+            {calcNetTotal}
           </div>
           <div className="text-center w-[2.5%]"></div>
         </div>

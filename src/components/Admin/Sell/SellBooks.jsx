@@ -28,7 +28,10 @@ const SellBooks = () => {
         setCart(localCartData);
       } else {
         const newData = localCartData.map((item) => {
-          return { ...item, discount: 0 };
+          const bookDiscount = item.publisher_discount
+            ? (item.price * item.publisher_discount) / 100
+            : 0;
+          return { ...item, cart_discount: bookDiscount };
         });
         setCart(newData);
       }
@@ -38,6 +41,14 @@ const SellBooks = () => {
   const setCartFunc = (data) => {
     setCart(data);
     localStorage.setItem("sellCart", JSON.stringify(data));
+  };
+
+  const calcQuantity = () => {
+    let total = 0;
+    cart.map((book) => {
+      total += parseInt(book.quantity) || 0;
+    });
+    return total;
   };
 
   const calcTotal = () => {
@@ -51,10 +62,11 @@ const SellBooks = () => {
   const calcDiscount = () => {
     let total = 0;
     cart.map((book) => {
-      total += book.discount * book.quantity;
+      total += book.cart_discount * book.quantity;
     });
     return total.toFixed(2);
   };
+
   const calcNetTotal = () => {
     return (calcTotal() - calcDiscount()).toFixed(2);
   };
@@ -88,7 +100,7 @@ const SellBooks = () => {
         order_id: res.data.insertId,
         book_ISBN: book.ISBN,
         quantity: book.quantity,
-        discount: book.discount * book.quantity,
+        discount: book.cart_discount * book.quantity,
       }));
 
       await addOrderDetail(order_details);
@@ -143,7 +155,13 @@ const SellBooks = () => {
       if (!hasInvalidValue) {
         setConfirmLoading(true);
         setLoading(true);
-        const { id, date } = await addOrder();
+        const orderRes = await addOrder();
+        if (!orderRes) {
+          console.log("add order err");
+          toast.error("Error");
+          return;
+        }
+        const { id, date } = orderRes;
         const order_num = "INV" + String(id).padStart(5, "0");
         // const order_date = new Date(date).toString();
         // await handlePrint(order_num);
@@ -225,10 +243,16 @@ const SellBooks = () => {
           <SearchItem />
         </div>
         <div>
-          <CartList />
+          <CartList
+            setCartFunc={setCartFunc}
+            calcQuantity={calcQuantity()}
+            calcTotal={calcTotal()}
+            calcDiscount={calcDiscount()}
+            calcNetTotal={calcNetTotal()}
+          />
         </div>
         <div className="mt-12">
-          <ConfirmBox handleSubmit={handleSubmit} />
+          <ConfirmBox handleSubmit={handleSubmit} netTotal={calcNetTotal()} />
         </div>
       </div>
     </SellContext.Provider>
