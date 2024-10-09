@@ -9,7 +9,7 @@ export default function PublisherSelect({ initial, onChange }) {
   const fetchPublishers = async () => {
     const res = await axios.get(
       import.meta.env.VITE_API_BASEURL +
-        "/book/publishers" +
+        "/publisher/getall" +
         `?supplier_name=${supplier.supplier_name}`
     );
     return res.data;
