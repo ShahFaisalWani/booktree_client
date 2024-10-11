@@ -12,7 +12,6 @@ const loadCartState = () => {
       return undefined;
     }
     const cartItems = JSON.parse(serializedState);
-    console.log(cartItems);
 
     const updatedData = Object.fromEntries(
       Object.entries(cartItems.items).map(([key, value]) => {
@@ -24,7 +23,9 @@ const loadCartState = () => {
         const publisherDiscount = value.price * (validatedDiscount / 100);
 
         const memberDiscount =
-          !publisherDiscount && isMember ? value.price * 0.05 : 0;
+          !publisherDiscount && isMember && value.author
+            ? value.price * 0.05
+            : 0;
 
         const finalDiscount = Math.round(publisherDiscount || memberDiscount); // Round up discount
 
@@ -58,7 +59,9 @@ const cartSlice = createSlice({
       const publisherDiscount = newItem.price * (validatedDiscount / 100);
 
       const memberDiscount =
-        !publisherDiscount && isMember ? newItem.price * 0.05 : 0;
+        !publisherDiscount && isMember && newItem.author
+          ? newItem.price * 0.05
+          : 0;
 
       const finalDiscount = Math.round(publisherDiscount || memberDiscount); // Round up discount
 
@@ -97,7 +100,6 @@ const cartSlice = createSlice({
           toast.success("เพิ่มลงตะกร้าเรียบร้อย");
         }
       }
-      console.log(Object.values(state.items));
       saveCartState(state);
     },
     removeItem: (state, action) => {
@@ -122,7 +124,8 @@ const cartSlice = createSlice({
         );
         const publisherDiscount = item.price * (validatedDiscount / 100);
 
-        const memberDiscount = !publisherDiscount ? item.price * 0.05 : 0;
+        const memberDiscount =
+          !publisherDiscount && item.author ? item.price * 0.05 : 0;
 
         const finalDiscount = Math.round(publisherDiscount || memberDiscount); // Round up discount
 

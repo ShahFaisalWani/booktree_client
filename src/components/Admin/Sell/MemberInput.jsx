@@ -38,7 +38,10 @@ const MemberInput = () => {
                 ...book,
               };
             } else {
-              const memberDiscount = Math.round(book.price * 0.05); // Round up member discount
+              const memberDiscount = book.author
+                ? Math.round(book.price * 0.05)
+                : 0;
+
               return {
                 ...book,
                 cart_discount: memberDiscount,

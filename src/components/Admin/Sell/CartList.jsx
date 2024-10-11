@@ -87,7 +87,7 @@ const CartList = ({
     const finalPrice = calculateFinalPrice(bookData);
 
     const memberDiscount =
-      memberId && member === true && publisherDiscount === 0
+      memberId && member === true && publisherDiscount === 0 && bookData.author
         ? finalPrice * 0.05
         : 0;
 
