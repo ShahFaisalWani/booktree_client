@@ -3,7 +3,6 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import ManualGenreSelect from "./ManualGenreSelect";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import ImgInput from "./ImgInput";
 import { BookContext } from "./Book";
@@ -122,17 +121,13 @@ const ItemForm = ({ onFinish }) => {
                     >
                       {colNames[i + 1]}
                     </label>
-                    {col == "genre" ? (
-                      <ManualGenreSelect />
-                    ) : (
-                      <Field
-                        as={col == "desc" ? "textarea" : ""}
-                        type="text"
-                        name={col}
-                        className="border block items-center bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
-                        required={"ISBNtitleauthorpublisherprice".includes(col)}
-                      />
-                    )}
+                    <Field
+                      as={col == "desc" ? "textarea" : ""}
+                      type="text"
+                      name={col}
+                      className="border block items-center bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
+                      required={"ISBNtitleauthorpublisherprice".includes(col)}
+                    />
 
                     <ErrorMessage
                       component="span"

@@ -3,10 +3,11 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import ManualGenreSelect from "./ManualGenreSelect";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import ImgInput from "./ImgInput";
 import { BookContext } from "./Book";
+import GenreSelect from "./GenreSelect";
+import PublisherSelect from "./PublisherSelect";
 
 const ManualForm = ({ initial, onFinish }) => {
   const { genre, setGenre, supplier, setSupplier, setCoverImg, coverImg } =
@@ -14,7 +15,6 @@ const ManualForm = ({ initial, onFinish }) => {
 
   useEffect(() => {
     if (initial) {
-      setGenre(initial.genre);
       setCoverImg(initial.cover_img);
     }
   }, []);
@@ -29,11 +29,11 @@ const ManualForm = ({ initial, onFinish }) => {
     "รูปปก",
     "ISBN",
     "เรื่อง",
+    "สำนักพิมพ์",
+    "ราคา",
     "ผู้แต่ง",
     "หมวดหมู่",
     "ผู้แปล",
-    "ราคา",
-    "สำนักพิมพ์",
     "เนื้อเรื่อง",
     "น้ำหนัก",
     "ปีพิมพ์",
@@ -42,11 +42,11 @@ const ManualForm = ({ initial, onFinish }) => {
   const initialValues = {
     ISBN: initial?.ISBN || "",
     title: initial?.title || "",
+    publisher: initial?.publisher || "",
+    price: initial?.price || "",
     author: initial?.author || "",
     genre: initial?.genre || "",
     translator: initial?.translator || "",
-    price: initial?.price || "",
-    publisher: initial?.publisher || "",
     desc: initial?.desc || "",
     weight: initial?.weight || "",
     published_year: initial?.published_year || "",
@@ -154,7 +154,9 @@ const ManualForm = ({ initial, onFinish }) => {
                       {colNames[i + 1]}
                     </label>
                     {col == "genre" ? (
-                      <ManualGenreSelect />
+                      <GenreSelect initial={initialValues.genre} />
+                    ) : col == "publisher" ? (
+                      <PublisherSelect initial={initialValues.publisher} />
                     ) : (
                       <>
                         <Field

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -6,11 +6,11 @@ import { toast } from "react-hot-toast";
 import ImgInput from "./ImgInput";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Modal } from "@mui/material";
-import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import EditSupplierSelect from "../EditSupplierSelect";
 import GenreSelect from "./GenreSelect";
 import PublisherSelect from "./PublisherSelect";
+import { BookContext } from "./Book";
 
 const style = {
   position: "relative",
@@ -28,12 +28,11 @@ const colNames = [
   "รูปปก",
   "ISBN",
   "เรื่อง",
+  "ตำแทนจำหน่าย",
+  "สำนักพิมพ์",
   "ผู้แต่ง",
-  "หมวดหมู่เดิม",
   "ผู้แปล",
   "หมวดหมู่",
-  "สำนักพิมพ์",
-  "ตำแทนจำหน่าย",
   "ต้นทุน",
   "ราคา",
   "เนื้อเรื่อง",
@@ -45,10 +44,9 @@ const validationSchema = Yup.object({
   ISBN: Yup.string().required("Required"),
   title: Yup.string(),
   author: Yup.string(),
-  old_genre: Yup.string(),
   genre: Yup.string(),
   publisher: Yup.string(),
-  base_price: Yup.number().required("Required").typeError("Must be a number"),
+  base_price: Yup.number().typeError("Must be a number"),
   price: Yup.number().required("Required").typeError("Must be a number"),
   desc: Yup.string(),
   translator: Yup.string(),
@@ -60,18 +58,18 @@ const BookEditDialog = ({ handleClose, book }) => {
   const [supplier, setSupplier] = useState(book.supplier_name);
   const [coverImg, setCoverImg] = useState(book.cover_img);
   const [genre, setGenre] = useState(book.genre);
-  const [publisher, setPublisher] = useState(book.publisher);
+  // const [publisher, setPublisher] = useState(book.publisher);
+  const { publisher, setPublisher } = useContext(BookContext);
   const [loading, setLoading] = useState(false);
 
   const initialValues = {
     ISBN: book.ISBN || "",
     title: book.title || "",
+    supplier_name: book.supplier_name || "",
+    publisher: book.publisher || "",
     author: book.author || "",
-    old_genre: book.old_genre || "",
     translator: book.translator || "",
     genre: book.genre || "",
-    publisher: book.publisher || "",
-    supplier_name: book.supplier_name || "",
     base_price: book.base_price || "",
     price: book.price || "",
     desc: book.desc || "",
@@ -79,22 +77,16 @@ const BookEditDialog = ({ handleClose, book }) => {
     published_year: "",
   };
 
-  // Fetch genres
-  const fetchGenres = async () => {
-    const res = await axios.get(
-      `${import.meta.env.VITE_API_BASEURL}/book/genres`
-    );
-    return res.data;
-  };
-  const { data: genresData } = useQuery(["genres"], fetchGenres);
-  const genresList = genresData?.map((item) => item.genre_name);
-
   const handleSubmit = async (values) => {
+    if (!genre) return toast.error("เลือกหมวดหมู่");
+    if (!supplier) return toast.error("เลือกตัวแทนจำหน่าย");
+    if (!publisher) return toast.error("เลือกสำนักพิมพ์");
+
     const updatedData = {
       ...values,
       genre,
       publisher,
-      supplier_name: supplier,
+      supplier_name: supplier.supplier_name,
     };
 
     const isSame =
@@ -183,20 +175,36 @@ const BookEditDialog = ({ handleClose, book }) => {
                         </label>
 
                         {col === "genre" ? (
-                          <GenreSelect
-                            initial={book.genre}
-                            onChange={setGenre}
-                          />
+                          <div className="relative">
+                            <span className="absolute -top-[1.8rem] left-16">
+                              เดิม: {book.old_genre || "-"}
+                            </span>
+                            <GenreSelect
+                              initial={book.genre}
+                              onChange={setGenre}
+                            />
+                          </div>
                         ) : col === "publisher" ? (
-                          <PublisherSelect
-                            initial={book.publisher}
-                            onChange={setPublisher}
-                          />
+                          <div className="relative">
+                            <span className="absolute -top-[1.8rem] left-20">
+                              เดิม: {book.old_publisher || "-"}
+                            </span>
+                            <PublisherSelect
+                              initial={book.publisher}
+                              onChange={setPublisher}
+                              supplierName={
+                                supplier?.supplier_name || book.supplier_name
+                              }
+                            />
+                          </div>
                         ) : col === "supplier_name" ? (
                           <EditSupplierSelect
                             initial={book.supplier_name}
                             product="book"
-                            onChange={setSupplier}
+                            onChange={(sup) => {
+                              setSupplier(sup);
+                              setPublisher(null);
+                            }}
                           />
                         ) : (
                           <>

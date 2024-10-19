@@ -1,16 +1,16 @@
 import React, { useContext, useEffect } from "react";
 import { FormControl, Box, Autocomplete, TextField } from "@mui/material";
-import { BookContext } from "./Book"; // Assuming you are using the same context as in GenreSelect
+import { BookContext } from "./Book";
 import axios from "axios";
 import { useQuery } from "react-query";
 
-export default function PublisherSelect({ initial, onChange }) {
+export default function PublisherSelect({ initial, onChange, supplierName }) {
   const { publisher, supplier, setPublisher } = useContext(BookContext);
   const fetchPublishers = async () => {
     const res = await axios.get(
       import.meta.env.VITE_API_BASEURL +
         "/publisher/getall" +
-        `?supplier_name=${supplier.supplier_name}`
+        `?supplier_name=${supplierName || supplier.supplier_name}`
     );
     return res.data;
   };
@@ -19,7 +19,7 @@ export default function PublisherSelect({ initial, onChange }) {
     isLoading,
     error,
     data: publishersData,
-  } = useQuery(["publishers"], fetchPublishers);
+  } = useQuery(["publishers", supplier, supplierName], fetchPublishers);
 
   useEffect(() => {
     if (initial && publishersData) {
@@ -50,7 +50,7 @@ export default function PublisherSelect({ initial, onChange }) {
           }
           options={publishersList || []}
           value={publisher || ""}
-          renderInput={(params) => <TextField {...params} label="สำนักพิมพ์" />}
+          renderInput={(params) => <TextField {...params} />}
           onChange={handlePublisherChange}
         />
       </FormControl>

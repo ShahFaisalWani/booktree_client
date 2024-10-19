@@ -31,7 +31,7 @@ export default function GenreSelect({ initial, onChange }) {
           }
           options={genresList || []}
           value={genre || ""}
-          renderInput={(params) => <TextField {...params} label="หมวดหมู่" />}
+          renderInput={(params) => <TextField {...params} />}
           onChange={handleGenreChange}
         />
       </FormControl>

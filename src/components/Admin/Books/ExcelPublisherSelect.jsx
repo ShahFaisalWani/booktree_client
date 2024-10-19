@@ -1,29 +1,30 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import FormControl from "@mui/material/FormControl";
-import axios from "axios";
-import { useQuery } from "react-query";
 import Box from "@mui/material/Box";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { BookContext } from "./Book";
 
-export default function ExcelGenreSelect({ handleGenreChange, selectedGenre }) {
-  const { genres } = useContext(BookContext);
-
+export default function ExcelPublisherSelect({
+  handlePublisherChange,
+  selectedPublisher,
+}) {
+  const { publishers } = useContext(BookContext);
   const handleChange = (value) => {
-    handleGenreChange(value);
+    handlePublisherChange(value);
   };
 
-  const genresList = genres && genres?.map((item) => item.genre_name);
+  const publishersList =
+    publishers && publishers?.map((item) => item.publisher_name);
 
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        {genresList && (
+        {publishersList && (
           <Autocomplete
-            value={selectedGenre}
-            options={genresList}
+            value={selectedPublisher}
+            options={publishersList}
             renderInput={(params) => <TextField {...params} />}
             onChange={(event, value) => handleChange(value)}
           />

@@ -517,7 +517,7 @@ const ManageBooks = () => {
     const selectedSupplier = suppliers.find(
       (supplier) => supplier.supplier_name === book.supplier_name
     );
-    setSupplier(selectedSupplier);
+    // setSupplier(selectedSupplier);
     setEditBook(book);
     setModalOpen(true);
   };

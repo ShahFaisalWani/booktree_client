@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ExcelGenreSelect from "./Books/ExcelGenreSelect";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import EditDialog from "./Books/EditDialog";
 import ImgInput from "./Books/ImgInput";
+import ExcelPublisherSelect from "./Books/ExcelPublisherSelect";
 
 const SingleBook = ({ book, handleBookChange, handleRemoveBook }) => {
   const [modifiedBook, setModifiedBook] = useState(book);
@@ -21,6 +21,13 @@ const SingleBook = ({ book, handleBookChange, handleRemoveBook }) => {
     setModifiedBook(updatedBook);
     handleBookChange(updatedBook);
   };
+
+  const handlePublisherChange = (pub) => {
+    const updatedBook = { ...modifiedBook, publisher: pub };
+    setModifiedBook(updatedBook);
+    handleBookChange(updatedBook);
+  };
+
   const handleRemove = (ISBN) => {
     handleRemoveBook(ISBN);
   };
@@ -53,7 +60,13 @@ const SingleBook = ({ book, handleBookChange, handleRemoveBook }) => {
           selectedGenre={modifiedBook.genre || null}
         />
       </div>
-      <div className="w-[20%]">สำนักพิมพ์: {modifiedBook.publisher}</div>
+      <div className="w-[20%]">
+        <p>สำนักพิมพ์เดิม: {modifiedBook.old_publisher}</p>
+        <ExcelPublisherSelect
+          handlePublisherChange={handlePublisherChange}
+          selectedPublisher={modifiedBook.publisher || null}
+        />
+      </div>
       <div className="w-[5%]">{modifiedBook.price}</div>
       <div className="w-[10%] flex gap-5 justify-center">
         <button className="text-blue-500" onClick={() => setOpen(true)}>

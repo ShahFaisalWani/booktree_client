@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import ExcelGenreSelect from "./ExcelGenreSelect";
 import ImgInput from "./ImgInput";
+import ExcelPublisherSelect from "./ExcelPublisherSelect";
 
 const EditDialog = ({ initial, changeInitial, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +49,7 @@ const EditDialog = ({ initial, changeInitial, onClose }) => {
     genre: Yup.string(),
     author: Yup.string(),
     publisher: Yup.string(),
-    base_price: Yup.number().required("Required").typeError("Must be a number"),
+    base_price: Yup.number().typeError("Must be a number"),
     price: Yup.number().required("Required").typeError("Must be a number"),
     desc: Yup.string(),
     translator: Yup.string(),
@@ -59,7 +60,11 @@ const EditDialog = ({ initial, changeInitial, onClose }) => {
   const handleGenreChange = (genre) => {
     const updatedBook = { ...inputData, genre: genre };
     setInputData(updatedBook);
-    changeInitial(updatedBook);
+  };
+
+  const handlePublisherChange = (pub) => {
+    const updatedBook = { ...inputData, publisher: pub };
+    setInputData(updatedBook);
   };
 
   const handleImgChange = (file) => {
@@ -72,6 +77,7 @@ const EditDialog = ({ initial, changeInitial, onClose }) => {
     const newData = {
       ...values,
       genre: inputData.genre,
+      publisher: inputData.publisher,
       cover_img: inputData.cover_img,
     };
     changeInitial(newData);
@@ -120,6 +126,11 @@ const EditDialog = ({ initial, changeInitial, onClose }) => {
                       <ExcelGenreSelect
                         handleGenreChange={handleGenreChange}
                         selectedGenre={inputData.genre || null}
+                      />
+                    ) : col == "publisher" ? (
+                      <ExcelPublisherSelect
+                        handlePublisherChange={handlePublisherChange}
+                        selectedPublisher={inputData.publisher || null}
                       />
                     ) : (
                       <Field

@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
 import LoadingScreen from "../../Loading/LoadingScreen";
@@ -13,7 +13,6 @@ export default function BookProvider({ children }) {
   const [genre, setGenre] = useState("");
   const [item, setItem] = useState("book");
 
-  // Fetch suppliers with react-query and cache the data
   const fetchSuppliers = async () => {
     const res = await axios.get(
       `${import.meta.env.VITE_API_BASEURL}/book/suppliers`
@@ -28,19 +27,43 @@ export default function BookProvider({ children }) {
     return res.data;
   };
 
+  const fetchPublishers = async () => {
+    const res = await axios.get(
+      import.meta.env.VITE_API_BASEURL +
+        "/publisher/getall" +
+        `?supplier_name=${supplier.supplier_name}`
+    );
+    return res.data;
+  };
+
   const {
     data: suppliers = [],
     isLoading: isLoadingSuppliers,
     isError: isErrorSuppliers,
-  } = useQuery(["suppliers"], fetchSuppliers);
+  } = useQuery(["suppliers"], fetchSuppliers, {
+    refetchOnWindowFocus: false,
+  });
 
   const {
     data: genres = [],
     isLoading: isLoadingGenres,
     isError: isErrorGenres,
-  } = useQuery(["genres"], fetchGenres);
+  } = useQuery(["genres"], fetchGenres, {
+    refetchOnWindowFocus: false,
+  });
+  const {
+    data: publishers = [],
+    isLoading: isLoadingPublishers,
+    isError: isErrorPublishers,
+  } = useQuery(["publishers", supplier], fetchPublishers, {
+    refetchOnWindowFocus: false,
+  });
 
-  if (isLoadingSuppliers || isLoadingGenres) {
+  useEffect(() => {
+    console.log("supplier change", supplier);
+  }, [supplier]);
+
+  if (isLoadingSuppliers || isLoadingGenres || isLoadingPublishers) {
     return <LoadingScreen />;
   }
 
@@ -61,6 +84,7 @@ export default function BookProvider({ children }) {
         setItem,
         suppliers,
         genres,
+        publishers,
       }}
     >
       {children}
