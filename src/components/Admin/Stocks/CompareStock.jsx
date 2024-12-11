@@ -3,7 +3,6 @@ import React, { useRef, useState } from "react";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import { DataGrid } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
-import { Checkbox } from "@mui/material";
 import MyModal from "../../MyModal";
 import toast from "react-hot-toast";
 
@@ -12,7 +11,7 @@ const CompareStock = () => {
   const inputRef = useRef();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [persistedSelection, setPersistedSelection] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [refNum, setRefNum] = useState("");
   const [openModal, setOpenModal] = useState(false);
 
@@ -62,7 +61,7 @@ const CompareStock = () => {
 
     const resId = res.data;
 
-    const data = persistedSelection.map((book) => {
+    const data = selectedRows.map((book) => {
       const dif = book.actual_stock - book.in_stock;
       const type = dif > 0 ? "add" : "return";
       return {
@@ -78,7 +77,7 @@ const CompareStock = () => {
       .post(import.meta.env.VITE_API_BASEURL + "/stock/restockDetail", data)
       .then(() => {
         toast.success("สำเร็จ");
-        setPersistedSelection([]);
+        setSelectedRows([]);
         if (inputRef.current) inputRef.current.value = "";
         setBooks([]);
         setOpenModal(false);
@@ -90,42 +89,7 @@ const CompareStock = () => {
     setLoading(false);
   };
 
-  const isSelected = (rowId) => {
-    return persistedSelection.some((item) => item.id === rowId);
-  };
-
-  const handleCustomSelection = (e, row) => {
-    if (e.target.checked) {
-      setPersistedSelection((prev) => [...prev, row]);
-    } else {
-      setPersistedSelection((prev) =>
-        prev.filter((item) => item.id !== row.id)
-      );
-    }
-  };
-
   const columns = [
-    {
-      field: "customSelected",
-      headerName: "เลือก",
-      width: 75,
-      headerAlign: "center",
-      renderCell: (params) => {
-        const dif = params.row.actual_stock - params.row.in_stock;
-        if (dif != 0) {
-          return (
-            <div className="m-auto">
-              <Checkbox
-                checked={isSelected(params.id)}
-                onChange={(e) => {
-                  handleCustomSelection(e, params.row);
-                }}
-              />
-            </div>
-          );
-        }
-      },
-    },
     { field: "ISBN", headerName: "ISBN", width: 150 },
     {
       field: "coverImg",
@@ -150,11 +114,6 @@ const CompareStock = () => {
       minWidth: 250,
     },
     { field: "genre", headerName: "หมวดหมู่", width: 150 },
-    // {
-    //   field: "supplier_name",
-    //   headerName: "ตัวแทนจำหน่าย",
-    //   minWidth: 150,
-    // },
     {
       field: "price",
       headerName: "ราคา (฿)",
@@ -199,12 +158,12 @@ const CompareStock = () => {
           />
           <button
             className={`w-full flex justify-center items-center text-white ${
-              persistedSelection.length == 0
+              selectedRows.length === 0
                 ? "bg-gray-400"
                 : "bg-blue-700 hover:bg-blue-800"
             } rounded-lg px-5 py-2.5 text-center`}
             onClick={clickRestock}
-            disabled={persistedSelection.length == 0}
+            disabled={selectedRows.length === 0}
           >
             ปรับสต็อก
           </button>
@@ -215,8 +174,7 @@ const CompareStock = () => {
         {books && (
           <Box sx={{ maxHeight: "90vh", width: "70%", margin: "auto" }}>
             <DataGrid
-              disableColumnFilter
-              disableDensitySelector
+              checkboxSelection
               rows={books}
               columns={columns}
               initialState={{
@@ -227,6 +185,15 @@ const CompareStock = () => {
                 },
               }}
               pageSizeOptions={[15]}
+              isRowSelectable={(params) =>
+                params.row.actual_stock - params.row.in_stock !== 0
+              }
+              onRowSelectionModelChange={(newSelection) => {
+                const selectedData = newSelection.map((id) =>
+                  books.find((row) => row.id === id)
+                );
+                setSelectedRows(selectedData);
+              }}
             />
           </Box>
         )}
@@ -247,7 +214,7 @@ const CompareStock = () => {
                     </tr>
                   </thead>
                   <tbody className="block max-h-[500px] overflow-y-scroll">
-                    {persistedSelection?.map((stock) => (
+                    {selectedRows?.map((stock) => (
                       <tr
                         key={stock.ISBN}
                         className="flex gap-5 items-center pb-2"
