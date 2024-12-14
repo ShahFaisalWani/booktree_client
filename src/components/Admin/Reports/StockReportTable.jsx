@@ -22,6 +22,7 @@ function exportToExcel(
   total_add,
   total_return,
   total_sold,
+  total_restock,
   total_in_stock,
   total_revenue
 ) {
@@ -53,6 +54,7 @@ function exportToExcel(
       total_add,
       total_return,
       total_sold,
+      total_restock,
       total_in_stock,
       total_revenue.toFixed(2),
     ];
@@ -66,6 +68,7 @@ function exportToExcel(
       total_add,
       total_return,
       total_sold,
+      total_restock,
       total_in_stock,
       total_revenue.toFixed(2),
     ];
@@ -97,6 +100,7 @@ const GridToolbarExport = ({
   total_add,
   total_return,
   total_sold,
+  total_restock,
   total_in_stock,
   total_revenue,
   ...other
@@ -113,6 +117,7 @@ const GridToolbarExport = ({
           total_add,
           total_return,
           total_sold,
+          total_restock,
           total_in_stock,
           total_revenue
         )
@@ -131,6 +136,7 @@ function CustomToolbar({
   total_add,
   total_return,
   total_sold,
+  total_restock,
   total_in_stock,
   total_revenue,
 }) {
@@ -147,6 +153,7 @@ function CustomToolbar({
         total_add={total_add}
         total_return={total_return}
         total_sold={total_sold}
+        total_restock={total_restock}
         total_in_stock={total_in_stock}
         total_revenue={total_revenue}
       />
@@ -205,6 +212,14 @@ function CustomToolbar({
             textAlign: "center",
           }}
         >
+          {total_restock}
+        </div>
+        <div
+          style={{
+            flexBasis: "100px",
+            textAlign: "center",
+          }}
+        >
           {total_in_stock}
         </div>
         <div
@@ -225,6 +240,7 @@ export default function StockReportTable({ rows, month, supplier }) {
   const [total_add, setTotalAdd] = useState(0);
   const [total_return, setTotalReturn] = useState(0);
   const [total_sold, setTotalSold] = useState(0);
+  const [total_restock, setTotalRestock] = useState(0);
   const [total_in_stock, setTotalInStock] = useState(0);
   const [total_revenue, setTotalRevenue] = useState(0);
 
@@ -233,6 +249,7 @@ export default function StockReportTable({ rows, month, supplier }) {
     setTotalAdd(0);
     setTotalReturn(0);
     setTotalSold(0);
+    setTotalRestock(0);
     setTotalInStock(0);
     setTotalRevenue(0);
     if (rows)
@@ -245,13 +262,22 @@ export default function StockReportTable({ rows, month, supplier }) {
             prev +
             (row.total_add_quantity ? parseInt(row.total_add_quantity) : 0)
         );
-        setTotalReturn((prev) =>
-          prev + row.total_return_quantity
-            ? parseInt(row.total_return_quantity)
-            : 0
+        setTotalReturn(
+          (prev) =>
+            prev +
+            (row.total_return_quantity
+              ? parseInt(row.total_return_quantity)
+              : 0)
         );
         setTotalSold(
           (prev) => prev + (row.sold_quantity ? parseInt(row.sold_quantity) : 0)
+        );
+        setTotalRestock(
+          (prev) =>
+            prev +
+            (row.total_restock_quantity
+              ? parseInt(row.total_restock_quantity)
+              : 0)
         );
         setTotalInStock(
           (prev) => prev + (row.in_stock ? parseInt(row.in_stock) : 0)
@@ -317,6 +343,13 @@ export default function StockReportTable({ rows, month, supplier }) {
       align: "center",
       headerAlign: "center",
     },
+    {
+      field: "total_restock_quantity",
+      headerName: "ปรับสต็อก",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
     // { field: "sold_revenue", headerName: "มูลค่าขาย", width: 100 },
     {
       field: "in_stock",
@@ -372,6 +405,7 @@ export default function StockReportTable({ rows, month, supplier }) {
             total_add,
             total_return,
             total_sold,
+            total_restock,
             total_in_stock,
             total_revenue,
           },

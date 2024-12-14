@@ -59,6 +59,7 @@ const StockReport = () => {
           total_add_quantity: parseInt(item.total_add_quantity),
           total_return_quantity: parseInt(item.total_return_quantity),
           sold_quantity: -parseInt(item.sold_quantity),
+          total_restock_quantity: parseInt(item.total_restock_quantity),
           in_stock: item.in_stock,
           in_stock_revenue: parseFloat(item.in_stock_revenue),
           supplier_name: item.supplier_name,
