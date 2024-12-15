@@ -9,6 +9,7 @@ import {
   GridCsvExportMenuItem,
   GridPrintExportMenuItem,
   GridPagination,
+  GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
 
 import * as XLSX from "xlsx";
@@ -144,6 +145,9 @@ function CustomToolbar({
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarDensitySelector />
+      <div className="ml-auto">
+        <GridToolbarQuickFilter />
+      </div>
       <GridToolbarExport
         rows={rows}
         columns={columns}
@@ -392,7 +396,7 @@ export default function StockReportTable({ rows, month, supplier }) {
             },
           },
         }}
-        pageSizeOptions={[20]}
+        pageSizeOptions={[20, 50, 100, 250]}
         disableColumnFilter
         slots={{ toolbar: CustomToolbar }}
         slotProps={{
