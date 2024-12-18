@@ -16,7 +16,10 @@ export default function ExcelPublisherSelect({
   };
 
   const publishersList =
-    publishers && publishers?.map((item) => item.publisher_name);
+    publishers &&
+    publishers
+      .map((item) => item.publisher_name)
+      .sort((a, b) => a.localeCompare(b));
 
   return (
     <Box sx={{ minWidth: 120 }}>
