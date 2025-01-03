@@ -6,6 +6,7 @@ import MemberInput from "./MemberInput";
 import CartList from "./CartList";
 import ConfirmBox from "./ConfirmBox";
 import SearchItem from "./SearchItem";
+import { calculateFinalPrice, validateDiscount } from "../../../utils/pricing";
 
 export const SellContext = createContext();
 
@@ -28,9 +29,25 @@ const SellBooks = () => {
         setCart(localCartData);
       } else {
         const newData = localCartData.map((item) => {
-          const bookDiscount = item.publisher_discount
-            ? Math.round((item.price * item.publisher_discount) / 100)
-            : 0;
+          const publisherDiscount = validateDiscount(
+            item.publisher_discount,
+            item.discount_start,
+            item.discount_end
+          );
+
+          const finalPrice = calculateFinalPrice(item);
+
+          const memberDiscount =
+            memberId &&
+            member === true &&
+            publisherDiscount === 0 &&
+            item.author
+              ? finalPrice * 0.05
+              : 0;
+
+          const bookDiscount =
+            item.price - Math.round(finalPrice + memberDiscount);
+
           return { ...item, cart_discount: bookDiscount };
         });
         setCart(newData);

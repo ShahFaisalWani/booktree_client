@@ -100,7 +100,6 @@ const CartList = ({
         quantity: 1,
       },
     ];
-
     setCartFunc(newData);
     return (document.getElementById("ISBN").value = "");
   };
