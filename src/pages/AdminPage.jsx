@@ -9,7 +9,7 @@ const SellBooks = lazy(() => import("../components/Admin/Sell/SellBooks"));
 const ReturnBooks = lazy(() =>
   import("../components/Admin/Stocks/ReturnBooks")
 );
-const BookProvider = lazy(() => import("../components/Admin/Books/Book"));
+const BookProvider = lazy(() => import("../contexts/admin/BookContext"));
 const CheckStock = lazy(() => import("../components/Admin/Stocks/CheckStock"));
 const CompareStock = lazy(() =>
   import("../components/Admin/Stocks/CompareStock")

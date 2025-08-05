@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { Box, TextField, IconButton, createTheme } from "@mui/material";
@@ -11,10 +11,10 @@ import DiscountIcon from "@mui/icons-material/Discount";
 import Modal from "@mui/material/Modal";
 import PublisherEditDialog from "./PublisherEditDialog";
 import LoadingScreen from "../../Loading/LoadingScreen";
-import { BookContext } from "../Books/Book";
 import { createStyles, makeStyles } from "@mui/styles";
 import PublisherSupplierForm from "./PublisherForm";
 import DiscountForm from "./DiscountForm";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const style = {
   position: "absolute",
@@ -199,7 +199,7 @@ const ManagePublishers = () => {
   const [originalData, setOriginalData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
-  const { suppliers } = useContext(BookContext);
+  const { suppliers } = useBookContext();
 
   const fetchPublishersData = async () => {
     const res = await axios.get(

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -10,7 +10,7 @@ import LoadingScreen from "../../Loading/LoadingScreen";
 import EditSupplierSelect from "../EditSupplierSelect";
 import GenreSelect from "./GenreSelect";
 import PublisherSelect from "./PublisherSelect";
-import { BookContext } from "./Book";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const style = {
   position: "relative",
@@ -59,7 +59,7 @@ const BookEditDialog = ({ handleClose, book }) => {
   const [coverImg, setCoverImg] = useState(book.cover_img);
   const [genre, setGenre] = useState(book.genre);
   // const [publisher, setPublisher] = useState(book.publisher);
-  const { publisher, setPublisher } = useContext(BookContext);
+  const { publisher, setPublisher } = useBookContext();
   const [loading, setLoading] = useState(false);
 
   const initialValues = {

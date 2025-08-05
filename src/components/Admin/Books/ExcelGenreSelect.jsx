@@ -1,15 +1,13 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import FormControl from "@mui/material/FormControl";
-import axios from "axios";
-import { useQuery } from "react-query";
 import Box from "@mui/material/Box";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { BookContext } from "./Book";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 export default function ExcelGenreSelect({ handleGenreChange, selectedGenre }) {
-  const { genres } = useContext(BookContext);
+  const { genres } = useBookContext();
 
   const handleChange = (value) => {
     handleGenreChange(value);

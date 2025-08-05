@@ -1,17 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import ImgInput from "./ImgInput";
-import { BookContext } from "./Book";
 import GenreSelect from "./GenreSelect";
 import PublisherSelect from "./PublisherSelect";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const ManualForm = ({ initial, onFinish }) => {
   const { genre, setGenre, supplier, setSupplier, setCoverImg, coverImg } =
-    useContext(BookContext);
+    useBookContext();
 
   useEffect(() => {
     if (initial) {

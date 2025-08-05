@@ -1,13 +1,13 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
-import { BookContext } from "./Books/Book";
+import { useBookContext } from "../../contexts/admin/BookContext";
 
 export default function EditSupplierSelect({ initial, onChange, product }) {
-  const { suppliers } = useContext(BookContext);
+  const { suppliers } = useBookContext();
   const [supplier, setSupplier] = useState("");
 
   useEffect(() => {

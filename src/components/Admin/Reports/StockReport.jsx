@@ -1,16 +1,16 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import StockReportTable from "./StockReportTable";
 import SupplierSelect from "../Books/SupplierSelect";
-import { BookContext } from "../Books/Book";
 import MonthSelect from "./MonthSelect";
 import axios from "axios";
 import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import YearSelect from "./YearSelect";
 import toast from "react-hot-toast";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const StockReport = () => {
-  const { supplier } = useContext(BookContext);
+  const { supplier } = useBookContext();
   const [month, setMonth] = useState("");
   const [rows, setRows] = useState([]);
   const [year, setYear] = useState("");

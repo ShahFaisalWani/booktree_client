@@ -1,22 +1,25 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
-import { BookContext } from "./Book";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 export default function SupplierSelect({ initial, onChange, product }) {
-  const { suppliers, supplier, setSupplier } = useContext(BookContext);
+  const { suppliers, supplier, setSupplier, prefetchPublishers } =
+    useBookContext();
 
   useEffect(() => {
     if (initial && suppliers?.length > 0) {
       const sup = suppliers.find((s) => s.supplier_name === initial);
       if (sup) {
         setSupplier(sup);
+        // Prefetch publishers for this supplier
+        prefetchPublishers(sup.supplier_name);
       }
     }
-  }, [initial, suppliers, setSupplier]);
+  }, [initial, suppliers, setSupplier, prefetchPublishers]);
 
   const allSup = {
     supplier_name: "All",
@@ -46,6 +49,12 @@ export default function SupplierSelect({ initial, onChange, product }) {
     );
 
     setSupplier(selectedSupplier);
+
+    // Prefetch publishers when supplier is selected
+    if (selectedSupplier && selectedSupplier.supplier_name !== "All") {
+      prefetchPublishers(selectedSupplier.supplier_name);
+    }
+
     if (onChange) onChange(selectedSupplier);
   };
 

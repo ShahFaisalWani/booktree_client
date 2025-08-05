@@ -3,10 +3,10 @@ import { SellContext } from "./SellBooks";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import MyModal from "../../MyModal";
-import { BookContext } from "../Books/Book";
 import SupplierSelect from "../Books/SupplierSelect";
 import toast from "react-hot-toast";
 import { calculateFinalPrice, validateDiscount } from "../../../utils/pricing";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const CartList = ({
   setCartFunc,
@@ -274,7 +274,7 @@ const CartList = ({
 
 const AddBookModal = ({ initialISBN, onSuccess, onClose }) => {
   const [supplier, setSupplier1] = useState("");
-  const { setSupplier } = useContext(BookContext);
+  const { setSupplier } = useBookContext();
   const [type, setType] = useState("book");
   const [next, setNext] = useState(false);
   const [ISBN, setISBN] = useState(initialISBN);

@@ -1,16 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import ImgInput from "./ImgInput";
-import { BookContext } from "./Book";
-import SupplierSelect from "./SupplierSelect";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const ItemForm = ({ onFinish }) => {
-  const { supplier, setSupplier, setCoverImg, coverImg } =
-    useContext(BookContext);
+  const { supplier, setSupplier, setCoverImg, coverImg } = useBookContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleImgChange = (file) => {

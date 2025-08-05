@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import RestockReportTable from "./RestockReportTable";
 import SupplierSelect from "../Books/SupplierSelect";
-import { BookContext } from "../Books/Book";
 import axios from "axios";
 import { useQuery } from "react-query";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import RangePicker from "./RangePicker";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const RestockReport = () => {
-  const { supplier } = useContext(BookContext);
+  const { supplier } = useBookContext();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [rows, setRows] = useState([]);

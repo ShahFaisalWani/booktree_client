@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 import Box from "@mui/material/Box";
@@ -26,11 +26,11 @@ import {
   Modal,
   Select,
 } from "@mui/material";
-import { BookContext } from "../Books/Book";
 import AddIcon from "@mui/icons-material/Add";
 import SupplierSelect from "../Books/SupplierSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import ManageStocks, { StockSuccessModal } from "../Stocks/ManageStocks";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const style = {
   position: "absolute",
@@ -114,7 +114,7 @@ const GridToolbar = ({ refetchData, rowSelectionModel, onFinish }) => {
   const [type, setType] = useState("");
   const [modalData, setModalData] = useState("");
   const [openDone, setOpenDone] = useState(false);
-  const { supplier, setSupplier } = useContext(BookContext);
+  const { supplier, setSupplier } = useBookContext();
 
   const handleClick = () => {
     setOpen(true);
@@ -264,7 +264,7 @@ function CustomToolbar({
 
 const ManageStationeries = () => {
   const [originalData, setOriginalData] = useState([]);
-  const { supplier, setSupplier } = useContext(BookContext);
+  const { supplier, setSupplier } = useBookContext();
   const [searchText, setSearchText] = useState("");
   const [persistedSelection, setPersistedSelection] = useState([]);
 

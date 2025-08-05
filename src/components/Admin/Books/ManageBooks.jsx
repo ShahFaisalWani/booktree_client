@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { toast } from "react-hot-toast";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
@@ -15,24 +16,23 @@ import SearchIcon from "@mui/icons-material/Search";
 import { createTheme } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
 import Checkbox from "@mui/material/Checkbox";
-import BookEditDialog from "./BookEditDialog";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
-import ManualForm from "./ManualForm";
+import BookForm from "./BookForm";
 import ManageStocks, {
   StockSuccessModal,
   handleExport,
 } from "../Stocks/ManageStocks";
 import AddExcel from "./AddExcel";
 import BooksList from "../BooksList";
-import { BookContext } from "./Book";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import * as XLSX from "xlsx";
 import SwapHorizontalCircleIcon from "@mui/icons-material/SwapHorizontalCircle";
 import { Button } from "@mui/material";
+import { useBookContext } from "../../../contexts/admin/BookContext";
 
 const style = {
   position: "absolute",
@@ -127,7 +127,7 @@ const GridToolbar = ({
   const [type, setType] = useState("");
   const [modalData, setModalData] = useState("");
   const [openDone, setOpenDone] = useState(false);
-  const { supplier, setSupplier } = useContext(BookContext);
+  const { supplier, setSupplier } = useBookContext();
 
   const handleClick = () => {
     setOpen(true);
@@ -344,31 +344,18 @@ const GridToolbar = ({
           Export Excel
         </button>
       </div>
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <div>
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute right-7 top-7 text-gray-400 hover:text-red-400"
-            >
-              <CloseIcon fontSize="medium" />
-            </button>
-            <div className="p-10">
-              <ManualForm
-                onFinish={() => {
-                  setOpen(false);
-                  if (refetchBooks) refetchBooks();
-                }}
-              />
-            </div>
-          </div>
-        </Box>
-      </Modal>
+      {/* Add Book Modal */}
+      {open && (
+        <BookForm
+          onSuccess={() => {
+            setOpen(false);
+            if (refetchBooks) refetchBooks();
+          }}
+          onCancel={() => setOpen(false)}
+          title="เพิ่มหนังสือ"
+        />
+      )}
+
       <AddExcel
         ref={excelRef}
         onChange={(books) => {
@@ -475,7 +462,13 @@ function CustomToolbar({
 
 const ManageBooks = () => {
   const [originalData, setOriginalData] = useState([]);
-  const { supplier, setSupplier, suppliers } = useContext(BookContext);
+  const {
+    supplier,
+    setSupplier,
+    suppliers,
+    getCachedBooks,
+    invalidateBooksCache,
+  } = useBookContext();
   const [searchText, setSearchText] = useState("");
   const [persistedSelection, setPersistedSelection] = useState([]);
 
@@ -488,11 +481,20 @@ const ManageBooks = () => {
     const res = await axios.get(import.meta.env.VITE_API_BASEURL + url);
     return res.data;
   };
+
   const { isLoading, error, data, refetch } = useQuery(
     ["books table", supplier],
     fetchMyData,
     {
       refetchOnWindowFocus: false,
+      staleTime: 3 * 60 * 1000, // 3 minutes
+      cacheTime: 15 * 60 * 1000, // 15 minutes - longer cache for books
+      // Keep previous data while fetching new data
+      keepPreviousData: true,
+      // Don't retry if supplier is not set
+      enabled: true,
+      // Prefer cache on mount - only refetch if cache is stale
+      refetchOnMount: false,
     }
   );
 
@@ -501,16 +503,52 @@ const ManageBooks = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editBook, setEditBook] = useState(null);
   const [copyBook, setCopyBook] = useState(null);
+  const [isCopying, setIsCopying] = useState(false);
 
+  // Define isSelected function early since it's used in useEffect
+  const isSelected = (rowId) => {
+    return persistedSelection.some((item) => item.id === rowId);
+  };
+
+  // Single effect to handle all row updates and sorting
   useEffect(() => {
-    if (data?.length >= 0) {
-      const updatedRows = data.map((item) => {
+    let updatedRows = [];
+
+    if (data !== undefined) {
+      // Data is loaded (could be empty array or populated array)
+      updatedRows = data.map((item) => {
         return { ...item, id: item.ISBN, isEditable: false };
       });
-      setRows(updatedRows);
-      setOriginalData(updatedRows);
+    } else if (getCachedBooks) {
+      // Fallback to cache if no fresh data
+      const cachedBooks = getCachedBooks(supplier);
+      if (cachedBooks?.length > 0) {
+        updatedRows = cachedBooks.map((item) => {
+          return { ...item, id: item.ISBN, isEditable: false };
+        });
+      }
     }
-  }, [data]);
+
+    // Sort rows to put selected items first (only if there are rows)
+    if (updatedRows.length > 0) {
+      const sortedRows = updatedRows.sort((a, b) => {
+        if (isSelected(a.id) && !isSelected(b.id)) {
+          return -1;
+        }
+        if (!isSelected(a.id) && isSelected(b.id)) {
+          return 1;
+        }
+        return 0;
+      });
+
+      setRows(sortedRows);
+      setOriginalData(sortedRows);
+    } else {
+      // Clear rows when no data is available
+      setRows([]);
+      setOriginalData([]);
+    }
+  }, [data, supplier, getCachedBooks, persistedSelection]);
 
   const handleEdit = (id) => {
     const book = rows.find((row) => row.id === id);
@@ -524,13 +562,32 @@ const ManageBooks = () => {
 
   const handleAddCopy = (id) => {
     const book = rows.find((row) => row.id === id);
-    const copyOfBook = Object.assign({}, book);
-
-    copyOfBook.ISBN = "0" + book.ISBN;
-    copyOfBook.supplier_name = "Booktree";
-
+    setCopyBook(book);
     setAddModalOpen(true);
-    setCopyBook(copyOfBook);
+  };
+
+  const handleConfirmCopy = async () => {
+    if (!copyBook) return;
+
+    try {
+      setIsCopying(true);
+
+      await axios.post(
+        import.meta.env.VITE_API_BASEURL + "/book/takeover",
+        copyBook
+      );
+
+      toast.success("คัดลอกหนังสือเป็น Booktree สำเร็จ");
+      setSupplier({ supplier_name: "Booktree" });
+      setAddModalOpen(false);
+      setCopyBook(null);
+      refetch();
+    } catch (error) {
+      console.error("Error copying book:", error);
+      toast.error("เกิดข้อผิดพลาดในการคัดลอกหนังสือ");
+    } finally {
+      setIsCopying(false);
+    }
   };
 
   useEffect(() => {
@@ -560,45 +617,6 @@ const ManageBooks = () => {
     setModalOpen(false);
     if (success) refetch();
   };
-
-  const isSelected = (rowId) => {
-    return persistedSelection.some((item) => item.id === rowId);
-  };
-
-  useEffect(() => {
-    if (data?.length > 0) {
-      const updatedRows = data.map((item) => {
-        return { ...item, id: item.ISBN, isEditable: false };
-      });
-
-      const sortedRows = updatedRows.sort((a, b) => {
-        if (isSelected(a.id) && !isSelected(b.id)) {
-          return -1;
-        }
-        if (!isSelected(a.id) && isSelected(b.id)) {
-          return 1;
-        }
-        return 0;
-      });
-
-      setRows(sortedRows);
-      setOriginalData(sortedRows);
-    }
-  }, [data, persistedSelection]);
-
-  useEffect(() => {
-    const sortedRows = [...rows].sort((a, b) => {
-      if (isSelected(a.id) && !isSelected(b.id)) {
-        return -1;
-      }
-      if (!isSelected(a.id) && isSelected(b.id)) {
-        return 1;
-      }
-      return 0;
-    });
-
-    setRows(sortedRows);
-  }, [persistedSelection]);
 
   const handleCustomSelection = (e, row) => {
     if (e.target.checked) {
@@ -764,81 +782,114 @@ const ManageBooks = () => {
 
   return (
     <>
-      {data && (
-        <Box sx={{ width: "100%", margin: "auto" }}>
-          <DataGrid
-            rowHeight={105}
-            getRowSpacing={(params) => {
-              return {
-                top: params.isFirstVisible ? 0 : 5,
-                bottom: params.isLastVisible ? 0 : 5,
-              };
-            }}
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 30,
-                },
+      <Box sx={{ width: "100%", margin: "auto" }}>
+        <DataGrid
+          rowHeight={105}
+          getRowSpacing={(params) => {
+            return {
+              top: params.isFirstVisible ? 0 : 5,
+              bottom: params.isLastVisible ? 0 : 5,
+            };
+          }}
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 30,
               },
-            }}
-            pageSizeOptions={[30]}
-            slots={{
-              toolbar: CustomToolbar,
-            }}
-            slotProps={{
-              toolbar: {
-                value: searchText,
-                onChange: (event) => requestSearch(event.target.value),
-                clearSearch: () => requestSearch(""),
-                refetchBooks: () => refetch(),
-                rowSelectionModel: persistedSelection,
-                setRowSelectionModel: setPersistedSelection,
-                rows: rows,
-                onFinish: () => {
-                  setPersistedSelection([]);
-                  setSupplier("");
-                },
+            },
+          }}
+          pageSizeOptions={[30]}
+          slots={{
+            toolbar: CustomToolbar,
+          }}
+          slotProps={{
+            toolbar: {
+              value: searchText,
+              onChange: (event) => requestSearch(event.target.value),
+              clearSearch: () => requestSearch(""),
+              refetchBooks: () => refetch(),
+              rowSelectionModel: persistedSelection,
+              setRowSelectionModel: setPersistedSelection,
+              rows: rows,
+              onFinish: () => {
+                setPersistedSelection([]);
+                setSupplier("");
               },
+            },
+          }}
+          disableColumnFilter
+          disableDensitySelector
+        />
+        {/* Edit Book Modal */}
+        {modalOpen && (
+          <BookForm
+            book={editBook}
+            onSuccess={() => {
+              handleCloseModal(true);
+              refetch();
             }}
-            disableColumnFilter
-            disableDensitySelector
+            onCancel={() => handleCloseModal(false)}
+            title="แก้ไขหนังสือ"
           />
-          {modalOpen && (
-            <BookEditDialog
-              handleClose={(success) => handleCloseModal(success)}
-              book={editBook}
-            />
-          )}
+        )}
+
+        {/* Copy Book Confirmation Modal */}
+        {addModalOpen && (
           <Modal
             open={addModalOpen}
-            onClose={() => setAddModalOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+            aria-labelledby="copy-modal-title"
+            aria-describedby="copy-modal-description"
           >
-            <Box sx={style}>
-              <div>
-                <button
-                  onClick={() => setAddModalOpen(false)}
-                  className="absolute right-7 top-7 text-gray-400 hover:text-red-400"
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 400,
+                bgcolor: "background.paper",
+                borderRadius: 2,
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
+              <div className="text-center">
+                <h2
+                  id="copy-modal-title"
+                  className="text-xl font-semibold mb-4"
                 >
-                  <CloseIcon fontSize="medium" />
-                </button>
-                <div className="p-10">
-                  <ManualForm
-                    initial={copyBook}
-                    onFinish={() => {
-                      setSupplier({ supplier_name: "Booktree" });
+                  ยืนยันการคัดลอกหนังสือ
+                </h2>
+                <p id="copy-modal-description" className="text-gray-600 mb-6">
+                  คุณต้องการคัดลอกหนังสือ "{copyBook?.title}" เป็น Booktree
+                  หรือไม่?
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => {
                       setAddModalOpen(false);
+                      setCopyBook(null);
                     }}
-                  />
+                    disabled={isCopying}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleConfirmCopy}
+                    disabled={isCopying}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                  >
+                    {isCopying ? "กำลังคัดลอก..." : "ยืนยัน"}
+                  </button>
                 </div>
               </div>
             </Box>
           </Modal>
-        </Box>
-      )}
+        )}
+      </Box>
     </>
   );
 };

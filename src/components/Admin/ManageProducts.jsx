@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
@@ -7,17 +7,17 @@ import InputLabel from "@mui/material/InputLabel";
 import ManageBooks from "./Books/ManageBooks";
 import ManageStationeries from "./Stationery/ManageStationeries";
 import SupplierSelect from "./Books/SupplierSelect";
-import { BookContext } from "./Books/Book";
+import { useBookContext } from "../../contexts/admin/BookContext";
 
 const ManageProducts = () => {
-  const { setSupplier } = useContext(BookContext);
-  const [item, setItem] = useState(() => {
-    return localStorage.getItem("selectedItemType") || "book";
-  });
+  const { item, setItem, resetSupplierState } = useBookContext();
+
   const onChange = (e) => {
-    setSupplier("");
-    setItem(e.target.value);
-    localStorage.setItem("selectedItemType", e.target.value);
+    const newItem = e.target.value;
+
+    // Reset supplier when changing item type
+    resetSupplierState();
+    setItem(newItem);
   };
 
   return (
@@ -42,7 +42,7 @@ const ManageProducts = () => {
           <SupplierSelect product={item} />
         </Box>
       </div>
-      {item == "book" ? <ManageBooks /> : <ManageStationeries />}
+      {item === "book" ? <ManageBooks /> : <ManageStationeries />}
     </div>
   );
 };
