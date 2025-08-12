@@ -27,8 +27,9 @@ export default function PublisherSelect({
     ? value
     : publisher;
 
-  // Determine the target supplier
-  const targetSupplier = supplierName || supplier?.supplier_name;
+  // Determine the target supplier - handle both string and object cases
+  const targetSupplier =
+    supplierName?.supplier_name || supplierName || supplier?.supplier_name;
 
   // Fetch publishers with enhanced caching
   const fetchPublishers = async () => {
@@ -46,6 +47,7 @@ export default function PublisherSelect({
     isLoading,
     error,
     data: publishersData,
+    refetch,
   } = useQuery(["publishers", targetSupplier], fetchPublishers, {
     enabled: !!(targetSupplier && targetSupplier !== "All"),
     refetchOnWindowFocus: false,
@@ -72,6 +74,31 @@ export default function PublisherSelect({
       }
     }
   }, [initial, publishersData, setPublisher, onChange, useLocalState]);
+
+  // Track previous supplier to detect changes
+  const [previousSupplier, setPreviousSupplier] = useState("");
+
+  // Clear publisher when supplier changes
+  useEffect(() => {
+    // Initialize previous supplier on first render
+    if (!previousSupplier && targetSupplier) {
+      setPreviousSupplier(targetSupplier);
+      return;
+    }
+
+    // Only clear if supplier actually changed
+    if (targetSupplier !== previousSupplier) {
+      if (useLocalState) {
+        setLocalValue("");
+      } else {
+        setPublisher("");
+      }
+      // Notify parent of the change
+      onChange?.("");
+
+      setPreviousSupplier(targetSupplier);
+    }
+  }, [targetSupplier, previousSupplier, useLocalState, setPublisher, onChange]);
 
   // Update local value when external value changes (for controlled mode)
   useEffect(() => {
@@ -111,6 +138,7 @@ export default function PublisherSelect({
     <Box sx={{ minWidth: 200 }}>
       <FormControl fullWidth>
         <Autocomplete
+          key={targetSupplier} // Force re-render when supplier changes
           disablePortal
           isOptionEqualToValue={(option, value) =>
             option === value || value === ""

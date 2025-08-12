@@ -36,8 +36,7 @@ const BookForm = ({
   const {
     genre,
     setGenre,
-    supplier,
-    setSupplier,
+    supplier: globalSupplier, // Rename to distinguish from form supplier
     publisher,
     setPublisher,
     coverImg,
@@ -47,7 +46,8 @@ const BookForm = ({
   } = useBookContext();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [localSupplier, setLocalSupplier] = useState(null);
+  // Form-specific supplier state (separate from global supplier used for filtering)
+  const [formSupplier, setFormSupplier] = useState(null);
   const [localGenre, setLocalGenre] = useState("");
   const [localPublisher, setLocalPublisher] = useState("");
   const [localCoverImg, setLocalCoverImg] = useState(null);
@@ -55,7 +55,7 @@ const BookForm = ({
   // Initialize form state
   useEffect(() => {
     if (isEdit && book) {
-      setLocalSupplier(book.supplier_name);
+      setFormSupplier(book.supplier_name);
       setLocalGenre(book.genre || "");
       setLocalPublisher(book.publisher || "");
       setLocalCoverImg(book.cover_img);
@@ -68,12 +68,20 @@ const BookForm = ({
       // Don't set context state in edit mode - use local state
     } else {
       // Reset for add mode - use context state
-      setLocalSupplier(supplier?.supplier_name || "");
+      setFormSupplier(globalSupplier?.supplier_name || "");
       setLocalGenre(genre || "");
       setLocalPublisher(publisher || "");
       setLocalCoverImg(coverImg);
     }
-  }, [book, isEdit, prefetchPublishers, supplier, genre, publisher, coverImg]);
+  }, [
+    book,
+    isEdit,
+    prefetchPublishers,
+    globalSupplier,
+    genre,
+    publisher,
+    coverImg,
+  ]);
 
   const validationSchema = Yup.object({
     ISBN: Yup.string().required("Required"),
@@ -112,12 +120,18 @@ const BookForm = ({
   };
 
   const handleSupplierChange = (selectedSupplier) => {
-    setLocalSupplier(selectedSupplier);
-    setSupplier(selectedSupplier);
+    setFormSupplier(selectedSupplier);
+    // Don't update global supplier state - keep it separate
     // Reset publisher when supplier changes
     setLocalPublisher("");
     if (!isEdit) {
       setPublisher("");
+    }
+
+    // Prefetch publishers for the new supplier
+    const supplierName = selectedSupplier?.supplier_name || selectedSupplier;
+    if (supplierName && supplierName !== "All") {
+      prefetchPublishers(supplierName);
     }
   };
 
@@ -129,7 +143,9 @@ const BookForm = ({
     }
 
     const supplierName =
-      localSupplier?.supplier_name || localSupplier || supplier?.supplier_name;
+      formSupplier?.supplier_name ||
+      formSupplier ||
+      globalSupplier?.supplier_name;
     if (!supplierName) {
       toast.error("เลือกตัวแทนจำหน่าย");
       return;
@@ -154,7 +170,22 @@ const BookForm = ({
       let apiEndpoint, successMessage;
 
       if (isEdit) {
-        const initialValues = BOOK_FORM_CONFIG.getInitialValues(book, supplier);
+        const getInitialValues = (book, supplier) => {
+          return {
+            ISBN: book?.ISBN || "",
+            title: book?.title || "",
+            author: book?.author || "",
+            desc: book?.desc || "",
+            translator: book?.translator || "",
+            weight: book?.weight || "",
+            published_year: book?.published_year || "",
+            base_price: book?.base_price || "",
+            price: book?.price || "",
+            supplier_name: book?.supplier_name || "",
+          };
+        };
+
+        const initialValues = getInitialValues(book, globalSupplier);
         const isSame =
           JSON.stringify(initialValues) === JSON.stringify(formData);
         if (isSame && localCoverImg === book.cover_img) {
@@ -199,6 +230,7 @@ const BookForm = ({
         setLocalGenre("");
         setLocalPublisher("");
         setLocalCoverImg(null);
+        setFormSupplier(globalSupplier?.supplier_name || "");
         // Reset context state
         resetFormState();
       }
@@ -225,6 +257,7 @@ const BookForm = ({
       setLocalGenre("");
       setLocalPublisher("");
       setLocalCoverImg(null);
+      setFormSupplier(globalSupplier?.supplier_name || "");
       resetFormState();
     }
     onCancel?.();
@@ -253,7 +286,7 @@ const BookForm = ({
     } else if (field.type === "publisher") {
       props.isPublisher = true;
       props.onPublisherChange = handlePublisherChange;
-      props.supplierName = localSupplier?.supplier_name || localSupplier;
+      props.supplierName = formSupplier?.supplier_name || formSupplier;
       props.initialValue = isEdit ? book?.publisher : "";
       props.oldValue = isEdit ? book?.old_publisher : null;
       if (isEdit) {
@@ -279,7 +312,7 @@ const BookForm = ({
     <div className="px-16">
       {isLoading && <LoadingScreen />}
       <Formik
-        initialValues={BOOK_FORM_CONFIG.getInitialValues(book, supplier)}
+        initialValues={BOOK_FORM_CONFIG.getInitialValues(book, formSupplier)}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
